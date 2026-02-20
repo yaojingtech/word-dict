@@ -171,7 +171,18 @@
             font-weight: 700;
             color: #000;
             font-size: 1.25em;
+            cursor: pointer;
+            transition: color 0.15s;
         }
+
+        .cell-word:hover { color: var(--accent-color); }
+
+        .col-word.word-speak {
+            cursor: pointer;
+            transition: color 0.15s;
+        }
+
+        .col-word.word-speak:hover { color: var(--accent-color); }
 
         .cell-phonetic {
             font-family: "Lucida Sans Unicode", "Arial", sans-serif;
@@ -337,6 +348,13 @@
         <input type="number" id="fontSizeInput" value="14" min="8" max="24" step="0.1">
         <button type="button" id="adaptiveFontBtn" class="adaptive-btn" title="每页单独自适应字号">自适应</button>
     </div>
+    <div class="control-group">
+        <label>发音</label>
+        <select id="accentSelect" title="点击单词时的发音口音">
+            <option value="1">英音</option>
+            <option value="2">美音</option>
+        </select>
+    </div>
     <div class="control-group control-group-sep" aria-hidden="true"></div>
     <div class="control-group control-group-flex">
         <label>显示列</label>
@@ -418,6 +436,24 @@
         }
         return rows;
     }
+
+    // 从 JSON 加载数据（用于默认加载 word(2800).json）
+    function loadFromJson(json) {
+        if (!json || !json.headers || !Array.isArray(json.data)) return false;
+        headers = json.headers;
+        allData = json.data.filter(r => r && r.length > 1);
+        if (allData.length === 0) return false;
+        visibleColumns = headers.map((_, i) => i);
+        initColumnControls();
+        requestAnimationFrame(() => { renderPages(); });
+        return true;
+    }
+
+    // 默认加载 word(2800).json
+    fetch('word(2800).json')
+        .then(r => r.ok ? r.json() : Promise.reject())
+        .then(json => { if (loadFromJson(json)) { /* 加载成功 */ } })
+        .catch(() => { /* 文件不存在或 CORS，保持默认空状态 */ });
 
     // 文件上传处理（异步渲染避免卡住）
     fileInput.addEventListener('change', (e) => {
@@ -662,10 +698,11 @@
                 tableHtml += '<tr>';
                 displayColumns.forEach(col => {
                     if (col.type === 'wordPhonetic') {
-                        const w = escapeHtml(row[col.wordIdx] || '').trim();
+                        const rawWord = (row[col.wordIdx] || '').trim();
+                        const w = escapeHtml(rawWord);
                         const p = escapeHtml(row[col.phoneticIdx] || '').trim();
                         tableHtml += '<td class="col-word-phonetic-combined"><div class="cell-word-phonetic-wrap">';
-                        if (w) tableHtml += `<div class="cell-word">${w}</div>`;
+                        if (w) tableHtml += `<div class="cell-word" data-word="${escapeHtml(rawWord)}" title="点击发音">${w}</div>`;
                         if (p) tableHtml += `<div class="cell-phonetic">${p}</div>`;
                         if (!w && !p) tableHtml += '<div class="cell-word">&nbsp;</div>';
                         tableHtml += '</div></td>';
@@ -687,10 +724,13 @@
                         const role = getColumnRole(col.header);
                         const cls = getColumnClass(role, false, false);
                         let content = escapeHtml(row[col.index] || '');
+                        const rawVal = (row[col.index] || '').trim();
                         if (role === 'pos' && content && content.length < 12) {
                             content = '<span class="pos-tag">' + content + '</span>';
                         }
-                        tableHtml += `<td class="${cls}">${content}</td>`;
+                        const wordSpeakClass = role === 'word' && rawVal ? ' word-speak' : '';
+                        const dataWord = role === 'word' && rawVal ? ` data-word="${escapeHtml(rawVal)}" title="点击发音"` : '';
+                        tableHtml += `<td class="${cls}${wordSpeakClass}"${dataWord}>${content}</td>`;
                     }
                 });
                 tableHtml += '</tr>';
@@ -815,6 +855,27 @@
     layoutSelect.addEventListener('change', renderPages);
     pageSizeInput.addEventListener('input', renderPages);
     fontSizeInput.addEventListener('input', renderPages);
+
+    // 点击单词发音（有道公开 API：英音 type=1，美音 type=2）
+    const accentSelect = document.getElementById('accentSelect');
+    let currentAudio = null;
+
+    previewArea.addEventListener('click', function(e) {
+        const wordEl = e.target.closest('.cell-word, .col-word.word-speak');
+        if (!wordEl) return;
+        const word = wordEl.getAttribute('data-word') || (wordEl.textContent || '').trim();
+        if (!word) return;
+
+        const type = (accentSelect && accentSelect.value) || '1';
+        const url = 'https://dict.youdao.com/dictvoice?audio=' + encodeURIComponent(word) + '&type=' + type;
+
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio = null;
+        }
+        currentAudio = new Audio(url);
+        currentAudio.play().catch(function() { /* 静默处理自动播放限制 */ });
+    });
 
     // 跳转到第 x 页
     (function() {
