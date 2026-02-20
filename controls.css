@@ -1,0 +1,200 @@
+/**
+ * Notion-style top toolbar for 单词表打印排版工具
+ */
+
+/* --- Toolbar 容器 --- */
+.controls {
+    background: #f7f6f3;
+    padding: 8px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+    border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+    font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif;
+}
+
+/* --- 控制组：横向排列，紧凑 --- */
+.controls .control-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background 0.15s ease;
+}
+
+.controls .control-group:hover {
+    background: rgba(55, 53, 47, 0.04);
+}
+
+/* 分隔线 */
+.controls .control-group.control-group-sep {
+    width: 1px;
+    min-height: 20px;
+    padding: 0;
+    margin: 0 8px;
+    background: rgba(55, 53, 47, 0.12);
+    border-radius: 0;
+    flex-shrink: 0;
+}
+
+.controls .control-group.control-group-sep:hover {
+    background: rgba(55, 53, 47, 0.12);
+}
+
+/* 可伸缩组（显示列） */
+.controls .control-group.control-group-flex {
+    flex-grow: 1;
+    flex-wrap: wrap;
+}
+
+/* --- 标签：内联、小号 --- */
+.controls .control-group label {
+    font-size: 13px;
+    color: rgba(55, 53, 47, 0.65);
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+/* --- 表单控件 --- */
+.controls select,
+.controls input[type="number"] {
+    padding: 4px 10px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    font-size: 13px;
+    background: rgba(255, 255, 255, 0.8);
+    color: rgb(55, 53, 47);
+    min-height: 28px;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.controls select:hover,
+.controls input[type="number"]:hover {
+    background: rgba(255, 255, 255, 1);
+}
+
+.controls select:focus,
+.controls input[type="number"]:focus {
+    outline: none;
+    background: #fff;
+    border-color: rgba(55, 53, 47, 0.2);
+}
+
+.controls input[type="number"] {
+    width: 52px;
+}
+
+/* 文件上传：伪装成按钮 */
+.controls input[type="file"] {
+    font-size: 13px;
+    padding: 4px 0;
+    color: rgba(55, 53, 47, 0.65);
+}
+
+.controls input[type="file"]::file-selector-button {
+    padding: 4px 10px;
+    margin-right: 8px;
+    border: none;
+    border-radius: 6px;
+    background: rgba(55, 53, 47, 0.08);
+    color: rgb(55, 53, 47);
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.controls input[type="file"]::file-selector-button:hover {
+    background: rgba(55, 53, 47, 0.12);
+}
+
+/* --- 列切换（标签按钮组）--- */
+.controls .column-toggles {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.controls .column-toggles label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    color: rgba(55, 53, 47, 0.7);
+    background: rgba(255, 255, 255, 0.6);
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    transition: all 0.15s ease;
+}
+
+.controls .column-toggles input {
+    display: none;
+}
+
+.controls .column-toggles label:hover {
+    background: rgba(55, 53, 47, 0.06);
+}
+
+.controls .column-toggles label:has(input:checked) {
+    background: rgba(46, 170, 89, 0.15);
+    color: rgb(46, 170, 89);
+}
+
+/* --- 按钮统一样式 --- */
+.controls button {
+    padding: 4px 12px;
+    font-size: 13px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+    min-height: 28px;
+    transition: background 0.15s, color 0.15s;
+    font-family: inherit;
+}
+
+/* 主按钮：导出全部 */
+.controls .print-btn {
+    background: rgb(55, 53, 47);
+    color: #fff;
+    font-weight: 500;
+}
+
+.controls .print-btn:hover {
+    background: rgba(55, 53, 47, 0.85);
+}
+
+/* 次按钮：自适应、跳转页码 */
+.controls .adaptive-btn,
+.controls .go-to-page-btn {
+    background: rgba(55, 53, 47, 0.06);
+    color: rgb(55, 53, 47);
+}
+
+.controls .adaptive-btn:hover,
+.controls .go-to-page-btn:hover {
+    background: rgba(55, 53, 47, 0.1);
+}
+
+.controls .adaptive-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* 占位提示 */
+.controls .column-toggles .column-placeholder {
+    font-size: 13px;
+    color: rgba(55, 53, 47, 0.4);
+    padding: 4px 0;
+}
+
+@media print {
+    .controls { display: none !important; }
+}
