@@ -10,6 +10,8 @@
 <body>
 
 <div class="controls">
+    <button type="button" id="genWordsBtn" class="gen-words-btn" title="输入单词，用AI自动生成词条并添加到列表">✨ 智能生成</button>
+    <div class="control-group control-group-sep" aria-hidden="true"></div>
     <div class="control-group">
         <label>上传</label>
         <input type="file" id="fileInput" accept=".csv">
@@ -49,6 +51,7 @@
     <div class="control-group">
         <button type="button" id="goToPageBtn" class="go-to-page-btn" title="输入页码后跳转到该页">跳转</button>
     </div>
+    <button type="button" id="exportJsonBtn" class="go-to-page-btn" title="将当前词表导出为 JSON 文件">JSON导出</button>
     <button type="button" id="exportPdfBtn" class="go-to-page-btn" title="选择范围后打开浏览器打印，可另存为 PDF">PDF导出</button>
     <button class="print-btn" id="exportAllBtn">导出全部</button>
 </div>
@@ -74,6 +77,32 @@
     <button type="button" id="wordModalNext" class="word-modal-nav-btn" aria-label="下一个单词">&#8250;</button>
 </div>
 
+<!-- 智能生成单词条目模态框 -->
+<div id="genModalOverlay" class="gen-modal-overlay" aria-hidden="true">
+    <div class="gen-modal-backdrop" id="genModalBackdrop"></div>
+    <div id="genModalBox" class="gen-modal-box" role="dialog" aria-label="智能生成单词条目">
+        <div class="gen-modal-header">
+            <span class="gen-modal-title">✨ 智能生成单词条目</span>
+            <button type="button" class="gen-modal-close" id="genModalClose" aria-label="关闭">×</button>
+        </div>
+        <div class="gen-modal-body">
+            <div class="gen-input-section">
+                <label class="gen-label" for="genWordsInput">输入单词<span class="gen-label-hint">（每行一个，或用逗号 / 中文逗号分隔）</span></label>
+                <textarea id="genWordsInput" class="gen-textarea" rows="6"
+                    placeholder="例如：&#10;apple&#10;banana, orange&#10;algorithm，data structure"></textarea>
+            </div>
+            <div class="gen-action-row">
+                <button type="button" id="genStartBtn" class="gen-start-btn">🚀 开始生成</button>
+                <span id="genStatusText" class="gen-status-text"></span>
+            </div>
+            <div id="genProgress" class="gen-progress" style="display:none"></div>
+        </div>
+        <div class="gen-modal-footer" id="genFooter" style="display:none">
+            <button type="button" id="genAddBtn" class="gen-add-btn">➕ 添加到列表</button>
+        </div>
+    </div>
+</div>
+
 <script src="libs/dom-to-image.min.js"></script>
 <script src="libs/index.js"></script>
     <script src="js/utils.js"></script>
@@ -83,5 +112,6 @@
 <script src="js/export.js"></script>
 <script src="js/render.js"></script>
 <script src="js/main.js"></script>
+<script src="js/ai_generate.js"></script>
 </body>
 </html>

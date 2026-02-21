@@ -33,6 +33,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const exportPdfBtn = document.getElementById('exportPdfBtn');
     const exportAllBtn = document.getElementById('exportAllBtn');
 
+    // JSON 导出：保持与 word(2800).json 完全一致的格式
+    document.getElementById('exportJsonBtn')?.addEventListener('click', () => {
+        if (!allData || allData.length === 0) return alert('暂无数据，请先上传文件或生成词条。');
+
+        const json = JSON.stringify({ headers, data: allData }, null, 2);
+        const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
+        const url  = URL.createObjectURL(blob);
+        const date = new Date().toISOString().slice(0, 10);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `词表_${allData.length}条_${date}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    });
+
     // PDF 导出：选择范围后打开浏览器打印面板
     exportPdfBtn?.addEventListener('click', () => {
         const wraps = previewArea?.querySelectorAll('.page-export-wrap');
