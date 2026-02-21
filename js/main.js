@@ -40,21 +40,26 @@ fileInput.addEventListener('change', (e) => {
     const reader = new FileReader();
     reader.onload = (event) => {
         try {
-            const rows = parseCSV(event.target.result); // 调用 utils.js 的方法
-            if (rows.length === 0) return;
-
-            headers = rows[0];
-            allData = rows.slice(1).filter(r => r.length > 1);
-            visibleColumns = headers.map((_, i) => i);
-
-            initColumnControls();
-            requestAnimationFrame(() => { renderPages(); });
+            if (file.name.toLowerCase().endsWith('.json')) {
+                // JSON 格式：{ headers: [...], data: [[...], ...] }
+                const json = JSON.parse(event.target.result);
+                if (!loadFromJson(json)) throw new Error('JSON 格式不符，需包含 headers 和 data 字段');
+            } else {
+                // CSV 格式
+                const rows = parseCSV(event.target.result);
+                if (rows.length === 0) return;
+                headers = rows[0];
+                allData = rows.slice(1).filter(r => r.length > 1);
+                visibleColumns = headers.map((_, i) => i);
+                initColumnControls();
+                requestAnimationFrame(() => { renderPages(); });
+            }
         } catch (err) {
             console.error(err);
             alert('解析文件出错：' + (err.message || err));
         }
     };
-    reader.readAsText(file);
+    reader.readAsText(file, 'utf-8');
 });
 
 // 列配置逻辑已抽离到 columns.js（initColumnControls / buildDisplayColumns 等）
@@ -77,6 +82,16 @@ function spawnRipple(el, e) {
 }
 
 previewArea.addEventListener('click', (e) => {
+    // 页脚点击 → 弹出字号/导出操作面板
+    const footer = e.target.closest('.page-footer');
+    if (footer) {
+        const pageDiv = footer.closest('.page');
+        if (pageDiv && typeof openPageActionsPopover === 'function') {
+            openPageActionsPopover(footer, pageDiv);
+        }
+        return;
+    }
+
     // 整个单词+音标格（含空白和音标区域）→ 水波纹 + 发音
     const combinedTd = e.target.closest('td.col-word-phonetic-combined');
     if (combinedTd) {

@@ -86,49 +86,6 @@ function renderPages() {
             var wrap = document.createElement('div');
             wrap.className = 'page-export-wrap';
             wrap.appendChild(pageDiv);
-
-            // 单页导出功能控制栏
-            var sideControls = document.createElement('div');
-            sideControls.className = 'page-side-controls';
-
-            var exportBtn = document.createElement('button');
-            exportBtn.className = 'export-page-btn';
-            exportBtn.textContent = '导出';
-            exportBtn.type = 'button';
-            // 注意：这里调用的是 export.js 里的函数 (假设你已经抽离)
-            if(typeof exportSinglePage === 'function'){
-                exportBtn.onclick = () => exportSinglePage(pageDiv, i + 1, totalPages, exportBtn);
-            }
-            sideControls.appendChild(exportBtn);
-
-            var fontControl = document.createElement('div');
-            fontControl.className = 'page-font-control';
-            fontControl.innerHTML = '<span style="font-size:11px;color:#888;">字号</span>';
-            var btnSmaller = document.createElement('button');
-            btnSmaller.type = 'button';
-            btnSmaller.textContent = '－';
-            var fontValue = document.createElement('span');
-            fontValue.className = 'page-font-value';
-            fontValue.textContent = baseFontSize + 'px';
-            var btnBigger = document.createElement('button');
-            btnBigger.type = 'button';
-            btnBigger.textContent = '＋';
-            fontControl.appendChild(btnSmaller);
-            fontControl.appendChild(fontValue);
-            fontControl.appendChild(btnBigger);
-
-            const setSize = (px) => {
-                px = Math.max(8, Math.min(24, Math.round(px * 10) / 10));
-                pageDiv.style.setProperty('--table-font-size', px + 'px');
-                pageDiv.setAttribute('data-font-size', px);
-                fontValue.textContent = px + 'px';
-                requestAnimationFrame(() => updatePageBriefClamp(pageDiv));
-            };
-            btnSmaller.onclick = () => setSize(parseFloat(pageDiv.getAttribute('data-font-size')) - 0.1);
-            btnBigger.onclick = () => setSize(parseFloat(pageDiv.getAttribute('data-font-size')) + 0.1);
-
-            sideControls.appendChild(fontControl);
-            wrap.appendChild(sideControls);
             previewArea.appendChild(wrap);
 
             requestAnimationFrame(() => requestAnimationFrame(() => updatePageBriefClamp(pageDiv)));

@@ -10,29 +10,13 @@
 <body>
 
 <div class="controls">
-    <button type="button" id="genWordsBtn" class="gen-words-btn" title="输入单词，用AI自动生成词条并添加到列表">✨ 智能生成</button>
+    <button type="button" id="genWordsBtn" class="gen-words-btn" title="输入单词，用AI自动生成词条并添加到列表">智能生成</button>
     <div class="control-group control-group-sep" aria-hidden="true"></div>
     <div class="control-group">
-        <label>上传</label>
-        <input type="file" id="fileInput" accept=".csv">
+        <button type="button" id="fileInputBtn" class="upload-btn" title="上传 CSV 或 JSON 词表文件">上传</button>
+        <input type="file" id="fileInput" accept=".csv,.json" style="display:none">
     </div>
     <div class="control-group control-group-sep" aria-hidden="true"></div>
-    <div class="control-group">
-        <label>纸张</label>
-        <select id="layoutSelect">
-            <option value="a4-portrait">A4 纵向</option>
-            <option value="a4-landscape">A4 横向</option>
-        </select>
-    </div>
-    <div class="control-group">
-        <label>行数</label>
-        <input type="number" id="pageSizeInput" value="10" min="5" max="50" title="默认10条">
-    </div>
-    <div class="control-group">
-        <label>字号</label>
-        <input type="number" id="fontSizeInput" value="14" min="8" max="24" step="0.1">
-        <button type="button" id="adaptiveFontBtn" class="adaptive-btn" title="每页单独自适应字号">自适应</button>
-    </div>
     <div class="control-group">
         <label>发音</label>
         <select id="accentSelect" title="点击单词时的发音口音">
@@ -40,21 +24,91 @@
             <option value="2">美音</option>
         </select>
     </div>
+    <div class="control-group">
+        <label>讲解</label>
+        <select id="roleSelect" title="打开单词详情时默认展示的AI讲解角色">
+            <option value="age6">小学生</option>
+            <option value="age9">初中生</option>
+        </select>
+    </div>
     <div class="control-group control-group-sep" aria-hidden="true"></div>
-    <div class="control-group control-group-flex">
-        <label>显示列</label>
-        <div class="column-toggles" id="columnToggles">
-            <span class="column-placeholder">请先上传文件...</span>
-        </div>
+    <!-- 自适应字号 -->
+    <div class="control-group">
+        <button type="button" id="adaptiveFontBtn" class="adaptive-btn" title="每页单独自适应字号">自适应字号</button>
+    </div>
+    <!-- ⚙️ 高级设置按钮 -->
+    <div class="control-group">
+        <button type="button" id="advSettingsBtn" class="adv-settings-btn" title="纸张、行数、字号、显示列等高级设置">排版设置</button>
     </div>
     <div class="control-group control-group-sep" aria-hidden="true"></div>
     <div class="control-group">
         <button type="button" id="goToPageBtn" class="go-to-page-btn" title="输入页码后跳转到该页">跳转</button>
     </div>
-    <button type="button" id="exportJsonBtn" class="go-to-page-btn" title="将当前词表导出为 JSON 文件">JSON导出</button>
-    <button type="button" id="exportPdfBtn" class="go-to-page-btn" title="选择范围后打开浏览器打印，可另存为 PDF">PDF导出</button>
-    <button class="print-btn" id="exportAllBtn">导出全部</button>
+    <div class="control-group export-menu-wrap">
+        <button type="button" id="exportMenuBtn" class="export-menu-btn">导出</button>
+    </div>
 </div>
+
+<!-- 导出菜单 -->
+<div id="exportMenuPanel" class="export-menu-panel" aria-hidden="true">
+    <button type="button" id="exportJsonBtn" class="export-menu-item" title="将当前词表导出为 JSON 文件">
+        <span class="export-menu-icon">{ }</span>
+        <span class="export-menu-text">
+            <span class="export-menu-name">JSON 导出</span>
+            <span class="export-menu-desc">导出结构化词表文件</span>
+        </span>
+    </button>
+    <button type="button" id="exportPdfBtn" class="export-menu-item" title="选择范围后打开浏览器打印，可另存为 PDF">
+        <span class="export-menu-icon">PDF</span>
+        <span class="export-menu-text">
+            <span class="export-menu-name">PDF 导出</span>
+            <span class="export-menu-desc">打印当前选定范围</span>
+        </span>
+    </button>
+    <div class="export-menu-divider"></div>
+    <button type="button" id="exportAllBtn" class="export-menu-item export-menu-item-primary" title="导出全部页面">
+        <span class="export-menu-icon">⬇</span>
+        <span class="export-menu-text">
+            <span class="export-menu-name">导出全部</span>
+            <span class="export-menu-desc">全部页面一次性导出</span>
+        </span>
+    </button>
+</div>
+<div id="exportMenuBackdrop" class="export-menu-backdrop"></div>
+
+<!-- ⚙️ 排版设置弹窗 -->
+<div id="advSettingsPanel" class="adv-panel" role="dialog" aria-label="排版设置" aria-hidden="true">
+    <div class="adv-panel-header">
+        <span class="adv-panel-title">排版设置</span>
+        <button type="button" class="adv-panel-close" id="advSettingsClose" aria-label="关闭">×</button>
+    </div>
+    <div class="adv-panel-body">
+        <div class="adv-section-label">页面</div>
+        <div class="adv-grid">
+            <div class="adv-field">
+                <label class="adv-field-label" for="layoutSelect">纸张方向</label>
+                <select id="layoutSelect" class="adv-select">
+                    <option value="a4-portrait">A4 纵向</option>
+                    <option value="a4-landscape">A4 横向</option>
+                </select>
+            </div>
+            <div class="adv-field">
+                <label class="adv-field-label" for="pageSizeInput">每页行数</label>
+                <input type="number" id="pageSizeInput" class="adv-number" value="10" min="5" max="50">
+            </div>
+            <div class="adv-field">
+                <label class="adv-field-label" for="fontSizeInput">全局字号</label>
+                <input type="number" id="fontSizeInput" class="adv-number" value="14" min="8" max="24" step="0.1">
+            </div>
+        </div>
+        <div class="adv-divider"></div>
+        <div class="adv-section-label">显示列</div>
+        <div class="column-toggles" id="columnToggles">
+            <span class="column-placeholder">请先上传文件...</span>
+        </div>
+    </div>
+</div>
+<div id="advSettingsBackdrop" class="adv-backdrop"></div>
 
 <div id="preview-area">
     <div class="page a4-portrait" style="display: flex; justify-content: center; align-items: center; color: #bbb;">
@@ -77,6 +131,59 @@
     <button type="button" id="wordModalNext" class="word-modal-nav-btn" aria-label="下一个单词">&#8250;</button>
 </div>
 
+<!-- 页面操作 Popover（点击页脚触发） -->
+<div id="pageActionsPopover" class="pap" style="display:none" role="dialog">
+    <div class="pap-label" id="papLabel"></div>
+    <div class="pap-row">
+        <span class="pap-font-label">字号</span>
+        <button type="button" class="pap-font-btn" id="papFontSmaller">－</button>
+        <span class="pap-font-value" id="papFontValue">14px</span>
+        <button type="button" class="pap-font-btn" id="papFontBigger">＋</button>
+        <button type="button" class="pap-export-btn" id="papExportBtn">📥 导出此页</button>
+    </div>
+    <div class="pap-row pap-row-deep">
+        <button type="button" class="pap-deep-btn" id="papDeepBtn">📖 深度讲解</button>
+    </div>
+</div>
+
+<!-- 深度语法讲解模态框 -->
+<div id="deepModalOverlay" class="deep-modal-overlay" aria-hidden="true">
+    <div class="deep-modal-backdrop" id="deepModalBackdrop"></div>
+    <div class="deep-modal-box" role="dialog" aria-label="深度语法讲解">
+        <div class="deep-modal-header">
+            <span class="deep-modal-title">📖 深度语法讲解</span>
+            <button type="button" class="deep-modal-close" id="deepModalClose" aria-label="关闭">×</button>
+        </div>
+        <div class="deep-word-panel">
+            <div class="deep-word-bar">
+                <span class="deep-word-bar-label">选择本页单词</span>
+                <button type="button" class="deep-word-bar-btn" id="deepSelectAll">全选</button>
+                <button type="button" class="deep-word-bar-btn" id="deepClearAll">取消全选</button>
+                <div class="deep-rand-ctrl">
+                    <button type="button" class="deep-rand-adj" id="deepRandMinus">－</button>
+                    <input type="number" id="deepRandNum" class="deep-rand-input" value="3" min="1" max="50">
+                    <button type="button" class="deep-rand-adj" id="deepRandPlus">＋</button>
+                    <button type="button" class="deep-rand-btn" id="deepRandBtn">🎲 随机</button>
+                </div>
+            </div>
+            <div class="deep-word-chips" id="deepWordChips"></div>
+        </div>
+        <div class="deep-action-bar">
+            <div class="deep-difficulty-wrap">
+                <label class="deep-difficulty-label" for="deepRoleSelect">难度</label>
+                <select id="deepRoleSelect" class="deep-difficulty-select">
+                    <option value="age6">小学生</option>
+                    <option value="age9">中学生</option>
+                </select>
+            </div>
+            <button type="button" class="deep-gen-btn" id="deepGenBtn">✨ 开始讲解</button>
+        </div>
+        <div class="deep-output-area" id="deepOutputArea" style="display:none">
+            <div class="deep-output-content" id="deepOutputContent"></div>
+        </div>
+    </div>
+</div>
+
 <!-- 页码跳转模态框 -->
 <div id="jumpModalOverlay" class="jump-modal-overlay" aria-hidden="true">
     <div class="jump-modal-backdrop" id="jumpModalBackdrop"></div>
@@ -87,10 +194,22 @@
         </div>
         <div class="jump-modal-tabs" id="jumpModalTabs"></div>
         <div class="jump-modal-grid" id="jumpModalGrid"></div>
-        <div class="jump-modal-footer">
-            <span class="jump-modal-hint">或直接输入页码</span>
-            <input type="number" id="jumpPageInput" class="jump-page-input" min="1" placeholder="页码">
-            <button type="button" id="jumpPageConfirm" class="jump-page-confirm">跳转</button>
+    </div>
+</div>
+
+<!-- 摄像头拍照覆层 -->
+<div id="cameraOverlay" class="camera-overlay" style="display:none">
+    <div class="camera-box">
+        <div class="camera-header">
+            <span>📸 对准画面后点击拍照</span>
+            <button type="button" id="cameraCloseBtn" class="camera-close-btn" aria-label="取消">×</button>
+        </div>
+        <div class="camera-viewport">
+            <video id="cameraVideo" class="camera-video" autoplay playsinline muted></video>
+        </div>
+        <canvas id="cameraCanvas" style="display:none"></canvas>
+        <div class="camera-footer">
+            <button type="button" id="cameraCaptureBtn" class="camera-capture-btn">拍照</button>
         </div>
     </div>
 </div>
@@ -100,8 +219,22 @@
     <div class="gen-modal-backdrop" id="genModalBackdrop"></div>
     <div id="genModalBox" class="gen-modal-box" role="dialog" aria-label="智能生成单词条目">
         <div class="gen-modal-header">
-            <span class="gen-modal-title">✨ 智能生成单词条目</span>
+            <span class="gen-modal-title">智能生成单词条目</span>
             <button type="button" class="gen-modal-close" id="genModalClose" aria-label="关闭">×</button>
+        </div>
+        <!-- OCR 识别区（默认展开） -->
+        <div id="genOcrSection" class="gen-ocr-section">
+            <div class="gen-ocr-btns">
+                <button type="button" id="genOcrUploadBtn" class="gen-ocr-source-btn">📁 本地图片</button>
+                <button type="button" id="genOcrCameraBtn" class="gen-ocr-source-btn">📸 拍照</button>
+            </div>
+            <div id="genOcrPreview" class="gen-ocr-preview" style="display:none">
+                <img id="genOcrImg" class="gen-ocr-img" alt="预览图">
+                <div id="genOcrStatus" class="gen-ocr-status"></div>
+            </div>
+            <!-- 隐藏文件输入 -->
+            <input type="file" id="genFileInput" accept="image/*" style="display:none">
+            <input type="file" id="genCaptureInput" accept="image/*" capture="environment" style="display:none">
         </div>
         <div class="gen-modal-body">
             <div class="gen-input-section">
@@ -130,7 +263,80 @@
 <script src="js/export.js"></script>
 <script src="js/render.js"></script>
 <script src="js/main.js"></script>
+<script src="js/page_actions.js"></script>
 <script src="js/jump_modal.js"></script>
+<script src="js/ai_ocr.js"></script>
+<script src="js/deep_analysis.js"></script>
 <script src="js/ai_generate.js"></script>
+<script>
+// 上传按钮代理
+document.getElementById('fileInputBtn')?.addEventListener('click', () => {
+    document.getElementById('fileInput').click();
+});
+
+// ⚙️ 高级设置弹窗开关
+(function () {
+    const btn      = document.getElementById('advSettingsBtn');
+    const panel    = document.getElementById('advSettingsPanel');
+    const backdrop = document.getElementById('advSettingsBackdrop');
+    const closeBtn = document.getElementById('advSettingsClose');
+    if (!btn || !panel) return;
+
+    function openAdv() {
+        panel.classList.add('show');
+        backdrop.classList.add('show');
+        btn.classList.add('active');
+        panel.setAttribute('aria-hidden', 'false');
+    }
+    function closeAdv() {
+        panel.classList.remove('show');
+        backdrop.classList.remove('show');
+        btn.classList.remove('active');
+        panel.setAttribute('aria-hidden', 'true');
+    }
+
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        panel.classList.contains('show') ? closeAdv() : openAdv();
+    });
+    closeBtn?.addEventListener('click', closeAdv);
+    backdrop.addEventListener('click', closeAdv);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAdv(); });
+})();
+
+// 导出菜单
+(function () {
+    const btn      = document.getElementById('exportMenuBtn');
+    const panel    = document.getElementById('exportMenuPanel');
+    const backdrop = document.getElementById('exportMenuBackdrop');
+    if (!btn || !panel) return;
+
+    function openExport() {
+        // 定位：紧贴按钮右下角
+        const rect = btn.getBoundingClientRect();
+        panel.style.top  = (rect.bottom + 6) + 'px';
+        panel.style.right = (window.innerWidth - rect.right) + 'px';
+        panel.classList.add('show');
+        backdrop.classList.add('show');
+        btn.classList.add('active');
+        panel.setAttribute('aria-hidden', 'false');
+    }
+    function closeExport() {
+        panel.classList.remove('show');
+        backdrop.classList.remove('show');
+        btn.classList.remove('active');
+        panel.setAttribute('aria-hidden', 'true');
+    }
+
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        panel.classList.contains('show') ? closeExport() : openExport();
+    });
+    backdrop.addEventListener('click', closeExport);
+    // 点击菜单项后自动关闭
+    panel.addEventListener('click', () => setTimeout(closeExport, 120));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeExport(); });
+})();
+</script>
 </body>
 </html>

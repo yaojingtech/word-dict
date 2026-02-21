@@ -12,30 +12,28 @@ const AI_CONFIG = {
 const AI_ROLES = [
     {
         id: 'age6',
-        label: '6岁 启蒙',
+        label: '小学生',
         buildPrompt(word, phonetic, def, brief) {
             const entry = buildEntry(word, phonetic, def, brief);
             return `【角色设定】
-你是一位专业且极具亲和力的"6岁儿童英语启蒙老师"。你的任务是将字典里的英文释义，转化为贴近儿童日常生活的场景，并结合简单的肢体动作（TPR）进行教学。
+你是一位专业且极具亲和力的"6岁儿童英语启蒙老师"。你的任务是将英文释义转化为贴近儿童生活的场景，结合肢体动作进行教学。
 
-【核心原则】
-拒绝低幼化与抽象术语： 不要使用"魔法"、"小仙女"等过于低幼的词汇。也不要使用任何语法术语。用6岁孩子熟悉的生活场景（如：玩玩具、吃饭、逛超市、穿衣服）来打比方。
-情境代入与中英夹杂： 话术要自然，像平时聊天一样带出英文单词。
-动作必须结合"完整简单句"： 互动动作环节，绝对不能只让孩子输出孤立的单词。必须设计一个极其简单的完整句（主谓宾或主系表结构，词数尽量控制在 3-5 个词以内），让孩子一边做动作，一边说出这个完整的句子。
-化繁为简： 如果单词有多重含义，只挑选最符合儿童现实生活的一个具象意思进行讲解。
+【核心原则】（小模型必须严格遵守）
+1. 拒绝抽象：不讲语法！把单词变成孩子能看到、做出的画面。
+2. 讲解带英文：在讲解过程中，必须出现该【英文单词】及其发音，不能只说中文。
+3. 纯英文口语输出（生死红线）：在最后两个环节要求孩子说出的完整句子，【必须且只能是纯英文】，绝对严禁让孩子输出中文句子！英文句子要极简（3-5个词，主谓宾/主系表）。
 
-【输出结构】
-请按以下结构为我提供的单词输出讲解方案：
+【输出结构】（请严格保留前缀表情和冒号，照格式填空）
 
-💡 一句话导入： [用一句极简的中文，像聊天一样说清楚这个单词最核心、最基础的意思。不超过20个字，不用任何语法术语]
+💡 一句话导入：${word}，就是[用不超过20个字的大白话解释核心意思]。
 
-🎬 生活小剧场： [为这个单词设定一个小学生极其熟悉的生活日常、学习、运动场景]
+🎬 生活小剧场：[设定一个6岁孩子熟悉的生活日常、玩耍、运动场景，1句话描述]。
 
-🗣️ 老师怎么讲： [用第一人称写一段直接对孩子说的话，带简单的发音提示，用直白的生活经验解释意思，字数控制在100字以内]
+🗣️ 老师怎么讲：[用第一人称对孩子说话。先带读发音，再用上面的场景解释单词。语气要生动，字数80字以内]。
 
-🏃‍♂️ 动作与全句： [设计一个具体的肢体动作，并强制搭配一句包含该单词的、极简的完整英文句子。格式为："动作描写 + 要求孩子大声说出完整的句子：_____ "]
+🏃‍♂️ 动作与全句：[设计一个肢体动作]。要求孩子一边做动作，一边大声说出完整的纯英文句子：[此处必须是一句纯英文，且包含 ${word}]！
 
-🎮 场景替换小测试： [给出一个类似的生活场景，引导孩子用刚才学到的"完整句"结构，替换掉其中的一个词来造一个新句子]
+🎮 场景替换小测试：[给出一个新场景，引导孩子替换刚才英文句子里的人或物]。请孩子大声说出新的纯英文句子：[此处必须是一句全新的纯英文句子]！
 
 【待讲解的单词词条】
 ${entry}`;
@@ -43,7 +41,7 @@ ${entry}`;
     },
     {
         id: 'age9',
-        label: '9岁 培优',
+        label: '初中生',
         buildPrompt(word, phonetic, def, brief) {
             const entry = buildEntry(word, phonetic, def, brief);
             return `【角色设定】
@@ -113,10 +111,17 @@ function setCachedResult(word, roleId, content) {
     }
 }
 
+let _aiLogBuffer = ''; // accumulate stream for console logging
+
 async function fetchAiExplanation({ word, phonetic, def, brief, roleId, onChunk, onDone, onError }) {
+    _aiLogBuffer = '';
     try {
         const role = AI_ROLES.find(r => r.id === roleId) || AI_ROLES[0];
         const prompt = role.buildPrompt(word, phonetic, def, brief);
+
+        console.group(`🤖 AI讲解 · ${word} [${roleId}]`);
+        console.log('%c📤 Prompt', 'color:#667eea;font-weight:bold');
+        console.log(prompt);
 
         const res = await fetch(AI_CONFIG.endpoint, {
             method: 'POST',
@@ -145,16 +150,29 @@ async function fetchAiExplanation({ word, phonetic, def, brief, roleId, onChunk,
             for (const line of text.split('\n')) {
                 if (!line.startsWith('data: ')) continue;
                 const data = line.slice(6).trim();
-                if (data === '[DONE]') { onDone?.(); return; }
+                if (data === '[DONE]') {
+                    console.log('%c📥 Response', 'color:#2ea043;font-weight:bold');
+                    console.log(_aiLogBuffer);
+                    console.groupEnd();
+                    _aiLogBuffer = '';
+                    onDone?.();
+                    return;
+                }
                 try {
                     const json = JSON.parse(data);
                     const delta = json.choices?.[0]?.delta?.content;
-                    if (delta) onChunk(delta);
+                    if (delta) { _aiLogBuffer += delta; onChunk(delta); }
                 } catch { /* skip malformed SSE line */ }
             }
         }
+        console.log('%c📥 Response', 'color:#2ea043;font-weight:bold');
+        console.log(_aiLogBuffer);
+        console.groupEnd();
+        _aiLogBuffer = '';
         onDone?.();
     } catch (err) {
+        console.error('❌ AI Error:', err);
+        console.groupEnd();
         onError?.(err);
     }
 }

@@ -59,6 +59,10 @@ async function fetchWordEntry(word) {
   "phrases": "精选2-3个最常用短语搭配，格式：英文短语: 中文释义 | 英文短语: 中文释义（若无常用搭配则填空字符串）"
 }`;
 
+    console.group(`🤖 AI生成词条 · ${word}`);
+    console.log('%c📤 Prompt', 'color:#667eea;font-weight:bold');
+    console.log(prompt);
+
     const res = await fetch(AI_CONFIG.endpoint, {
         method: 'POST',
         headers: {
@@ -74,10 +78,14 @@ async function fetchWordEntry(word) {
         }),
     });
 
-    if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+    if (!res.ok) { console.groupEnd(); throw new Error(`HTTP ${res.status} ${res.statusText}`); }
 
     const data = await res.json();
     const content = (data.choices?.[0]?.message?.content || '').trim();
+
+    console.log('%c📥 Response', 'color:#2ea043;font-weight:bold');
+    console.log(content);
+    console.groupEnd();
 
     // 容忍 markdown 代码块包裹
     const jsonMatch = content.match(/\{[\s\S]*\}/);

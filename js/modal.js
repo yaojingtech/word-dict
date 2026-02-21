@@ -111,7 +111,7 @@ function buildModalCardHtml(row, displayColumns) {
                 ${phraseBlockHtml}
                 <div class="wm-block wm-ai-block">
                     <div class="wm-label-row">
-                        <div class="wm-label">🤖 AI 儿童讲解</div>
+                        <div class="wm-label">🤖 AI 单词讲解</div>
                         <button type="button" class="wm-ai-regen-btn" style="display:none;" disabled>↺ 重新生成</button>
                     </div>
                     <div class="wm-ai-tabs">
@@ -292,6 +292,10 @@ function openWordModal(rowData, layoutClass, displayColumns, navCtx = null) {
         aiBlock.querySelectorAll('.wm-ai-tab').forEach(tab => {
             tab.addEventListener('click', () => switchAiTab(aiBlock, tab.getAttribute('data-role')));
         });
+
+        // 默认激活用户在工具栏选择的讲解角色
+        const preferredRole = document.getElementById('roleSelect')?.value || AI_ROLES[0]?.id;
+        if (preferredRole) switchAiTab(aiBlock, preferredRole);
 
         // 重新生成（仅针对当前激活标签）
         const regenBtn = aiBlock.querySelector('.wm-ai-regen-btn');
