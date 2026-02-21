@@ -25,8 +25,8 @@ function playAudio(word, ev = null) {
 // --- 模态框 HTML 构建 ---
 function buildModalCardHtml(row, displayColumns) {
     let rawWord = '', phonetic = '', def = '', brief = '';
-    let phrEn = '', phrZh = '';
-    
+    let phrases = [];
+
     displayColumns.forEach(col => {
         if (col.type === 'wordPhonetic') {
             rawWord = (row[col.wordIdx] || '').trim();
@@ -35,18 +35,28 @@ function buildModalCardHtml(row, displayColumns) {
             def = (row[col.defIdx] || '').trim();
             brief = (row[col.briefIdx] || '').trim();
             if (col.phraseIdx >= 0) {
-                const phr = parseFirstPhrase(row[col.phraseIdx]);
-                phrEn = phr.en;
-                phrZh = phr.zh;
+                phrases = parseAllPhrases(row[col.phraseIdx]);
             }
         }
     });
-    
+
     def = wrapDefWordsForModal(escapeHtml(def));
-    if (phrEn) def += ` <span class="wm-phrase" data-word="${escapeHtml((phrEn.split(/\s+/)[0] || phrEn).trim())}" title="点击发音">${escapeHtml(phrEn)}</span>`;
     brief = wrapBriefPosForModal(escapeHtml(brief));
-    if (phrZh) brief += ` <span class="wm-phrase">${escapeHtml(phrZh)}</span>`;
-    
+
+    const phraseBlockHtml = phrases.length ? `
+                <div class="wm-block wm-phrase-block">
+                    <div class="wm-label">📌 短语搭配</div>
+                    <div class="wm-phrase-list">
+                        ${phrases.map(p => {
+                            const firstWord = escapeHtml((p.en.split(/\s+/)[0] || p.en).trim());
+                            return `<div class="wm-phrase-item">
+                                <span class="wm-phrase-en" data-word="${firstWord}" title="点击发音">${escapeHtml(p.en)}</span>
+                                ${p.zh ? `<span class="wm-phrase-zh">${escapeHtml(p.zh)}</span>` : ''}
+                            </div>`;
+                        }).join('')}
+                    </div>
+                </div>` : '';
+
     return `
         <div class="wm-card">
             <div class="wm-hero">
@@ -61,6 +71,7 @@ function buildModalCardHtml(row, displayColumns) {
                     <div class="wm-text">${def || '—'}</div>
                 </div>
                 <div class="wm-block"><div class="wm-label">✨ 简明释义</div><div class="wm-text">${brief || '—'}</div></div>
+                ${phraseBlockHtml}
                 <div class="wm-block wm-ai-block">
                     <div class="wm-label-row">
                         <div class="wm-label">🤖 AI 儿童讲解</div>
@@ -184,7 +195,7 @@ function openWordModal(rowData, layoutClass, displayColumns) {
     document.addEventListener('keydown', onWordModalKeydown);
 
     // 绑定模态框内部的单词发音点击事件
-    contentEl.querySelectorAll('.wm-word, .wm-def-word, .wm-phrase[data-word]').forEach(el => {
+    contentEl.querySelectorAll('.wm-word, .wm-def-word, .wm-phrase[data-word], .wm-phrase-en[data-word]').forEach(el => {
         el.addEventListener('click', (ev) => playAudio(ev.currentTarget.getAttribute('data-word') || ev.currentTarget.textContent, ev));
     });
 

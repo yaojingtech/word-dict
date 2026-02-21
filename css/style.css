@@ -349,19 +349,21 @@ body {
 .word-modal-backdrop { position: absolute; inset: 0; cursor: pointer; }
 .word-modal-box {
     position: relative;
-    width: 210mm;
-    height: 297mm;
-    transform: scale(0.7);
-    transform-origin: center center;
+    height: calc(100vh - 20px);
+    aspect-ratio: 210 / 297;
+    max-width: calc(100vw - 20px);
     background: linear-gradient(165deg, #fffef9 0%, #fff8ed 30%, #ffefe0 100%);
     border-radius: 28px;
     box-shadow: 0 25px 80px rgba(255,150,90,0.2), 0 0 0 4px rgba(255,200,150,0.4);
     overflow: hidden;
     cursor: default;
 }
-.word-modal-box.landscape { width: 297mm; height: 210mm; }
+.word-modal-box.landscape {
+    height: calc(100vh - 20px);
+    aspect-ratio: 297 / 210;
+}
 .word-modal-content {
-    padding: 14mm 16mm;
+    padding: 4% 5%;
     box-sizing: border-box;
     height: 100%;
     display: flex;
@@ -488,7 +490,7 @@ body {
 }
 .wm-text {
     flex: 1;
-    font-size: clamp(18px, 3vw, 24px);
+    font-size: 18px;
     line-height: 1.75;
     color: #3d3228;
     overflow-y: auto;
@@ -518,6 +520,47 @@ body {
     background: rgba(200,230,255,0.7);
     border-radius: 10px;
     border: 1px solid rgba(100,170,220,0.4);
+}
+
+/* ========== 短语搭配卡片 ========== */
+.wm-phrase-block .wm-label {
+    border-bottom-color: rgba(100,180,130,0.4);
+    color: #3a7a5a;
+}
+
+.wm-phrase-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.wm-phrase-item {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 5px 0;
+    border-bottom: 1px dashed rgba(100,180,130,0.25);
+    line-height: 1.45;
+}
+
+.wm-phrase-item:last-child { border-bottom: none; }
+
+.wm-phrase-en {
+    flex-shrink: 0;
+    font-weight: 700;
+    font-size: clamp(13px, 1.8vw, 17px);
+    color: #2a6e48;
+    cursor: pointer;
+    transition: color 0.15s;
+    white-space: nowrap;
+}
+
+.wm-phrase-en:hover { color: #1a5035; }
+
+.wm-phrase-zh {
+    font-size: clamp(12px, 1.6vw, 15px);
+    color: #4a5a4e;
+    line-height: 1.5;
 }
 
 /* ========== AI 儿童讲解卡片 ========== */

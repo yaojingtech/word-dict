@@ -72,6 +72,17 @@ function parseFirstPhrase(raw) {
     return { en: first.slice(0, idx).trim(), zh: first.slice(idx + 1).trim() };
 }
 
+function parseAllPhrases(raw) {
+    if (!raw || !String(raw).trim()) return [];
+    return String(raw).split(/\s*\|\s*/).map(entry => {
+        entry = entry.trim();
+        if (!entry) return null;
+        const idx = entry.search(/[：:]/);
+        if (idx < 0) return { en: entry, zh: '' };
+        return { en: entry.slice(0, idx).trim(), zh: entry.slice(idx + 1).trim() };
+    }).filter(Boolean);
+}
+
 function escapeHtml(text) {
     if (text == null) return '';
     const s = String(text);
