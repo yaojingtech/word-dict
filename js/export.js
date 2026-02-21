@@ -53,6 +53,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const wraps = previewArea?.querySelectorAll('.page-export-wrap');
         if (!wraps?.length) return alert('暂无页面，请先上传文件。');
 
+        // 关闭所有可能遮挡打印的浮层
+        document.getElementById('exportMenuPanel')  ?.classList.remove('show');
+        document.getElementById('exportMenuBackdrop')?.classList.remove('show');
+        document.getElementById('exportMenuBtn')    ?.classList.remove('active');
+        document.getElementById('wordModalOverlay') ?.classList.remove('show');
+        document.getElementById('deepModalOverlay') ?.classList.remove('show');
+        document.getElementById('genModalOverlay')  ?.classList.remove('show');
+        document.getElementById('advSettingsPanel') ?.classList.remove('show');
+        document.getElementById('advSettingsBackdrop')?.classList.remove('show');
+        document.getElementById('pageActionsPopover')?.style.setProperty('display', 'none');
+        document.body.style.overflow = '';
+
+        // 等浮层隐藏后再弹 prompt / 打印
+        requestAnimationFrame(() => {
         const input = prompt(`导出为 PDF 的页面范围\n示例：1-5 或 1,3,5 或 全部\n当前共 ${wraps.length} 页`, '全部');
         if (input === null) return;
 
@@ -71,6 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
             window.onafterprint = null;
         };
         window.print();
+        }); // end requestAnimationFrame
     });
 
     // 导出全部：PNG 单张或多张打包 ZIP
