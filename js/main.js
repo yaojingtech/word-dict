@@ -108,15 +108,11 @@ previewArea.addEventListener('click', (e) => {
     }
 });
 
-// 跳转页面
+// 跳转页面 — 由 jump_modal.js 接管，此处仅保留入口触发
 document.getElementById('goToPageBtn')?.addEventListener('click', () => {
     const wraps = previewArea.querySelectorAll('.page-export-wrap');
     if (!wraps.length) return alert('暂无页面，请先上传文件。');
-    const input = prompt(`请输入页码（1-${wraps.length}）`, '1');
-    if (input === null) return;
-    const page = parseInt(input.trim(), 10);
-    if (isNaN(page) || page < 1 || page > wraps.length) return alert(`请输入有效页码 1-${wraps.length}`);
-    wraps[page - 1].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    openJumpModal(wraps.length);
 });
 
 // 自适应字号

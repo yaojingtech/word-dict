@@ -77,6 +77,24 @@
     <button type="button" id="wordModalNext" class="word-modal-nav-btn" aria-label="下一个单词">&#8250;</button>
 </div>
 
+<!-- 页码跳转模态框 -->
+<div id="jumpModalOverlay" class="jump-modal-overlay" aria-hidden="true">
+    <div class="jump-modal-backdrop" id="jumpModalBackdrop"></div>
+    <div class="jump-modal-box" role="dialog" aria-label="跳转页面">
+        <div class="jump-modal-header">
+            <span class="jump-modal-title">跳转到页面</span>
+            <button type="button" class="jump-modal-close" id="jumpModalClose" aria-label="关闭">×</button>
+        </div>
+        <div class="jump-modal-tabs" id="jumpModalTabs"></div>
+        <div class="jump-modal-grid" id="jumpModalGrid"></div>
+        <div class="jump-modal-footer">
+            <span class="jump-modal-hint">或直接输入页码</span>
+            <input type="number" id="jumpPageInput" class="jump-page-input" min="1" placeholder="页码">
+            <button type="button" id="jumpPageConfirm" class="jump-page-confirm">跳转</button>
+        </div>
+    </div>
+</div>
+
 <!-- 智能生成单词条目模态框 -->
 <div id="genModalOverlay" class="gen-modal-overlay" aria-hidden="true">
     <div class="gen-modal-backdrop" id="genModalBackdrop"></div>
@@ -112,6 +130,7 @@
 <script src="js/export.js"></script>
 <script src="js/render.js"></script>
 <script src="js/main.js"></script>
+<script src="js/jump_modal.js"></script>
 <script src="js/ai_generate.js"></script>
 </body>
 </html>

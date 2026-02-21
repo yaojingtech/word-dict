@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>页面跳转弹窗演示</title>
+    <style>
+        /* 基础重置与页面样式 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f7fa;
+        }
+
+        .open-btn {
+            padding: 12px 24px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 123, 255, 0.2);
+            transition: background-color 0.2s;
+        }
+        .open-btn:hover { background-color: #0056b3; }
+
+        /* 弹窗遮罩层 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        /* 弹窗主体 */
+        .modal-content {
+            background-color: #fff;
+            width: 90%;
+            max-width: 680px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 24px;
+            position: relative;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+
+        /* 弹窗显示状态 */
+        .modal-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+        .modal-overlay.show .modal-content {
+            transform: translateY(0);
+        }
+
+        /* 关闭按钮 */
+        .close-btn {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+        .close-btn:hover { color: #333; }
+
+        /* 弹窗标题 */
+        .modal-title {
+            margin: 0 0 20px 0;
+            font-size: 18px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        /* 标签导航 (Tabs) */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #ebeef5;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+        .tab-btn {
+            padding: 10px 16px;
+            font-size: 14px;
+            color: #606266;
+            background: none;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            white-space: nowrap;
+        }
+        .tab-btn:hover { color: #007bff; }
+        .tab-btn.active {
+            color: #007bff;
+            font-weight: bold;
+        }
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #007bff;
+        }
+
+        /* 页码容器 (Grid布局) */
+        .page-grid {
+            display: grid;
+            /* 自动适应列数，最小宽度 50px */
+            grid-template-columns: repeat(auto-fill, minmax(54px, 1fr));
+            gap: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 4px; /* 为滚动条留白 */
+        }
+
+        /* 滚动条美化 */
+        .page-grid::-webkit-scrollbar { width: 6px; }
+        .page-grid::-webkit-scrollbar-thumb { background-color: #dcdfe6; border-radius: 3px; }
+
+        /* 单个页码按钮 */
+        .page-item {
+            padding: 8px 0;
+            font-size: 13px;
+            color: #606266;
+            background-color: #f4f4f5;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .page-item:hover {
+            background-color: #ecf5ff;
+            color: #409eff;
+            border-color: #b3d8ff;
+        }
+    </style>
+</head>
+<body>
+
+    <button class="open-btn" onclick="openModal()">快速跳转至...</button>
+
+    <div id="jumpModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <h3 class="modal-title">选择要跳转的页码</h3>
+            
+            <div id="tabsContainer" class="tabs">
+                </div>
+
+            <div id="pageGrid" class="page-grid">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        const TOTAL_PAGES = 300;
+        const PAGES_PER_TAB = 50;
+        
+        const modal = document.getElementById('jumpModal');
+        const tabsContainer = document.getElementById('tabsContainer');
+        const pageGrid = document.getElementById('pageGrid');
+
+        // 初始化组件
+        function init() {
+            generateTabs();
+            // 默认渲染第一组 (索引0)
+            renderPages(0); 
+        }
+
+        // 生成顶部的 50页/组 标签
+        function generateTabs() {
+            const tabCount = Math.ceil(TOTAL_PAGES / PAGES_PER_TAB);
+            tabsContainer.innerHTML = '';
+
+            for (let i = 0; i < tabCount; i++) {
+                const start = i * PAGES_PER_TAB + 1;
+                const end = Math.min((i + 1) * PAGES_PER_TAB, TOTAL_PAGES);
+                
+                // 格式化标签文字 (例: 001-050)
+                const label = `${formatNumber(start)}-${formatNumber(end)}`;
+                
+                const btn = document.createElement('button');
+                btn.className = `tab-btn ${i === 0 ? 'active' : ''}`;
+                btn.textContent = label;
+                
+                // 点击标签切换事件
+                btn.onclick = () => {
+                    // 移除所有 active 样式
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderPages(i);
+                };
+                
+                tabsContainer.appendChild(btn);
+            }
+        }
+
+        // 渲染具体数字按钮
+        function renderPages(tabIndex) {
+            pageGrid.innerHTML = '';
+            
+            const start = tabIndex * PAGES_PER_TAB + 1;
+            const end = Math.min((tabIndex + 1) * PAGES_PER_TAB, TOTAL_PAGES);
+            
+            for (let i = start; i <= end; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = 'page-item';
+                pageBtn.textContent = formatNumber(i);
+                
+                // 点击页码的回调事件
+                pageBtn.onclick = () => {
+                    alert(`正在跳转到第 ${formatNumber(i)} 页...`);
+                    closeModal(); // 跳转后自动关闭弹窗
+                };
+                
+                pageGrid.appendChild(pageBtn);
+            }
+        }
+
+        // 辅助函数：将数字格式化为三位数 (如 1 -> 001)
+        function formatNumber(num) {
+            return num.toString().padStart(3, '0');
+        }
+
+        // 打开弹窗
+        function openModal() {
+            modal.classList.add('show');
+        }
+
+        // 关闭弹窗
+        function closeModal() {
+            modal.classList.remove('show');
+        }
+
+        // 点击遮罩层也可关闭弹窗
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // 页面加载完成后初始化
+        window.onload = init;
+    </script>
+</body>
+</html>
