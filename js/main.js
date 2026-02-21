@@ -98,7 +98,12 @@ previewArea.addEventListener('click', (e) => {
             const pageIndex = parseInt(pageWrap.querySelector('.page').getAttribute('data-page-index'), 10);
             const pageSize = Math.min(50, Math.max(5, parseInt(pageSizeInput.value, 10) || 10));
             const globalIndex = pageIndex * pageSize + parseInt(tr.getAttribute('data-row-index'), 10);
-            if (allData[globalIndex]) openWordModal(allData[globalIndex], layoutSelect.value, buildDisplayColumns());
+            if (allData[globalIndex]) openWordModal(allData[globalIndex], layoutSelect.value, buildDisplayColumns(), {
+                    data: allData,
+                    index: globalIndex,
+                    getLayout: () => layoutSelect.value,
+                    getColumns: () => buildDisplayColumns(),
+                });
         }
     }
 });

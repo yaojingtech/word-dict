@@ -4,6 +4,35 @@
 // ==========================================
 
 let currentAudio = null;
+let _autoPlayTimer = null;
+let _modalNavContext = null;  // { data, index, getLayout, getColumns }
+
+function navigateModal(delta) {
+    if (!_modalNavContext) return;
+    const newIndex = _modalNavContext.index + delta;
+    if (newIndex < 0 || newIndex >= _modalNavContext.data.length) return;
+    openWordModal(
+        _modalNavContext.data[newIndex],
+        _modalNavContext.getLayout(),
+        _modalNavContext.getColumns(),
+        { ..._modalNavContext, index: newIndex }
+    );
+}
+
+function spawnHeroRipple(el, ev) {
+    const ripple = document.createElement('span');
+    ripple.className = 'wm-hero-ripple';
+    if (ev) {
+        const rect = el.getBoundingClientRect();
+        ripple.style.left = (ev.clientX - rect.left) + 'px';
+        ripple.style.top  = (ev.clientY - rect.top)  + 'px';
+    } else {
+        ripple.style.left = '50%';
+        ripple.style.top  = '50%';
+    }
+    el.appendChild(ripple);
+    ripple.addEventListener('animationend', () => ripple.remove(), { once: true });
+}
 
 // --- 发音核心功能 ---
 function playAudio(word, ev = null) {
@@ -43,17 +72,25 @@ function buildModalCardHtml(row, displayColumns) {
     def = wrapDefWordsForModal(escapeHtml(def));
     brief = wrapBriefPosForModal(escapeHtml(brief));
 
+    // 将短语中每个单词包成独立可点击 span
+    function wrapPhraseWords(raw) {
+        return raw.split(/(\s+)/).map(token => {
+            if (/^\s+$/.test(token)) return token;
+            const word = token.replace(/^[^a-zA-Z']+|[^a-zA-Z']+$/g, '');
+            const display = escapeHtml(token);
+            if (!word) return display;
+            return `<span class="wm-phrase-word" data-word="${escapeHtml(word)}" title="点击发音">${display}</span>`;
+        }).join('');
+    }
+
     const phraseBlockHtml = phrases.length ? `
                 <div class="wm-block wm-phrase-block">
                     <div class="wm-label">📌 短语搭配</div>
                     <div class="wm-phrase-list">
-                        ${phrases.map(p => {
-                            const firstWord = escapeHtml((p.en.split(/\s+/)[0] || p.en).trim());
-                            return `<div class="wm-phrase-item">
-                                <span class="wm-phrase-en" data-word="${firstWord}" title="点击发音">${escapeHtml(p.en)}</span>
+                        ${phrases.map(p => `<div class="wm-phrase-item">
+                                <span class="wm-phrase-en">${wrapPhraseWords(p.en)}</span>
                                 ${p.zh ? `<span class="wm-phrase-zh">${escapeHtml(p.zh)}</span>` : ''}
-                            </div>`;
-                        }).join('')}
+                            </div>`).join('')}
                     </div>
                 </div>` : '';
 
@@ -180,7 +217,8 @@ function startRoleGeneration(block, word, phonetic, def, brief, roleId, forceReg
 
 // --- 模态框交互控制 ---
 // 接收行数据、布局方式、列配置，实现解耦
-function openWordModal(rowData, layoutClass, displayColumns) {
+function openWordModal(rowData, layoutClass, displayColumns, navCtx = null) {
+    _modalNavContext = navCtx;
     const overlay = document.getElementById('wordModalOverlay');
     const box = document.getElementById('wordModalBox');
     const contentEl = document.getElementById('wordModalContent');
@@ -194,9 +232,31 @@ function openWordModal(rowData, layoutClass, displayColumns) {
 
     document.addEventListener('keydown', onWordModalKeydown);
 
-    // 绑定模态框内部的单词发音点击事件
-    contentEl.querySelectorAll('.wm-word, .wm-def-word, .wm-phrase[data-word], .wm-phrase-en[data-word]').forEach(el => {
-        el.addEventListener('click', (ev) => playAudio(ev.currentTarget.getAttribute('data-word') || ev.currentTarget.textContent, ev));
+    // 前/后导航按钮（位于 overlay 层，modal box 外侧）
+    const prevBtn = document.getElementById('wordModalPrev');
+    const nextBtn = document.getElementById('wordModalNext');
+    if (prevBtn && nextBtn) {
+        if (navCtx) {
+            prevBtn.style.visibility = '';
+            nextBtn.style.visibility = '';
+            prevBtn.disabled = navCtx.index <= 0;
+            nextBtn.disabled = navCtx.index >= navCtx.data.length - 1;
+            prevBtn.onclick = () => navigateModal(-1);
+            nextBtn.onclick = () => navigateModal(+1);
+        } else {
+            prevBtn.style.visibility = 'hidden';
+            nextBtn.style.visibility = 'hidden';
+            prevBtn.onclick = null;
+            nextBtn.onclick = null;
+        }
+    }
+
+    // 绑定模态框内部的单词发音点击事件（.wm-word 额外附带 hero 波纹效果）
+    contentEl.querySelectorAll('.wm-word, .wm-def-word, .wm-phrase[data-word], .wm-phrase-en[data-word], .wm-phrase-word[data-word]').forEach(el => {
+        el.addEventListener('click', (ev) => {
+            if (ev.currentTarget.classList.contains('wm-word')) spawnHeroRipple(ev.currentTarget, ev);
+            playAudio(ev.currentTarget.getAttribute('data-word') || ev.currentTarget.textContent, ev);
+        });
     });
 
     // 提取原始词条数据
@@ -210,6 +270,16 @@ function openWordModal(rowData, layoutClass, displayColumns) {
             aiBrief = (rowData[col.briefIdx] || '').trim();
         }
     });
+
+    // 1 秒后自动朗读单词，同时触发 hero 波纹
+    if (_autoPlayTimer) clearTimeout(_autoPlayTimer);
+    if (aiWord) {
+        _autoPlayTimer = setTimeout(() => {
+            playAudio(aiWord);
+            const wmWord = contentEl.querySelector('.wm-word');
+            if (wmWord) spawnHeroRipple(wmWord);
+        }, 1000);
+    }
 
     const aiBlock = contentEl.querySelector('.wm-ai-block');
     if (aiBlock) {
@@ -236,6 +306,7 @@ function openWordModal(rowData, layoutClass, displayColumns) {
 }
 
 function closeWordModal() {
+    if (_autoPlayTimer) { clearTimeout(_autoPlayTimer); _autoPlayTimer = null; }
     const overlay = document.getElementById('wordModalOverlay');
     if (overlay) {
         if (document.activeElement && overlay.contains(document.activeElement)) {
@@ -248,8 +319,10 @@ function closeWordModal() {
     }
 }
 
-function onWordModalKeydown(e) { 
-    if (e.key === 'Escape') closeWordModal(); 
+function onWordModalKeydown(e) {
+    if (e.key === 'Escape')     closeWordModal();
+    if (e.key === 'ArrowLeft')  navigateModal(-1);
+    if (e.key === 'ArrowRight') navigateModal(+1);
 }
 
 // 页面加载后自动绑定背景板和关闭按钮事件
