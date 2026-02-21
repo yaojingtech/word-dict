@@ -205,7 +205,7 @@ async function startGeneration() {
     const successCount = _genResults.filter(r => r.status === 'done').length;
     if (successCount > 0) {
         const addBtn = document.getElementById('genAddBtn');
-        if (addBtn) addBtn.textContent = `➕ 添加 ${successCount} 个词条到列表`;
+        if (addBtn) addBtn.textContent = `✅ 替换词库（${successCount} 个词条）`;
         footerEl.style.display = '';
     } else {
         statusEl.textContent += ' · 所有单词生成失败，请检查网络或 API 配置';
@@ -230,7 +230,7 @@ function ensureDataInitialized() {
     if (typeof initColumnControls === 'function') initColumnControls();
 }
 
-// --- 将生成结果合并进 allData 并重新渲染 ---
+// --- 用生成结果完整替换 allData 并重新渲染 ---
 function addGeneratedWordsToList() {
     const successful = _genResults.filter(r => r.status === 'done');
     if (successful.length === 0) return;
@@ -252,10 +252,10 @@ function addGeneratedWordsToList() {
         return row;
     });
 
-    // 插入到列表顶部
-    allData.unshift(...newRows);
+    // 完整替换词库，不叠加
+    allData.length = 0;
+    allData.push(...newRows);
 
-    // renderPages 会在 allData.length === 0 时直接返回，此时已有数据，正常渲染
     if (typeof renderPages === 'function') renderPages();
 
     closeGenModal();
@@ -263,7 +263,7 @@ function addGeneratedWordsToList() {
     // 淡出 toast 提示
     const notice = document.createElement('div');
     notice.className = 'gen-notice';
-    notice.textContent = `✅ 已添加 ${newRows.length} 个词条到列表顶部`;
+    notice.textContent = `✅ 已生成 ${newRows.length} 个词条（原词库已替换）`;
     document.body.appendChild(notice);
     setTimeout(() => {
         notice.style.transition = 'opacity 0.4s';
