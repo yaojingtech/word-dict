@@ -149,6 +149,32 @@ body {
     white-space: nowrap;
     text-align: center;
     vertical-align: middle;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    overflow: hidden;
+    transition: background-color 0.12s;
+}
+
+.col-word-phonetic-combined:active {
+    background-color: rgba(39, 174, 96, 0.1);
+}
+
+@keyframes cell-ripple-expand {
+    from { transform: scale(0); opacity: 0.45; }
+    to   { transform: scale(6); opacity: 0; }
+}
+
+.cell-click-ripple {
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    margin-left: -18px;
+    margin-top: -18px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    pointer-events: none;
+    animation: cell-ripple-expand 0.5s ease-out forwards;
 }
 
 .cell-word-phonetic-wrap {
@@ -374,8 +400,11 @@ body {
 }
 .wm-hero {
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    padding: 20px 16px 24px;
+    padding: 20px 16px;
     background: linear-gradient(135deg, rgba(255,230,200,0.6) 0%, rgba(255,210,170,0.4) 100%);
     border-radius: 20px;
     border: 3px solid rgba(255,180,120,0.5);
@@ -393,7 +422,7 @@ body {
     border: 3px solid rgba(255,160,90,0.5);
     box-shadow: 0 6px 20px rgba(255,130,70,0.2);
     transition: all 0.2s;
-    margin-bottom: 12px;
+    margin-bottom: 0;
 }
 .wm-word:hover {
     transform: scale(1.05);
@@ -418,16 +447,36 @@ body {
     min-height: 0;
 }
 .wm-block {
-    flex: 1;
+    flex: 0 0 auto;
     display: flex;
     flex-direction: column;
-    min-height: 80px;
     background: rgba(255,253,248,0.95);
     border-radius: 18px;
     border: 2px solid rgba(255,200,150,0.5);
     padding: 18px 22px;
     box-shadow: 0 2px 12px rgba(255,160,100,0.08);
 }
+.wm-label-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px dashed rgba(255,180,120,0.5);
+}
+
+.wm-label-row .wm-label {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+    flex-shrink: 0;
+}
+
+.wm-label-row .wm-phonetic {
+    font-size: clamp(13px, 1.8vw, 18px);
+    padding: 4px 14px;
+}
+
 .wm-label {
     flex-shrink: 0;
     font-size: clamp(16px, 2.5vw, 22px);
@@ -469,6 +518,207 @@ body {
     background: rgba(200,230,255,0.7);
     border-radius: 10px;
     border: 1px solid rgba(100,170,220,0.4);
+}
+
+/* ========== AI 儿童讲解卡片 ========== */
+.wm-ai-block {
+    background: linear-gradient(135deg, rgba(238,242,255,0.97) 0%, rgba(229,236,255,0.97) 100%);
+    border-color: rgba(130,160,255,0.4) !important;
+    flex: 1 !important;
+    min-height: 0;
+}
+
+.wm-ai-block .wm-label-row {
+    border-bottom-color: rgba(130,160,255,0.35);
+}
+
+.wm-ai-block .wm-label {
+    color: #5a6fd6;
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.wm-ai-regen-btn {
+    margin-left: auto;
+    padding: 5px 14px;
+    background: transparent;
+    color: #667eea;
+    border: 1.5px solid rgba(102,126,234,0.45);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: clamp(12px, 1.5vw, 14px);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.18s, border-color 0.18s;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.wm-ai-regen-btn:hover {
+    background: rgba(102,126,234,0.1);
+    border-color: rgba(102,126,234,0.8);
+}
+
+.wm-ai-regen-btn:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+.wm-ai-tabs {
+    display: flex;
+    flex-shrink: 0;
+    border-bottom: 2px solid rgba(130,160,255,0.25);
+    margin-bottom: 10px;
+    gap: 0;
+}
+
+.wm-ai-tab {
+    padding: 6px 20px;
+    font-size: clamp(12px, 1.5vw, 15px);
+    font-weight: 600;
+    color: #9aa5d4;
+    cursor: pointer;
+    border-bottom: 2.5px solid transparent;
+    margin-bottom: -2px;
+    transition: color 0.18s, border-color 0.18s;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.wm-ai-tab:hover { color: #667eea; }
+
+.wm-ai-tab.active {
+    color: #5a6fd6;
+    border-bottom-color: #667eea;
+}
+
+/* 加载中：标签右侧显示脉冲小圆点 */
+.wm-ai-tab[data-state="loading"]::after {
+    content: '';
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #9aa5d4;
+    margin-left: 6px;
+    vertical-align: middle;
+    animation: ai-cursor-blink 0.8s ease infinite;
+}
+
+.wm-ai-panels {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+}
+
+.wm-ai-panel {
+    display: none;
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.wm-ai-panel.active { display: block; }
+
+.wm-ai-panel::-webkit-scrollbar { width: 8px; }
+.wm-ai-panel::-webkit-scrollbar-track { background: rgba(130,160,255,0.12); border-radius: 4px; }
+.wm-ai-panel::-webkit-scrollbar-thumb { background: rgba(102,126,234,0.4); border-radius: 4px; }
+
+/* 加载中面板：显示提示文字 */
+.wm-ai-panel[data-state="loading"] .wm-ai-text:empty::before {
+    content: '正在生成…';
+    color: #9aa5d4;
+    font-style: italic;
+    font-size: 0.9em;
+}
+
+.wm-ai-placeholder {
+    font-size: clamp(13px, 1.8vw, 16px);
+    color: #9aa5d4;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.wm-ai-gen-btn {
+    align-self: flex-start;
+    padding: 10px 26px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: clamp(14px, 2vw, 18px);
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(102,126,234,0.4);
+    transition: transform 0.18s, box-shadow 0.18s;
+}
+
+.wm-ai-gen-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 22px rgba(102,126,234,0.55);
+}
+
+.wm-ai-gen-btn:active { transform: translateY(0); }
+
+.wm-ai-gen-btn:disabled {
+    background: linear-gradient(135deg, #b4bce8 0%, #c5b4d8 100%);
+    cursor: default;
+    transform: none;
+    box-shadow: none;
+}
+
+.wm-ai-text {
+    flex: 1;
+    font-size: clamp(13px, 2vw, 17px);
+    line-height: 1.85;
+    color: #2d3748;
+    overflow-y: auto;
+    padding-right: 6px;
+    min-height: 0;
+}
+
+.wm-ai-text::-webkit-scrollbar { width: 8px; }
+.wm-ai-text::-webkit-scrollbar-track { background: rgba(130,160,255,0.12); border-radius: 4px; }
+.wm-ai-text::-webkit-scrollbar-thumb { background: rgba(102,126,234,0.4); border-radius: 4px; }
+
+.wm-ai-section {
+    font-weight: 700;
+    color: #4a5a9a;
+    margin-top: 0.75em;
+    margin-bottom: 0.15em;
+    font-size: 1.05em;
+}
+
+.wm-ai-section:first-child { margin-top: 0; }
+
+.wm-ai-line {
+    color: #2d3748;
+    padding-left: 0.5em;
+}
+
+.wm-ai-gap { height: 0.4em; }
+
+.wm-ai-error {
+    color: #c44a1e;
+    font-style: italic;
+}
+
+@keyframes ai-cursor-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+.wm-ai-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1.1em;
+    background: #667eea;
+    margin-left: 2px;
+    vertical-align: text-bottom;
+    animation: ai-cursor-blink 0.65s ease infinite;
 }
 
 /* --- 打印媒体查询 --- */

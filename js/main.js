@@ -66,8 +66,28 @@ layoutSelect.addEventListener('change', renderPages);
 pageSizeInput.addEventListener('input', renderPages);
 fontSizeInput.addEventListener('input', renderPages);
 
+function spawnRipple(el, e) {
+    const rect = el.getBoundingClientRect();
+    const ripple = document.createElement('span');
+    ripple.className = 'cell-click-ripple';
+    ripple.style.left = (e.clientX - rect.left) + 'px';
+    ripple.style.top  = (e.clientY - rect.top)  + 'px';
+    el.appendChild(ripple);
+    ripple.addEventListener('animationend', () => ripple.remove(), { once: true });
+}
+
 previewArea.addEventListener('click', (e) => {
-    const wordEl = e.target.closest('.cell-word, .col-word.word-speak, .def-word');
+    // 整个单词+音标格（含空白和音标区域）→ 水波纹 + 发音
+    const combinedTd = e.target.closest('td.col-word-phonetic-combined');
+    if (combinedTd) {
+        spawnRipple(combinedTd, e);
+        const cellWord = combinedTd.querySelector('.cell-word');
+        if (cellWord) return playAudio(cellWord.getAttribute('data-word') || cellWord.textContent);
+        return;
+    }
+
+    // 其他可发音元素（独立单词列、释义中高亮词）
+    const wordEl = e.target.closest('.col-word.word-speak, .def-word');
     if (wordEl) return playAudio(wordEl.getAttribute('data-word') || wordEl.textContent);
 
     const td = e.target.closest('td');
