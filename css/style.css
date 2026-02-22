@@ -8,11 +8,6 @@
     --table-font-size: 14px; /* 默认字号变量 */
 }
 
-html {
-    /* html 层面允许横向滚动，不截断触摸滑动 */
-    overflow-x: auto;
-}
-
 body {
     font-family: "Segoe UI", "Microsoft Yahei", Helvetica, Arial, sans-serif;
     margin: 0;
@@ -28,7 +23,10 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 30px;
+    cursor: grab;
+    touch-action: pan-y;    /* 允许浏览器处理上下滚动，横向由 JS 接管 */
 }
+#preview-area:active { cursor: grabbing; }
 
 /* 每页 + 右侧导出按钮 */
 .page-export-wrap {
