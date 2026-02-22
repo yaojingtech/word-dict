@@ -201,6 +201,20 @@
     .controls { display: none !important; }
 }
 
+/* 小屏/平板：toolbar 允许换行，不产生横向溢出 */
+@media (max-width: 768px) {
+    .controls {
+        padding: 6px 8px;
+        gap: 3px;
+        justify-content: flex-start;
+    }
+    .controls button,
+    .controls select,
+    .controls input[type="number"] {
+        font-size: 12px;
+    }
+}
+
 /* ==========================================
    排版设置按钮
    ========================================== */

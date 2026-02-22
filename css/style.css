@@ -14,6 +14,9 @@ body {
     padding: 0;
     background-color: var(--bg-color);
     color: #333;
+    /* 防止任何元素横向撑破页面导致安卓平板内容被截断 */
+    overflow-x: hidden;
+    min-width: 0;
 }
 
 /* --- 预览区域 --- */
