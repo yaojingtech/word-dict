@@ -10,8 +10,6 @@ const OCR_PROMPT = `请仔细观察图片，识别其中出现的所有英文单
 如果图片里没有单词，则基于当前图片的场景为其提供10个描述当前图片场景的英语单词。
 输出要求：每行仅输出一个单词，不加序号、不加解释、不加标点，只输出单词本身。`;
 
-let _cameraStream = null;  // 当前摄像头流
-
 // ==========================================
 // 图片文件 → base64
 // ==========================================
@@ -136,58 +134,10 @@ function openLocalFile() {
 }
 
 // ==========================================
-// 摄像头拍照
+// 摄像头拍照：直接调起系统原生相机
 // ==========================================
-async function openCamera() {
-    // 优先用 getUserMedia（桌面 + 现代移动端）
-    if (navigator.mediaDevices?.getUserMedia) {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 } }
-            });
-            showCameraOverlay(stream);
-            return;
-        } catch { /* 权限被拒或设备不支持，回退到 file input */ }
-    }
-    // 回退：直接调用系统相机
+function openCamera() {
     document.getElementById('genCaptureInput')?.click();
-}
-
-function showCameraOverlay(stream) {
-    _cameraStream = stream;
-    const overlay = document.getElementById('cameraOverlay');
-    const video   = document.getElementById('cameraVideo');
-    if (!overlay || !video) return;
-
-    video.srcObject = stream;
-    overlay.style.display = '';
-    document.body.style.overflow = 'hidden';
-}
-
-function closeCameraOverlay() {
-    if (_cameraStream) {
-        _cameraStream.getTracks().forEach(t => t.stop());
-        _cameraStream = null;
-    }
-    const overlay = document.getElementById('cameraOverlay');
-    const video   = document.getElementById('cameraVideo');
-    if (video)   video.srcObject = null;
-    if (overlay) overlay.style.display = 'none';
-    document.body.style.overflow = '';
-}
-
-function capturePhoto() {
-    const video  = document.getElementById('cameraVideo');
-    const canvas = document.getElementById('cameraCanvas');
-    if (!video || !canvas) return;
-
-    canvas.width  = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext('2d').drawImage(video, 0, 0);
-
-    const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
-    closeCameraOverlay();
-    processImage(dataUrl);
 }
 
 // ==========================================
@@ -214,14 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
         processImage(dataUrl);
     });
 
-    // getUserMedia 拍照
+    // 拍照按钮：直接调起系统原生相机
     document.getElementById('genOcrCameraBtn')?.addEventListener('click', openCamera);
-    document.getElementById('cameraCaptureBtn')?.addEventListener('click', capturePhoto);
-    document.getElementById('cameraCloseBtn')?.addEventListener('click', closeCameraOverlay);
-
-    // 点击覆层背景关闭相机
-    document.getElementById('cameraOverlay')?.addEventListener('click', e => {
-        if (e.target === document.getElementById('cameraOverlay')) closeCameraOverlay();
-    });
 
 });
