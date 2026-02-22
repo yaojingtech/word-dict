@@ -8,7 +8,6 @@ let headers = [];
 let visibleColumns = [];
 
 // --- DOM 元素获取 ---
-const fileInput = document.getElementById('fileInput');
 const layoutSelect = document.getElementById('layoutSelect');
 const pageSizeInput = document.getElementById('pageSizeInput');
 const fontSizeInput = document.getElementById('fontSizeInput');
@@ -33,34 +32,6 @@ fetch('date/word(2800).json')
     .then(json => { if (loadFromJson(json)) { /* 加载成功 */ } })
     .catch(() => { /* 文件不存在或 CORS，保持默认空状态 */ });
 
-fileInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-        try {
-            if (file.name.toLowerCase().endsWith('.json')) {
-                // JSON 格式：{ headers: [...], data: [[...], ...] }
-                const json = JSON.parse(event.target.result);
-                if (!loadFromJson(json)) throw new Error('JSON 格式不符，需包含 headers 和 data 字段');
-            } else {
-                // CSV 格式
-                const rows = parseCSV(event.target.result);
-                if (rows.length === 0) return;
-                headers = rows[0];
-                allData = rows.slice(1).filter(r => r.length > 1);
-                visibleColumns = headers.map((_, i) => i);
-                initColumnControls();
-                requestAnimationFrame(() => { renderPages(); });
-            }
-        } catch (err) {
-            console.error(err);
-            alert('解析文件出错：' + (err.message || err));
-        }
-    };
-    reader.readAsText(file, 'utf-8');
-});
 
 // 列配置逻辑已抽离到 columns.js（initColumnControls / buildDisplayColumns 等）
 // 渲染逻辑已抽离到 render.js（renderPages / updatePageBriefClamp）

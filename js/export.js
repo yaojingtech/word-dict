@@ -34,6 +34,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const exportAllBtn = document.getElementById('exportAllBtn');
 
     // JSON 导出：保持与 word(2800).json 完全一致的格式
+    document.getElementById('exportJsonCopyBtn')?.addEventListener('click', () => {
+        if (!allData || allData.length === 0) return alert('暂无数据，请先上传文件或生成词条。');
+        const json = JSON.stringify({ headers, data: allData }, null, 2);
+        navigator.clipboard.writeText(json).then(() => {
+            const btn  = document.getElementById('exportJsonCopyBtn');
+            const name = btn?.querySelector('.export-menu-name');
+            if (name) {
+                const orig = name.textContent;
+                name.textContent = '已复制！';
+                setTimeout(() => { name.textContent = orig; }, 1800);
+            }
+            // 关闭菜单
+            document.getElementById('exportMenuPanel')?.classList.remove('show');
+        }).catch(() => alert('复制失败，请手动使用 JSON 导出'));
+    });
+
     document.getElementById('exportJsonBtn')?.addEventListener('click', () => {
         if (!allData || allData.length === 0) return alert('暂无数据，请先上传文件或生成词条。');
 

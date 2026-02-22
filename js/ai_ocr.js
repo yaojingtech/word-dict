@@ -107,11 +107,12 @@ async function processImage(dataUrl) {
             return;
         }
 
-        // 追加到 textarea（已有内容则换行分隔）
+        // 追加到 textarea（已有内容则逗号分隔，新识别词也用逗号连接）
         const textarea = document.getElementById('genWordsInput');
         if (textarea) {
             const existing = textarea.value.trim();
-            textarea.value = existing ? existing + '\n' + words.join('\n') : words.join('\n');
+            const newText  = words.join(', ');
+            textarea.value = existing ? existing + ', ' + newText : newText;
         }
 
         if (statusEl) {

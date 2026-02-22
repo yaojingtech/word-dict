@@ -118,9 +118,33 @@ function setItemLoading(itemEl) {
     itemEl.querySelector('.gen-item-preview').innerHTML = '';
 }
 
+// --- 选中状态管理 ---
+function getSelectedIndices() {
+    return Array.from(
+        document.querySelectorAll('#genProgress .gen-item-done.gen-item-selected')
+    ).map(el => parseInt(el.dataset.index, 10));
+}
+
+function updateSelectedCount() {
+    const total    = document.querySelectorAll('#genProgress .gen-item-done').length;
+    const selected = document.querySelectorAll('#genProgress .gen-item-done.gen-item-selected').length;
+    const el = document.getElementById('genSelectedCount');
+    if (el) el.textContent = `已选 ${selected} / ${total}`;
+    const replBtn = document.getElementById('genReplaceBtn');
+    const appBtn  = document.getElementById('genAppendBtn');
+    if (replBtn) replBtn.textContent = `替换词库（${selected} 个）`;
+    if (appBtn)  appBtn.textContent  = `叠加词库（${selected} 个）`;
+}
+
+function toggleItemSelected(itemEl) {
+    if (!itemEl.classList.contains('gen-item-done')) return;
+    itemEl.classList.toggle('gen-item-selected');
+    updateSelectedCount();
+}
+
 function setItemDone(itemEl, result) {
     itemEl.classList.remove('gen-item-loading');
-    itemEl.classList.add('gen-item-done');
+    itemEl.classList.add('gen-item-done', 'gen-item-selected'); // 默认选中
     itemEl.querySelector('.gen-item-status').textContent = '✅ 完成';
     const preview = itemEl.querySelector('.gen-item-preview');
     preview.innerHTML = `
@@ -204,12 +228,8 @@ async function startGeneration() {
 
     const successCount = _genResults.filter(r => r.status === 'done').length;
     if (successCount > 0) {
-        const addBtn = document.getElementById('genAddBtn');
-        if (document.getElementById('genReplaceBtn'))
-            document.getElementById('genReplaceBtn').textContent = `替换词库（${successCount} 个）`;
-        if (document.getElementById('genAppendBtn'))
-            document.getElementById('genAppendBtn').textContent  = `叠加词库（${successCount} 个）`;
         footerEl.style.display = '';
+        updateSelectedCount();
     } else {
         statusEl.textContent += ' · 所有单词生成失败，请检查网络或 API 配置';
     }
@@ -233,11 +253,12 @@ function ensureDataInitialized() {
     if (typeof initColumnControls === 'function') initColumnControls();
 }
 
-// --- 将生成结果转为行数组 ---
+// --- 将生成结果转为行数组（仅选中项）---
 function buildNewRows() {
     ensureDataInitialized();
+    const selectedIdx = new Set(getSelectedIndices());
     return _genResults
-        .filter(r => r.status === 'done')
+        .filter((r, i) => r.status === 'done' && selectedIdx.has(i))
         .map(r => {
             const row = new Array(headers.length).fill('');
             headers.forEach((h, idx) => {
@@ -295,6 +316,22 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('genStartBtn')?.addEventListener('click', startGeneration);
     document.getElementById('genReplaceBtn')?.addEventListener('click', replaceWordsToList);
     document.getElementById('genAppendBtn') ?.addEventListener('click', appendWordsToList);
+
+    // 点击 gen-item 切换选中态
+    document.getElementById('genProgress')?.addEventListener('click', (e) => {
+        const item = e.target.closest('.gen-item');
+        if (item) toggleItemSelected(item);
+    });
+
+    // 全选 / 取消全选
+    document.getElementById('genSelectAll')?.addEventListener('click', () => {
+        document.querySelectorAll('#genProgress .gen-item-done').forEach(el => el.classList.add('gen-item-selected'));
+        updateSelectedCount();
+    });
+    document.getElementById('genClearAll')?.addEventListener('click', () => {
+        document.querySelectorAll('#genProgress .gen-item-done').forEach(el => el.classList.remove('gen-item-selected'));
+        updateSelectedCount();
+    });
 
     // Ctrl/Cmd + Enter 触发生成
     document.getElementById('genWordsInput')?.addEventListener('keydown', (e) => {

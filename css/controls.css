@@ -94,6 +94,183 @@
 /* 文件上传按钮 */
 /* upload-btn 继承 base，无需额外覆盖 */
 
+/* ===== 上传模态框 ===== */
+.upload-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 15, 15, 0.45);
+    backdrop-filter: blur(2px);
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.upload-modal-box {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 40px rgba(15, 15, 15, 0.18), 0 0 0 1px rgba(15, 15, 15, 0.06);
+    width: 540px;
+    max-width: calc(100vw - 32px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.upload-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+.upload-modal-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #37352f;
+}
+
+.upload-modal-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: rgba(55, 53, 47, 0.45);
+    line-height: 1;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: background 0.15s, color 0.15s;
+}
+.upload-modal-close:hover {
+    background: rgba(55, 53, 47, 0.08);
+    color: #37352f;
+}
+
+.upload-modal-body {
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.upload-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.upload-section-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(55, 53, 47, 0.5);
+}
+
+.upload-json-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    resize: vertical;
+    min-height: 140px;
+    padding: 10px 12px;
+    font-size: 12.5px;
+    font-family: ui-monospace, 'Cascadia Code', monospace;
+    color: #37352f;
+    background: rgba(55, 53, 47, 0.03);
+    border: 1px solid rgba(55, 53, 47, 0.15);
+    border-radius: 8px;
+    outline: none;
+    line-height: 1.55;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.upload-json-textarea:focus {
+    border-color: rgba(55, 53, 47, 0.4);
+    box-shadow: 0 0 0 2px rgba(55, 53, 47, 0.08);
+}
+
+.upload-json-error {
+    font-size: 12px;
+    color: #cf222e;
+    padding: 6px 10px;
+    background: rgba(207, 34, 46, 0.06);
+    border-radius: 6px;
+    border: 1px solid rgba(207, 34, 46, 0.2);
+}
+
+.upload-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(55, 53, 47, 0.3);
+    font-size: 12px;
+}
+.upload-divider::before,
+.upload-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(55, 53, 47, 0.1);
+}
+
+.upload-file-pick-btn {
+    align-self: flex-start;
+    padding: 6px 14px;
+    font-size: 13px;
+    color: #37352f;
+    background: rgba(55, 53, 47, 0.05);
+    border: 1px solid rgba(55, 53, 47, 0.15);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.upload-file-pick-btn:hover {
+    background: rgba(55, 53, 47, 0.1);
+}
+
+.upload-file-name {
+    font-size: 12px;
+    color: rgba(55, 53, 47, 0.55);
+    word-break: break-all;
+}
+
+.upload-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 20px 16px;
+    border-top: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+.upload-cancel-btn {
+    padding: 7px 18px;
+    font-size: 13px;
+    color: rgba(55, 53, 47, 0.7);
+    background: rgba(55, 53, 47, 0.05);
+    border: 1px solid rgba(55, 53, 47, 0.13);
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.upload-cancel-btn:hover {
+    background: rgba(55, 53, 47, 0.1);
+}
+
+.upload-confirm-btn {
+    padding: 7px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    background: rgb(55, 53, 47);
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.upload-confirm-btn:hover {
+    background: #000;
+}
+
 /* --- 列切换（pill 标签按钮组）--- */
 .controls .column-toggles {
     display: flex;
@@ -467,15 +644,6 @@
     color: rgba(55, 53, 47, 0.45);
 }
 
-/* 主要操作（导出全部）深色高亮 */
-.export-menu-item-primary .export-menu-icon {
-    background: rgb(55, 53, 47);
-    color: #fff;
-}
-.export-menu-item-primary .export-menu-name {
-    font-weight: 600;
-}
-.export-menu-item-primary:hover { background: rgba(55, 53, 47, 0.06); }
 
 .export-menu-divider {
     height: 1px;
@@ -743,17 +911,30 @@
     border-radius: 8px;
     padding: 10px 14px;
     background: #fafaf9;
-    transition: border-color 0.2s, background 0.2s;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.15s;
+    position: relative;
+}
+
+.gen-item-done {
+    cursor: pointer;
+    border-color: rgba(55, 53, 47, 0.15);
+    background: #fafaf9;
+}
+.gen-item-done:hover {
+    border-color: rgba(55, 53, 47, 0.3);
+    background: #f5f5f4;
+}
+
+/* 选中态：绿色高亮 */
+.gen-item-done.gen-item-selected {
+    border-color: rgba(46, 160, 67, 0.5);
+    background: rgba(46, 160, 67, 0.06);
+    box-shadow: 0 0 0 2px rgba(46, 160, 67, 0.18);
 }
 
 .gen-item-loading {
     border-color: rgba(102, 126, 234, 0.35);
     background: rgba(102, 126, 234, 0.04);
-}
-
-.gen-item-done {
-    border-color: rgba(46, 160, 67, 0.35);
-    background: rgba(46, 160, 67, 0.04);
 }
 
 .gen-item-error {
@@ -818,7 +999,40 @@
     border-top: 1px solid rgba(55, 53, 47, 0.09);
     flex-shrink: 0;
     display: flex;
-    justify-content: flex-end;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.gen-footer-select {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.gen-select-btn {
+    padding: 5px 12px;
+    font-size: 13px;
+    color: rgba(55, 53, 47, 0.75);
+    background: rgba(55, 53, 47, 0.05);
+    border: 1px solid rgba(55, 53, 47, 0.13);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.gen-select-btn:hover {
+    background: rgba(55, 53, 47, 0.1);
+}
+
+.gen-selected-count {
+    font-size: 12px;
+    color: rgba(55, 53, 47, 0.5);
+    white-space: nowrap;
+}
+
+.gen-footer-actions {
+    display: flex;
+    gap: 8px;
 }
 
 /* 替换词库（深黑主操作） */

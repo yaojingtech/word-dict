@@ -14,7 +14,6 @@
     <div class="control-group control-group-sep" aria-hidden="true"></div>
     <div class="control-group">
         <button type="button" id="fileInputBtn" class="upload-btn" title="上传 CSV 或 JSON 词表文件">上传</button>
-        <input type="file" id="fileInput" accept=".csv,.json" style="display:none">
     </div>
     <div class="control-group control-group-sep" aria-hidden="true"></div>
     <div class="control-group">
@@ -52,6 +51,13 @@
 
 <!-- 导出菜单 -->
 <div id="exportMenuPanel" class="export-menu-panel" aria-hidden="true">
+    <button type="button" id="exportJsonCopyBtn" class="export-menu-item" title="将当前词表 JSON 复制到剪贴板">
+        <span class="export-menu-icon">⎘</span>
+        <span class="export-menu-text">
+            <span class="export-menu-name">JSON 复制</span>
+            <span class="export-menu-desc">复制 JSON 文本到剪贴板</span>
+        </span>
+    </button>
     <button type="button" id="exportJsonBtn" class="export-menu-item" title="将当前词表导出为 JSON 文件">
         <span class="export-menu-icon">{ }</span>
         <span class="export-menu-text">
@@ -67,7 +73,7 @@
         </span>
     </button>
     <div class="export-menu-divider"></div>
-    <button type="button" id="exportAllBtn" class="export-menu-item export-menu-item-primary" title="导出全部页面">
+    <button type="button" id="exportAllBtn" class="export-menu-item" title="导出全部页面">
         <span class="export-menu-icon">⬇</span>
         <span class="export-menu-text">
             <span class="export-menu-name">导出全部</span>
@@ -235,8 +241,44 @@
             <div id="genProgress" class="gen-progress" style="display:none"></div>
         </div>
         <div class="gen-modal-footer" id="genFooter" style="display:none">
-            <button type="button" id="genReplaceBtn" class="gen-add-btn">替换词库</button>
-            <button type="button" id="genAppendBtn" class="gen-append-btn">叠加词库</button>
+            <div class="gen-footer-select">
+                <button type="button" id="genSelectAll" class="gen-select-btn">全选</button>
+                <button type="button" id="genClearAll" class="gen-select-btn">取消全选</button>
+                <span id="genSelectedCount" class="gen-selected-count"></span>
+            </div>
+            <div class="gen-footer-actions">
+                <button type="button" id="genReplaceBtn" class="gen-add-btn">替换词库</button>
+                <button type="button" id="genAppendBtn" class="gen-append-btn">叠加词库</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 上传模态框 ===== -->
+<div id="uploadModalOverlay" class="upload-modal-overlay" style="display:none">
+    <div class="upload-modal-box">
+        <div class="upload-modal-header">
+            <span class="upload-modal-title">导入词表</span>
+            <button type="button" id="uploadModalClose" class="upload-modal-close" title="关闭">✕</button>
+        </div>
+        <div class="upload-modal-body">
+            <div class="upload-section">
+                <label class="upload-section-label">粘贴 JSON 文本</label>
+                <textarea id="uploadJsonInput" class="upload-json-textarea" rows="10"
+                    placeholder='粘贴 JSON 内容，格式如：&#10;{&#10;  "headers": ["单词", "音标", "简明释义", ...],&#10;  "data": [["apple", "/ˈæpəl/", "n. 苹果"], ...]&#10;}'></textarea>
+                <div id="uploadJsonError" class="upload-json-error" style="display:none"></div>
+            </div>
+            <div class="upload-divider"><span>或</span></div>
+            <div class="upload-section">
+                <label class="upload-section-label">选择本地文件（CSV / JSON）</label>
+                <button type="button" id="uploadFilePickBtn" class="upload-file-pick-btn">选择文件…</button>
+                <span id="uploadFileName" class="upload-file-name"></span>
+                <input type="file" id="fileInput" accept=".csv,.json" style="display:none">
+            </div>
+        </div>
+        <div class="upload-modal-footer">
+            <button type="button" id="uploadCancelBtn" class="upload-cancel-btn">取消</button>
+            <button type="button" id="uploadConfirmBtn" class="upload-confirm-btn">确定导入</button>
         </div>
     </div>
 </div>
@@ -256,10 +298,93 @@
 <script src="js/deep_analysis.js"></script>
 <script src="js/ai_generate.js"></script>
 <script>
-// 上传按钮代理
-document.getElementById('fileInputBtn')?.addEventListener('click', () => {
-    document.getElementById('fileInput').click();
-});
+// ===== 上传模态框逻辑 =====
+(function () {
+    const overlay     = document.getElementById('uploadModalOverlay');
+    const closeBtn    = document.getElementById('uploadModalClose');
+    const cancelBtn   = document.getElementById('uploadCancelBtn');
+    const confirmBtn  = document.getElementById('uploadConfirmBtn');
+    const filePickBtn = document.getElementById('uploadFilePickBtn');
+    const fileInput   = document.getElementById('fileInput');
+    const fileNameEl  = document.getElementById('uploadFileName');
+    const jsonInput   = document.getElementById('uploadJsonInput');
+    const jsonError   = document.getElementById('uploadJsonError');
+
+    function openUploadModal() {
+        jsonInput.value = '';
+        jsonError.style.display = 'none';
+        fileNameEl.textContent = '';
+        fileInput.value = '';
+        overlay.style.display = 'flex';
+    }
+    function closeUploadModal() {
+        overlay.style.display = 'none';
+    }
+
+    document.getElementById('fileInputBtn')?.addEventListener('click', openUploadModal);
+    closeBtn?.addEventListener('click', closeUploadModal);
+    cancelBtn?.addEventListener('click', closeUploadModal);
+    overlay?.addEventListener('click', (e) => { if (e.target === overlay) closeUploadModal(); });
+
+    // 选择文件按钮
+    filePickBtn?.addEventListener('click', () => fileInput.click());
+    fileInput?.addEventListener('change', () => {
+        fileNameEl.textContent = fileInput.files[0]?.name || '';
+    });
+
+    // 确定导入
+    confirmBtn?.addEventListener('click', () => {
+        const text = jsonInput.value.trim();
+
+        // 优先用文本框中的 JSON
+        if (text) {
+            try {
+                const json = JSON.parse(text);
+                if (typeof loadFromJson === 'function') {
+                    if (!loadFromJson(json)) throw new Error('JSON 格式不符，需包含 headers 和 data 字段');
+                }
+                closeUploadModal();
+            } catch (err) {
+                jsonError.textContent = '解析失败：' + (err.message || err);
+                jsonError.style.display = 'block';
+            }
+            return;
+        }
+
+        // 否则用文件
+        const file = fileInput.files[0];
+        if (!file) {
+            jsonError.textContent = '请粘贴 JSON 文本或选择一个文件';
+            jsonError.style.display = 'block';
+            return;
+        }
+        jsonError.style.display = 'none';
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                if (file.name.toLowerCase().endsWith('.json')) {
+                    const json = JSON.parse(e.target.result);
+                    if (!loadFromJson(json)) throw new Error('JSON 格式不符，需包含 headers 和 data 字段');
+                } else {
+                    // CSV
+                    if (typeof parseCSV !== 'function') throw new Error('CSV 解析器未加载');
+                    const rows = parseCSV(e.target.result);
+                    if (rows.length === 0) throw new Error('CSV 内容为空');
+                    headers = rows[0];
+                    allData = rows.slice(1).filter(r => r.length > 1);
+                    visibleColumns = headers.map((_, i) => i);
+                    if (typeof initColumnControls === 'function') initColumnControls();
+                    requestAnimationFrame(() => { if (typeof renderPages === 'function') renderPages(); });
+                }
+                closeUploadModal();
+            } catch (err) {
+                jsonError.textContent = '解析文件出错：' + (err.message || err);
+                jsonError.style.display = 'block';
+            }
+        };
+        reader.readAsText(file, 'utf-8');
+    });
+})();
 
 // ⚙️ 高级设置弹窗开关
 (function () {
