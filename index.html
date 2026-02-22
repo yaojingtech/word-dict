@@ -326,38 +326,10 @@
     cancelBtn?.addEventListener('click', closeUploadModal);
     overlay?.addEventListener('click', (e) => { if (e.target === overlay) closeUploadModal(); });
 
-    // 选择文件按钮
-    filePickBtn?.addEventListener('click', () => fileInput.click());
-    fileInput?.addEventListener('change', () => {
-        fileNameEl.textContent = fileInput.files[0]?.name || '';
-    });
-
-    // 确定导入
-    confirmBtn?.addEventListener('click', () => {
-        const text = jsonInput.value.trim();
-
-        // 优先用文本框中的 JSON
-        if (text) {
-            try {
-                const json = JSON.parse(text);
-                if (typeof loadFromJson === 'function') {
-                    if (!loadFromJson(json)) throw new Error('JSON 格式不符，需包含 headers 和 data 字段');
-                }
-                closeUploadModal();
-            } catch (err) {
-                jsonError.textContent = '解析失败：' + (err.message || err);
-                jsonError.style.display = 'block';
-            }
-            return;
-        }
-
-        // 否则用文件
-        const file = fileInput.files[0];
-        if (!file) {
-            jsonError.textContent = '请粘贴 JSON 文本或选择一个文件';
-            jsonError.style.display = 'block';
-            return;
-        }
+    // 从文件对象读取并导入（选文件后立即生效）
+    function importFromFile(file) {
+        if (!file) return;
+        fileNameEl.textContent = file.name;
         jsonError.style.display = 'none';
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -366,7 +338,6 @@
                     const json = JSON.parse(e.target.result);
                     if (!loadFromJson(json)) throw new Error('JSON 格式不符，需包含 headers 和 data 字段');
                 } else {
-                    // CSV
                     if (typeof parseCSV !== 'function') throw new Error('CSV 解析器未加载');
                     const rows = parseCSV(e.target.result);
                     if (rows.length === 0) throw new Error('CSV 内容为空');
@@ -383,6 +354,30 @@
             }
         };
         reader.readAsText(file, 'utf-8');
+    }
+
+    // 选择文件后立即导入，无需点击确定
+    filePickBtn?.addEventListener('click', () => fileInput.click());
+    fileInput?.addEventListener('change', () => importFromFile(fileInput.files[0]));
+
+    // 确定导入（仅处理文本框 JSON）
+    confirmBtn?.addEventListener('click', () => {
+        const text = jsonInput.value.trim();
+        if (!text) {
+            jsonError.textContent = '请粘贴 JSON 文本，或使用上方选择文件按钮直接导入';
+            jsonError.style.display = 'block';
+            return;
+        }
+        try {
+            const json = JSON.parse(text);
+            if (typeof loadFromJson === 'function') {
+                if (!loadFromJson(json)) throw new Error('JSON 格式不符，需包含 headers 和 data 字段');
+            }
+            closeUploadModal();
+        } catch (err) {
+            jsonError.textContent = '解析失败：' + (err.message || err);
+            jsonError.style.display = 'block';
+        }
     });
 })();
 
