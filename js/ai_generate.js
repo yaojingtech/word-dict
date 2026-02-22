@@ -205,7 +205,10 @@ async function startGeneration() {
     const successCount = _genResults.filter(r => r.status === 'done').length;
     if (successCount > 0) {
         const addBtn = document.getElementById('genAddBtn');
-        if (addBtn) addBtn.textContent = `✅ 替换词库（${successCount} 个词条）`;
+        if (document.getElementById('genReplaceBtn'))
+            document.getElementById('genReplaceBtn').textContent = `替换词库（${successCount} 个）`;
+        if (document.getElementById('genAppendBtn'))
+            document.getElementById('genAppendBtn').textContent  = `叠加词库（${successCount} 个）`;
         footerEl.style.display = '';
     } else {
         statusEl.textContent += ' · 所有单词生成失败，请检查网络或 API 配置';
@@ -230,40 +233,30 @@ function ensureDataInitialized() {
     if (typeof initColumnControls === 'function') initColumnControls();
 }
 
-// --- 用生成结果完整替换 allData 并重新渲染 ---
-function addGeneratedWordsToList() {
-    const successful = _genResults.filter(r => r.status === 'done');
-    if (successful.length === 0) return;
-
-    // 确保全局状态就绪
+// --- 将生成结果转为行数组 ---
+function buildNewRows() {
     ensureDataInitialized();
-
-    const newRows = successful.map(r => {
-        const row = new Array(headers.length).fill('');
-        headers.forEach((h, idx) => {
-            switch (h) {
-                case '单词':                              row[idx] = r.word        || ''; break;
-                case '美音': case '英音': case '音标':   row[idx] = r.phonetic    || ''; break;
-                case 'definition':                        row[idx] = r.definition  || ''; break;
-                case '简明释义':                          row[idx] = r.brief       || ''; break;
-                case '精选短语':                          row[idx] = r.phrases     || ''; break;
-            }
+    return _genResults
+        .filter(r => r.status === 'done')
+        .map(r => {
+            const row = new Array(headers.length).fill('');
+            headers.forEach((h, idx) => {
+                switch (h) {
+                    case '单词':                              row[idx] = r.word        || ''; break;
+                    case '美音': case '英音': case '音标':   row[idx] = r.phonetic    || ''; break;
+                    case 'definition':                        row[idx] = r.definition  || ''; break;
+                    case '简明释义':                          row[idx] = r.brief       || ''; break;
+                    case '精选短语':                          row[idx] = r.phrases     || ''; break;
+                }
+            });
+            return row;
         });
-        return row;
-    });
+}
 
-    // 完整替换词库，不叠加
-    allData.length = 0;
-    allData.push(...newRows);
-
-    if (typeof renderPages === 'function') renderPages();
-
-    closeGenModal();
-
-    // 淡出 toast 提示
+function showGenNotice(text) {
     const notice = document.createElement('div');
     notice.className = 'gen-notice';
-    notice.textContent = `✅ 已生成 ${newRows.length} 个词条（原词库已替换）`;
+    notice.textContent = text;
     document.body.appendChild(notice);
     setTimeout(() => {
         notice.style.transition = 'opacity 0.4s';
@@ -272,13 +265,36 @@ function addGeneratedWordsToList() {
     }, 2600);
 }
 
+// --- 替换词库 ---
+function replaceWordsToList() {
+    const newRows = buildNewRows();
+    if (newRows.length === 0) return;
+    allData.length = 0;
+    allData.push(...newRows);
+    if (typeof renderPages === 'function') renderPages();
+    closeGenModal();
+    showGenNotice(`✅ 已生成 ${newRows.length} 个词条（原词库已替换）`);
+}
+
+// --- 叠加词库（插入顶部）---
+function appendWordsToList() {
+    const newRows = buildNewRows();
+    if (newRows.length === 0) return;
+    ensureDataInitialized();
+    allData.unshift(...newRows);
+    if (typeof renderPages === 'function') renderPages();
+    closeGenModal();
+    showGenNotice(`✅ 已叠加 ${newRows.length} 个词条到列表顶部`);
+}
+
 // --- 事件绑定 ---
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('genWordsBtn')?.addEventListener('click', openGenModal);
     document.getElementById('genModalBackdrop')?.addEventListener('click', closeGenModal);
     document.getElementById('genModalClose')?.addEventListener('click', closeGenModal);
     document.getElementById('genStartBtn')?.addEventListener('click', startGeneration);
-    document.getElementById('genAddBtn')?.addEventListener('click', addGeneratedWordsToList);
+    document.getElementById('genReplaceBtn')?.addEventListener('click', replaceWordsToList);
+    document.getElementById('genAppendBtn') ?.addEventListener('click', appendWordsToList);
 
     // Ctrl/Cmd + Enter 触发生成
     document.getElementById('genWordsInput')?.addEventListener('keydown', (e) => {

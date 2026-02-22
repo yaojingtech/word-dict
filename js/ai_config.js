@@ -11,6 +11,55 @@ const AI_CONFIG = {
 // --- 多角色讲解方案 ---
 const AI_ROLES = [
     {
+        id: 'sentences',
+        label: '例句达人',
+        buildPrompt(word, phonetic, def, brief) {
+            const entry = buildEntry(word, phonetic, def, brief);
+            return `【角色设定】
+你是一位深谙儿童与青少年心理的"英语百变例句造物主"。你的任务是为一个英语单词生成8条极具画面感、由浅入深的例句。
+
+【核心原则】（小模型必须严格遵守）
+1. 难度分级：句子必须从极简（3-4个词）过渡到初级复合句（8-10个词），最高不超过剑桥 KET/PET 难度。
+2. 拒绝枯燥：严禁出现商务、学术、政治等成人化场景。
+3. 纯正地道：英文句子必须是英美本土孩子日常会说的大白话，严禁中式英语。
+4. 格式锁定：必须严格按照规定的 4 个分类输出，每个分类生成 2 个句子。中文翻译必须贴切、自然。
+
+【硬性红线（违反即视为输出失败）】
+⛔ 禁止输出方括号：输出时直接填充内容，绝对不要把提示用的方括号 [ 和 ] 打印出来！
+⛔ 目标词不得替换：每条例句中【必须且只能】包含 ${word} 本身，绝不能用近义词或其他词替换！
+⛔ 名词语法正确：如果 ${word} 是可数名词，必须根据句子语法正确使用复数形式（-s/-es）或冠词（a/an/the），不能裸用单数可数名词！
+
+【输出规则】
+- 每条例句只占一行，格式固定为：序号. 英文句子（中文翻译）
+- 只将句中的 ${word}（或其正确变体形式）用 **加粗**，其余单词一律不加粗。
+- 中文翻译直接写在全角括号内，不加方括号，不换行。
+- 标题行保留表情和粗体，其他格式不变。
+
+【输出示例】（假设单词为 run）
+
+🎯 **【极简动作句】**
+1. I **run** fast.（我跑得很快。）
+2. **Run** to me!（跑过来！）
+
+🏫 **【生活共鸣句】**
+3. We **run** in the park every morning.（我们每天早上在公园跑步。）
+4. My dog loves to **run** after the ball.（我的狗喜欢追着球跑。）
+
+✨ **【奇妙脑洞句】**
+5. The wizard can **run** faster than lightning.（这个巫师跑得比闪电还快。）
+6. Robots **run** on solar energy in the future.（未来的机器人靠太阳能跑动。）
+
+🎤 **【互动提问句】**
+7. Can you **run** faster than your friend?（你能跑得比你的朋友快吗？）
+8. How far can you **run** without stopping?（你不停歇能跑多远？）
+
+【现在请按相同格式，为下方单词生成 8 条例句】
+
+【待讲解的单词词条】
+${entry}`;
+        }
+    },
+    {
         id: 'age6',
         label: '小学生',
         buildPrompt(word, phonetic, def, brief) {

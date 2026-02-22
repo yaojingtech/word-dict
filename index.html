@@ -27,6 +27,7 @@
     <div class="control-group">
         <label>讲解</label>
         <select id="roleSelect" title="打开单词详情时默认展示的AI讲解角色">
+            <option value="sentences">例句达人</option>
             <option value="age6">小学生</option>
             <option value="age9">初中生</option>
         </select>
@@ -172,6 +173,7 @@
             <div class="deep-difficulty-wrap">
                 <label class="deep-difficulty-label" for="deepRoleSelect">难度</label>
                 <select id="deepRoleSelect" class="deep-difficulty-select">
+                    <option value="sentences">例句达人</option>
                     <option value="age6">小学生</option>
                     <option value="age9">中学生</option>
                 </select>
@@ -233,7 +235,8 @@
             <div id="genProgress" class="gen-progress" style="display:none"></div>
         </div>
         <div class="gen-modal-footer" id="genFooter" style="display:none">
-            <button type="button" id="genAddBtn" class="gen-add-btn">➕ 添加到列表</button>
+            <button type="button" id="genReplaceBtn" class="gen-add-btn">替换词库</button>
+            <button type="button" id="genAppendBtn" class="gen-append-btn">叠加词库</button>
         </div>
     </div>
 </div>

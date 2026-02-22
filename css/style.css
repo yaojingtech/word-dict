@@ -938,8 +938,33 @@ body {
 .wm-ai-section:first-child { margin-top: 0; }
 
 .wm-ai-line {
-    color: #2d3748;
+    color: rgb(55, 53, 47);
     padding-left: 0.5em;
+}
+
+/* 编号例句行（1. 2. 3. …） */
+.wm-ai-sentence {
+    color: rgb(55, 53, 47);
+    padding: 3px 0 3px 1em;
+    border-left: 3px solid rgba(55, 53, 47, 0.15);
+    margin: 4px 0;
+}
+.wm-ai-sentence strong {
+    color: rgb(30, 30, 30);
+    font-weight: 700;
+}
+
+/* bold 通用强调 */
+.wm-ai-section strong,
+.wm-ai-line strong {
+    font-weight: 700;
+    color: rgb(30, 30, 30);
+}
+
+/* 行内中文翻译（淡色区分） */
+.wm-ai-translation {
+    color: rgba(55, 53, 47, 0.5);
+    font-size: 0.92em;
 }
 
 .wm-ai-gap { height: 0.4em; }

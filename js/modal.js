@@ -126,14 +126,30 @@ function buildModalCardHtml(row, displayColumns) {
 }
 
 // --- AI 讲解生成 ---
+function applyBold(escaped) {
+    // **text** → <strong>text</strong>
+    return escaped
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        // 英文例句（中文翻译）→ 翻译部分用淡色 span
+        .replace(/（([^）]+)）/, '&thinsp;<span class="wm-ai-translation">（$1）</span>');
+}
+
 function formatAiText(text) {
     return text.split('\n').map(line => {
-        if (!line.trim()) return '<div class="wm-ai-gap"></div>';
-        const escaped = escapeHtml(line.trim());
-        if (/^[💡🎬🗣🏃🎮🧠]/.test(line.trim())) {
-            return `<div class="wm-ai-section">${escaped}</div>`;
+        const trimmed = line.trim();
+        if (!trimmed) return '<div class="wm-ai-gap"></div>';
+        const escaped = escapeHtml(trimmed);
+        const html    = applyBold(escaped);
+
+        // 章节标题行：以 emoji 开头（🎯🏫✨🎤💡🎬🗣🏃🎮🧠🌟 等）
+        if (/^[\u{1F300}-\u{1FAFF}\u{2600}-\u{26FF}]/u.test(trimmed)) {
+            return `<div class="wm-ai-section">${html}</div>`;
         }
-        return `<div class="wm-ai-line">${escaped}</div>`;
+        // 编号例句行：1. / 2. 等
+        if (/^\d+\./.test(trimmed)) {
+            return `<div class="wm-ai-sentence">${html}</div>`;
+        }
+        return `<div class="wm-ai-line">${html}</div>`;
     }).join('');
 }
 
