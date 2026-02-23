@@ -90,6 +90,7 @@ function renderPages() {
 
             requestAnimationFrame(() => requestAnimationFrame(() => updatePageBriefClamp(pageDiv)));
         }
+        if (typeof onPagesRendered === 'function') onPagesRendered();
     } catch (err) {
         console.error(err);
         previewArea.innerHTML = `<div class="page" style="color:#c00; padding:20px;">渲染出错：${err.message || err}</div>`;

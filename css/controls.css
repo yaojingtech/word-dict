@@ -1136,9 +1136,10 @@
     position: relative;
     z-index: 1;
     background: #fff;
-    border-radius: 10px;
-    width: min(560px, 92vw);
-    max-height: 80vh;
+    border-radius: 12px;
+    width: min(640px, 94vw);
+    height: 60vh;
+    min-height: 360px;
     display: flex;
     flex-direction: column;
     box-shadow:
@@ -1154,13 +1155,13 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 14px 16px 10px;
+    padding: 16px 20px 12px;
     border-bottom: 1px solid rgba(55, 53, 47, 0.09);
     flex-shrink: 0;
 }
 
 .jump-modal-title {
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 600;
     color: rgba(55, 53, 47, 0.65);
     letter-spacing: 0.02em;
@@ -1168,13 +1169,13 @@
 }
 
 .jump-modal-close {
-    width: 24px;
-    height: 24px;
+    width: 36px;
+    height: 36px;
     border: none;
     background: transparent;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 18px;
+    font-size: 22px;
     line-height: 1;
     color: rgba(55, 53, 47, 0.45);
     display: flex;
@@ -1193,8 +1194,8 @@
 .jump-modal-tabs {
     display: flex;
     overflow-x: auto;
-    gap: 2px;
-    padding: 8px 12px 0;
+    gap: 4px;
+    padding: 10px 16px 0;
     flex-shrink: 0;
     border-bottom: 1px solid rgba(55, 53, 47, 0.09);
     scrollbar-width: none;
@@ -1203,9 +1204,9 @@
 .jump-modal-tabs::-webkit-scrollbar { display: none; }
 
 .jump-tab-btn {
-    padding: 5px 10px 7px;
-    font-size: 12px;
-    font-family: ui-monospace, 'Cascadia Code', monospace;
+    padding: 10px 16px 12px;
+    font-size: 14px;
+    font-family: inherit;
     color: rgba(55, 53, 47, 0.55);
     background: none;
     border: none;
@@ -1243,9 +1244,9 @@
 /* 页码格子 */
 .jump-modal-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
-    gap: 6px;
-    padding: 14px 16px;
+    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+    gap: 10px;
+    padding: 18px 20px;
     overflow-y: auto;
     flex: 1;
     scrollbar-width: thin;
@@ -1259,9 +1260,13 @@
 }
 
 .jump-page-item {
-    padding: 7px 4px;
-    font-size: 12px;
-    font-family: ui-monospace, 'Cascadia Code', monospace;
+    padding: 12px 8px;
+    font-size: 15px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
     color: rgba(55, 53, 47, 0.7);
     background: rgba(55, 53, 47, 0.04);
     border: 1px solid transparent;

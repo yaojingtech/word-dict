@@ -36,6 +36,9 @@
     <div class="control-group">
         <button type="button" id="adaptiveFontBtn" class="adaptive-btn" title="每页单独自适应字号">自适应字号</button>
     </div>
+    <div class="control-group">
+        <button type="button" id="singlePageBtn" class="adaptive-btn" title="一页一屏呈现，支持前后翻页">单页模式</button>
+    </div>
     <!-- ⚙️ 高级设置按钮 -->
     <div class="control-group">
         <button type="button" id="advSettingsBtn" class="adv-settings-btn" title="纸张、行数、字号、显示列等高级设置">排版设置</button>
@@ -117,6 +120,9 @@
 </div>
 <div id="advSettingsBackdrop" class="adv-backdrop"></div>
 
+<div id="preview-area-wrapper">
+    <button type="button" id="singlePagePrev" class="single-page-nav" aria-label="上一页" title="上一页" style="display:none">‹</button>
+    <button type="button" id="singlePageNext" class="single-page-nav" aria-label="下一页" title="下一页" style="display:none">›</button>
 <div id="preview-area">
     <div class="page a4-portrait" style="display: flex; justify-content: center; align-items: center; color: #bbb;">
         <div style="text-align: center;">
@@ -125,6 +131,7 @@
             <p style="font-size: 0.8em;">(您的文件列数减少后，程序会自动适配)</p>
         </div>
     </div>
+</div>
 </div>
 
 <!-- 单词详情模态框 -->
@@ -293,6 +300,7 @@
 <script src="js/render.js"></script>
 <script src="js/main.js"></script>
 <script src="js/page_actions.js"></script>
+<script src="js/single_page.js"></script>
 <script src="js/jump_modal.js"></script>
 <script src="js/ai_ocr.js"></script>
 <script src="js/deep_analysis.js"></script>
@@ -463,6 +471,7 @@
     // ── 鼠标拖拽 ──
     area.addEventListener('mousedown', e => {
         if (e.target.closest('button, a, input, select, [data-word]')) return;
+        if (document.getElementById('preview-area-wrapper')?.classList.contains('single-page-mode')) return;
         active = true;
         dragStartX = e.clientX;
         dragStartOffset = offsetX;
@@ -491,6 +500,7 @@
 
     area.addEventListener('touchmove', e => {
         if (e.touches.length !== 1) return;
+        if (document.getElementById('preview-area-wrapper')?.classList.contains('single-page-mode')) return;
         const dx = e.touches[0].clientX - touchStartX;
         // 横移幅度超过 8px 才开始横移，避免误触上下滚动
         if (!isTouchDragging && Math.abs(dx) < 8) return;

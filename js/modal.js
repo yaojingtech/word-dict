@@ -96,8 +96,8 @@ function buildModalCardHtml(row, displayColumns) {
 
     return `
         <div class="wm-card">
-            <div class="wm-hero">
-                <div class="wm-word" ${rawWord ? `data-word="${escapeHtml(rawWord)}" title="点击发音"` : ''}>${escapeHtml(rawWord) || '&nbsp;'}</div>
+            <div class="wm-hero" ${rawWord ? `title="点击发音"` : ''}>
+                <div class="wm-word" ${rawWord ? `data-word="${escapeHtml(rawWord)}"` : ''}>${escapeHtml(rawWord) || '&nbsp;'}</div>
             </div>
             <div class="wm-body">
                 <div class="wm-block">
@@ -108,7 +108,6 @@ function buildModalCardHtml(row, displayColumns) {
                     <div class="wm-text">${def || '—'}</div>
                 </div>
                 <div class="wm-block"><div class="wm-label">✨ 简明释义</div><div class="wm-text">${brief || '—'}</div></div>
-                ${phraseBlockHtml}
                 <div class="wm-block wm-ai-block">
                     <div class="wm-label-row">
                         <div class="wm-label">🤖 AI 单词讲解</div>
@@ -121,6 +120,7 @@ function buildModalCardHtml(row, displayColumns) {
                         ${AI_ROLES.map((r, i) => `<div class="wm-ai-panel${i === 0 ? ' active' : ''}" data-role="${r.id}" data-state="loading"><div class="wm-ai-text"></div></div>`).join('')}
                     </div>
                 </div>
+                ${phraseBlockHtml}
             </div>
         </div>`;
 }
@@ -267,11 +267,18 @@ function openWordModal(rowData, layoutClass, displayColumns, navCtx = null) {
         }
     }
 
-    // 绑定模态框内部的单词发音点击事件（.wm-word 额外附带 hero 波纹效果）
-    contentEl.querySelectorAll('.wm-word, .wm-def-word, .wm-phrase[data-word], .wm-phrase-en[data-word], .wm-phrase-word[data-word]').forEach(el => {
+    // 绑定模态框内部的单词发音点击事件（.wm-hero 整块可点击发音，附带波纹效果）
+    contentEl.querySelectorAll('.wm-hero, .wm-def-word, .wm-phrase[data-word], .wm-phrase-en[data-word], .wm-phrase-word[data-word]').forEach(el => {
         el.addEventListener('click', (ev) => {
-            if (ev.currentTarget.classList.contains('wm-word')) spawnHeroRipple(ev.currentTarget, ev);
-            playAudio(ev.currentTarget.getAttribute('data-word') || ev.currentTarget.textContent, ev);
+            let word = '';
+            if (el.classList.contains('wm-hero')) {
+                const wmWord = el.querySelector('.wm-word');
+                word = wmWord?.getAttribute('data-word') || wmWord?.textContent || '';
+                if (wmWord) spawnHeroRipple(wmWord, ev);
+            } else {
+                word = el.getAttribute('data-word') || el.textContent;
+            }
+            if (word) playAudio(word, ev);
         });
     });
 

@@ -15,6 +15,7 @@ function padPage(n) { return n.toString().padStart(3, '0'); }
 function jumpToPage(idx) {
     const wraps = document.querySelectorAll('#preview-area .page-export-wrap');
     wraps[idx]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (typeof notifyJumpToPage === 'function') notifyJumpToPage(idx);
     closeJumpModal();
 }
 
