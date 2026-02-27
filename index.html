@@ -6,6 +6,7 @@
     <title>贝东2800高频词词典</title>
     <link rel="stylesheet" href="css/controls.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/extract_select.css">
 </head>
 <body>
 
@@ -35,6 +36,7 @@
     <!-- 自适应字号 -->
     <div class="control-group">
         <button type="button" id="adaptiveFontBtn" class="adaptive-btn" title="每页单独自适应字号">自适应字号</button>
+        <button type="button" id="saveFontConfigBtn" class="adaptive-btn" title="保存当前字号配置到文件" style="display:none">💾 保存配置</button>
     </div>
     <div class="control-group">
         <button type="button" id="singlePageBtn" class="adaptive-btn" title="一页一屏呈现，支持前后翻页">单页模式</button>
@@ -226,14 +228,34 @@
             <div class="gen-ocr-btns">
                 <button type="button" id="genOcrUploadBtn" class="gen-ocr-source-btn">📁 本地图片</button>
                 <button type="button" id="genOcrCameraBtn" class="gen-ocr-source-btn">📸 拍照</button>
+                <button type="button" id="genOcrExtractBtn" class="gen-ocr-source-btn">✂️ 选词</button>
             </div>
             <div id="genOcrPreview" class="gen-ocr-preview" style="display:none">
-                <img id="genOcrImg" class="gen-ocr-img" alt="预览图">
-                <div id="genOcrStatus" class="gen-ocr-status"></div>
+                <div class="ocr-preview-card">
+                    <div class="ocr-preview-thumbnail">
+                        <img id="genOcrImg" class="gen-ocr-img" alt="预览图">
+                    </div>
+                    <div class="ocr-preview-content">
+                        <div class="ocr-preview-header">
+                            <span class="ocr-preview-title">图片识别结果</span>
+                            <button type="button" id="genReExtractBtn" class="ocr-reextract-btn" style="display:none">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                                </svg>
+                                重新选词
+                            </button>
+                        </div>
+                        <div id="genOcrStatus" class="ocr-preview-status"></div>
+                        <div id="genOcrWordCount" class="ocr-preview-count" style="display:none"></div>
+                    </div>
+                </div>
             </div>
             <!-- 隐藏文件输入 -->
             <input type="file" id="genFileInput" accept="image/*" style="display:none">
             <input type="file" id="genCaptureInput" accept="image/*" capture="environment" style="display:none">
+            <!-- 选词功能文件输入 -->
+            <input type="file" id="genExtractFileInput" accept="image/*" style="display:none">
+            <input type="file" id="genExtractCaptureInput" accept="image/*" capture="environment" style="display:none">
         </div>
         <div class="gen-modal-body">
             <div class="gen-input-section">
@@ -256,6 +278,30 @@
             <div class="gen-footer-actions">
                 <button type="button" id="genReplaceBtn" class="gen-add-btn">替换词库</button>
                 <button type="button" id="genAppendBtn" class="gen-append-btn">叠加词库</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 选词结果选择弹窗 -->
+<div id="extractSelectOverlay" class="extract-select-overlay" aria-hidden="true">
+    <div class="extract-select-backdrop" id="extractSelectBackdrop"></div>
+    <div id="extractSelectBox" class="extract-select-box" role="dialog" aria-label="选择识别到的单词">
+        <div class="extract-select-header">
+            <span class="extract-select-title">识别结果 - 点击选择单词</span>
+            <button type="button" class="extract-select-close" id="extractSelectClose" aria-label="关闭">×</button>
+        </div>
+        <div class="extract-select-body">
+            <div id="extractRawText" class="extract-raw-text"></div>
+        </div>
+        <div class="extract-select-footer">
+            <div class="extract-select-actions">
+                <button type="button" id="extractSelectAllBtn" class="extract-select-btn">全选</button>
+                <button type="button" id="extractClearBtn" class="extract-select-btn">取消全选</button>
+                <span id="extractSelectedCount" class="extract-selected-count">已选 0 个</span>
+            </div>
+            <div class="extract-select-confirm">
+                <button type="button" id="extractConfirmBtn" class="extract-confirm-btn">确定添加</button>
             </div>
         </div>
     </div>
@@ -303,6 +349,7 @@
 <script src="js/single_page.js"></script>
 <script src="js/jump_modal.js"></script>
 <script src="js/ai_ocr.js"></script>
+<script src="js/ai_extract.js"></script>
 <script src="js/deep_analysis.js"></script>
 <script src="js/ai_generate.js"></script>
 <script>
@@ -339,6 +386,11 @@
         if (!file) return;
         fileNameEl.textContent = file.name;
         jsonError.style.display = 'none';
+        
+        // 检测是否为 word(2800).json，显示保存配置按钮
+        const isWord2800 = file.name === 'word(2800).json';
+        const saveFontConfigBtn = document.getElementById('saveFontConfigBtn');
+        
         const reader = new FileReader();
         reader.onload = (e) => {
             try {
@@ -355,6 +407,12 @@
                     if (typeof initColumnControls === 'function') initColumnControls();
                     requestAnimationFrame(() => { if (typeof renderPages === 'function') renderPages(); });
                 }
+                
+                // 如果是 word(2800).json，显示保存配置按钮
+                if (isWord2800 && saveFontConfigBtn) {
+                    saveFontConfigBtn.style.display = '';
+                }
+                
                 closeUploadModal();
             } catch (err) {
                 jsonError.textContent = '解析文件出错：' + (err.message || err);

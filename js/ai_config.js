@@ -160,9 +160,9 @@ function setCachedResult(word, roleId, content) {
     }
 }
 
-let _aiLogBuffer = ''; // accumulate stream for console logging
+let _aiLogBuffer = ''; // for console logging
 
-async function fetchAiExplanation({ word, phonetic, def, brief, roleId, onChunk, onDone, onError }) {
+async function fetchAiExplanation({ word, phonetic, def, brief, roleId, onDone, onError }) {
     _aiLogBuffer = '';
     try {
         const role = AI_ROLES.find(r => r.id === roleId) || AI_ROLES[0];
@@ -181,7 +181,7 @@ async function fetchAiExplanation({ word, phonetic, def, brief, roleId, onChunk,
             body: JSON.stringify({
                 model: AI_CONFIG.model,
                 messages: [{ role: 'user', content: prompt }],
-                stream: true,
+                stream: false,
                 max_tokens: 900,
                 temperature: 0.7,
             }),
@@ -189,36 +189,16 @@ async function fetchAiExplanation({ word, phonetic, def, brief, roleId, onChunk,
 
         if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
 
-        const reader = res.body.getReader();
-        const decoder = new TextDecoder();
+        const json = await res.json();
+        const fullText = json.choices?.[0]?.message?.content?.trim() || '';
 
-        while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            const text = decoder.decode(value, { stream: true });
-            for (const line of text.split('\n')) {
-                if (!line.startsWith('data: ')) continue;
-                const data = line.slice(6).trim();
-                if (data === '[DONE]') {
-                    console.log('%c📥 Response', 'color:#2ea043;font-weight:bold');
-                    console.log(_aiLogBuffer);
-                    console.groupEnd();
-                    _aiLogBuffer = '';
-                    onDone?.();
-                    return;
-                }
-                try {
-                    const json = JSON.parse(data);
-                    const delta = json.choices?.[0]?.delta?.content;
-                    if (delta) { _aiLogBuffer += delta; onChunk(delta); }
-                } catch { /* skip malformed SSE line */ }
-            }
-        }
+        _aiLogBuffer = fullText;
         console.log('%c📥 Response', 'color:#2ea043;font-weight:bold');
         console.log(_aiLogBuffer);
         console.groupEnd();
         _aiLogBuffer = '';
-        onDone?.();
+
+        onDone?.(fullText);
     } catch (err) {
         console.error('❌ AI Error:', err);
         console.groupEnd();

@@ -6,6 +6,8 @@
 let allData = [];
 let headers = [];
 let visibleColumns = [];
+let currentFontConfig = null; // 当前字号配置
+let isDefaultWord2800Loaded = false; // 是否加载了默认的 word(2800).json
 
 // --- DOM 元素获取 ---
 const layoutSelect = document.getElementById('layoutSelect');
@@ -15,6 +17,82 @@ const previewArea = document.getElementById('preview-area');
 const columnToggles = document.getElementById('columnToggles');
 const rootStyles = document.documentElement.style;
 
+// --- 字号配置管理 ---
+const FONT_CONFIG_FILE = 'date/word(2800).font-config.json';
+
+// 加载字号配置
+async function loadFontConfig() {
+    try {
+        const response = await fetch(FONT_CONFIG_FILE);
+        if (!response.ok) return null;
+        const config = await response.json();
+        if (config.version === 1 && Array.isArray(config.pageFonts)) {
+            return config;
+        }
+        return null;
+    } catch {
+        return null;
+    }
+}
+
+// 应用字号配置到页面
+function applyFontConfig(config) {
+    if (!config || !config.pageFonts || !config.pageFonts.length) return false;
+    
+    const wraps = previewArea.querySelectorAll('.page-export-wrap');
+    if (!wraps.length) return false;
+    
+    wraps.forEach((wrap, idx) => {
+        const pageEl = wrap.querySelector('.page');
+        const valueSpan = wrap.querySelector('.page-font-value');
+        const fontSize = config.pageFonts[idx];
+        
+        if (pageEl && fontSize) {
+            pageEl.style.setProperty('--table-font-size', fontSize + 'px');
+            pageEl.setAttribute('data-font-size', fontSize);
+            if (valueSpan) valueSpan.textContent = fontSize + 'px';
+        }
+    });
+    
+    return true;
+}
+
+// 保存当前字号配置
+async function saveFontConfig() {
+    const wraps = previewArea.querySelectorAll('.page-export-wrap');
+    if (!wraps.length) {
+        alert('暂无页面，无法保存配置。');
+        return;
+    }
+    
+    const pageFonts = [];
+    wraps.forEach(wrap => {
+        const pageEl = wrap.querySelector('.page');
+        const fontSize = pageEl?.getAttribute('data-font-size');
+        pageFonts.push(fontSize ? parseFloat(fontSize) : 14);
+    });
+    
+    const config = {
+        version: 1,
+        sourceFile: 'word(2800).json',
+        createdAt: new Date().toISOString(),
+        pageFonts: pageFonts
+    };
+    
+    // 下载配置文件
+    const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'word(2800).font-config.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    alert(`✅ 已保存字号配置！\n共 ${pageFonts.length} 页，请手动将下载的文件放到 date 文件夹中。`);
+}
+
 // --- 初始化与数据加载 ---
 function loadFromJson(json) {
     if (!json || !json.headers || !Array.isArray(json.data)) return false;
@@ -23,14 +101,43 @@ function loadFromJson(json) {
     if (allData.length === 0) return false;
     visibleColumns = headers.map((_, i) => i);
     initColumnControls();
-    requestAnimationFrame(() => { renderPages(); });
+    requestAnimationFrame(() => { 
+        renderPages();
+        // 如果是默认词表，尝试加载并应用字号配置
+        if (isDefaultWord2800Loaded && currentFontConfig) {
+            setTimeout(() => {
+                if (applyFontConfig(currentFontConfig)) {
+                    console.log('✅ 已应用保存的字号配置');
+                }
+            }, 100);
+        }
+    });
     return true;
 }
 
-fetch('date/word(2800).json')
-    .then(r => r.ok ? r.json() : Promise.reject())
-    .then(json => { if (loadFromJson(json)) { /* 加载成功 */ } })
-    .catch(() => { /* 文件不存在或 CORS，保持默认空状态 */ });
+// 加载默认词表和配置
+async function initDefaultData() {
+    try {
+        // 先加载字号配置
+        currentFontConfig = await loadFontConfig();
+        
+        // 加载词表数据
+        const response = await fetch('date/word(2800).json');
+        if (!response.ok) throw new Error('加载失败');
+        const json = await response.json();
+        
+        if (loadFromJson(json)) {
+            isDefaultWord2800Loaded = true;
+            // 显示保存配置按钮
+            const saveBtn = document.getElementById('saveFontConfigBtn');
+            if (saveBtn) saveBtn.style.display = '';
+        }
+    } catch (err) {
+        console.log('默认词表加载失败或不存在，保持空状态');
+    }
+}
+
+initDefaultData();
 
 
 // 列配置逻辑已抽离到 columns.js（initColumnControls / buildDisplayColumns 等）
@@ -142,5 +249,8 @@ document.getElementById('adaptiveFontBtn')?.addEventListener('click', function()
     };
     adaptOne();
 });
+
+// 保存字号配置按钮
+document.getElementById('saveFontConfigBtn')?.addEventListener('click', saveFontConfig);
 
 // PDF 导出、PNG/ZIP 导出已抽离至 export.js

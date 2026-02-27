@@ -11,6 +11,17 @@ function navigateModal(delta) {
     if (!_modalNavContext) return;
     const newIndex = _modalNavContext.index + delta;
     if (newIndex < 0 || newIndex >= _modalNavContext.data.length) return;
+    
+    // 计算当前页和下一页的页码
+    const pageSize = Math.min(50, Math.max(5, parseInt(document.getElementById('pageSizeInput')?.value, 10) || 10));
+    const currentPage = Math.floor(_modalNavContext.index / pageSize);
+    const newPage = Math.floor(newIndex / pageSize);
+    
+    // 如果跳转到下一页，自动滚动到对应页面
+    if (newPage !== currentPage && typeof goToPageIndex === 'function') {
+        goToPageIndex(newPage);
+    }
+    
     openWordModal(
         _modalNavContext.data[newIndex],
         _modalNavContext.getLayout(),
@@ -205,26 +216,16 @@ function startRoleGeneration(block, word, phonetic, def, brief, roleId, forceReg
     }
 
     setTabState(block, roleId, 'loading');
-    textEl.textContent = '';
-    const cursor = document.createElement('span');
-    cursor.className = 'wm-ai-cursor';
-    textEl.appendChild(cursor);
+    textEl.textContent = '正在生成…';
 
-    let buffer = '';
     fetchAiExplanation({
         word, phonetic, def, brief, roleId,
-        onChunk(delta) {
-            buffer += delta;
-            textEl.textContent = buffer;
-            textEl.appendChild(cursor);
-        },
-        onDone() {
-            textEl.innerHTML = formatAiText(buffer);
-            setCachedResult(word, roleId, buffer);
+        onDone(fullText) {
+            textEl.innerHTML = formatAiText(fullText);
+            setCachedResult(word, roleId, fullText);
             setTabState(block, roleId, 'done');
         },
         onError(err) {
-            cursor.remove();
             textEl.innerHTML = `<span class="wm-ai-error">生成失败：${escapeHtml(err.message)}</span>`;
             setTabState(block, roleId, 'error');
         },
