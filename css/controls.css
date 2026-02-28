@@ -745,6 +745,25 @@
     gap: 10px;
 }
 
+.gen-ocr-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.gen-ocr-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.gen-ocr-group-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(55, 53, 47, 0.6);
+    letter-spacing: 0.02em;
+}
+
 .gen-ocr-btns {
     display: flex;
     gap: 8px;

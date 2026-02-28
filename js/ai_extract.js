@@ -293,37 +293,21 @@ async function processExtractImage(dataUrl, isReExtract = false) {
 }
 
 // ==========================================
-// 本地文件上传
+// 本地文件上传（选词功能）
 // ==========================================
-function openExtractLocalFile() {
+function openExtractUpload() {
     document.getElementById('genExtractFileInput')?.click();
-}
-
-// ==========================================
-// 摄像头拍照：直接调起系统原生相机
-// ==========================================
-function openExtractCamera() {
-    document.getElementById('genExtractCaptureInput')?.click();
 }
 
 // ==========================================
 // 事件绑定
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-    // 选词按钮点击 - 调起系统原生相机
-    document.getElementById('genOcrExtractBtn')?.addEventListener('click', openExtractCamera);
+    // 单一入口：由系统决定拍照/相册/文件
+    document.getElementById('genOcrExtractBtn')?.addEventListener('click', openExtractUpload);
 
-    // 本地文件选择
+    // 本地文件选择（上传选词）
     document.getElementById('genExtractFileInput')?.addEventListener('change', async e => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        e.target.value = '';
-        const dataUrl = await fileToBase64Extract(file);
-        processExtractImage(dataUrl);
-    });
-
-    // 相机拍照选择
-    document.getElementById('genExtractCaptureInput')?.addEventListener('change', async e => {
         const file = e.target.files?.[0];
         if (!file) return;
         e.target.value = '';

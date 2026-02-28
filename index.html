@@ -11,7 +11,7 @@
 <body>
 
 <div class="controls">
-    <button type="button" id="genWordsBtn" class="gen-words-btn" title="输入单词，用AI自动生成词条并添加到列表">智能生成</button>
+    <button type="button" id="genWordsBtn" class="gen-words-btn" title="输入单词，用AI自动生成词条并添加到列表">拍照识词</button>
     <div class="control-group control-group-sep" aria-hidden="true"></div>
     <div class="control-group">
         <button type="button" id="fileInputBtn" class="upload-btn" title="上传 CSV 或 JSON 词表文件">上传</button>
@@ -36,7 +36,6 @@
     <!-- 自适应字号 -->
     <div class="control-group">
         <button type="button" id="adaptiveFontBtn" class="adaptive-btn" title="每页单独自适应字号">自适应字号</button>
-        <button type="button" id="saveFontConfigBtn" class="adaptive-btn" title="保存当前字号配置到文件" style="display:none">💾 保存配置</button>
     </div>
     <div class="control-group">
         <button type="button" id="singlePageBtn" class="adaptive-btn" title="一页一屏呈现，支持前后翻页">单页模式</button>
@@ -78,6 +77,13 @@
         </span>
     </button>
     <div class="export-menu-divider"></div>
+    <button type="button" id="exportFontConfigBtn" class="export-menu-item" title="导出当前字号配置，下次加载同名词表时自动应用">
+        <span class="export-menu-icon">📐</span>
+        <span class="export-menu-text">
+            <span class="export-menu-name">导出字号配置</span>
+            <span class="export-menu-desc">保存当前每页字号设置</span>
+        </span>
+    </button>
     <button type="button" id="exportAllBtn" class="export-menu-item" title="导出全部页面">
         <span class="export-menu-icon">⬇</span>
         <span class="export-menu-text">
@@ -226,9 +232,8 @@
         <!-- OCR 识别区（默认展开） -->
         <div id="genOcrSection" class="gen-ocr-section">
             <div class="gen-ocr-btns">
-                <button type="button" id="genOcrUploadBtn" class="gen-ocr-source-btn">📁 本地图片</button>
-                <button type="button" id="genOcrCameraBtn" class="gen-ocr-source-btn">📸 拍照</button>
-                <button type="button" id="genOcrExtractBtn" class="gen-ocr-source-btn">✂️ 选词</button>
+                <button type="button" id="genOcrUploadBtn" class="gen-ocr-source-btn">AI智能识词（手写体友好）</button>
+                <button type="button" id="genOcrExtractBtn" class="gen-ocr-source-btn">OCR手动选词（印刷体友好）</button>
             </div>
             <div id="genOcrPreview" class="gen-ocr-preview" style="display:none">
                 <div class="ocr-preview-card">
@@ -252,10 +257,8 @@
             </div>
             <!-- 隐藏文件输入 -->
             <input type="file" id="genFileInput" accept="image/*" style="display:none">
-            <input type="file" id="genCaptureInput" accept="image/*" capture="environment" style="display:none">
             <!-- 选词功能文件输入 -->
             <input type="file" id="genExtractFileInput" accept="image/*" style="display:none">
-            <input type="file" id="genExtractCaptureInput" accept="image/*" capture="environment" style="display:none">
         </div>
         <div class="gen-modal-body">
             <div class="gen-input-section">
@@ -344,6 +347,7 @@
     <script src="js/modal.js"></script>
 <script src="js/export.js"></script>
 <script src="js/render.js"></script>
+<script src="js/font_fit.js"></script>
 <script src="js/main.js"></script>
 <script src="js/page_actions.js"></script>
 <script src="js/single_page.js"></script>
@@ -387,16 +391,13 @@
         fileNameEl.textContent = file.name;
         jsonError.style.display = 'none';
         
-        // 检测是否为 word(2800).json，显示保存配置按钮
-        const isWord2800 = file.name === 'word(2800).json';
-        const saveFontConfigBtn = document.getElementById('saveFontConfigBtn');
-        
         const reader = new FileReader();
         reader.onload = (e) => {
             try {
                 if (file.name.toLowerCase().endsWith('.json')) {
                     const json = JSON.parse(e.target.result);
-                    if (!loadFromJson(json)) throw new Error('JSON 格式不符，需包含 headers 和 data 字段');
+                    // 传递文件名以支持字号配置匹配
+                    if (!loadFromJson(json, file.name)) throw new Error('JSON 格式不符，需包含 headers 和 data 字段');
                 } else {
                     if (typeof parseCSV !== 'function') throw new Error('CSV 解析器未加载');
                     const rows = parseCSV(e.target.result);
@@ -406,11 +407,6 @@
                     visibleColumns = headers.map((_, i) => i);
                     if (typeof initColumnControls === 'function') initColumnControls();
                     requestAnimationFrame(() => { if (typeof renderPages === 'function') renderPages(); });
-                }
-                
-                // 如果是 word(2800).json，显示保存配置按钮
-                if (isWord2800 && saveFontConfigBtn) {
-                    saveFontConfigBtn.style.display = '';
                 }
                 
                 closeUploadModal();

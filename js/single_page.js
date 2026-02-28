@@ -9,6 +9,7 @@ const prevBtn = document.getElementById('singlePagePrev');
 const nextBtn = document.getElementById('singlePageNext');
 
 let singlePageActive = false;
+let autoEnableSinglePage = true; // 默认自动启用单页模式
 
 function isSinglePageMode() {
     return singlePageActive;
@@ -147,9 +148,34 @@ function onPagesRendered() {
         updatePageScale();
         applyScaleToPages();
         updateNavButtons();
+    } else if (autoEnableSinglePage) {
+        // 首次渲染后自动启用单页模式
+        const wraps = singlePagePreviewArea?.querySelectorAll('.page-export-wrap');
+        if (wraps?.length > 0) {
+            autoEnableSinglePage = false; // 只自动启用一次
+            enableSinglePageMode();
+        }
     }
 }
 window.onPagesRendered = onPagesRendered;
+
+// 启用单页模式（不切换状态）
+function enableSinglePageMode() {
+    const wraps = singlePagePreviewArea?.querySelectorAll('.page-export-wrap');
+    if (!wraps?.length) return;
+
+    singlePageActive = true;
+    previewWrapper.classList.add('single-page-mode');
+    if (singlePageBtn) {
+        singlePageBtn.classList.add('active');
+        singlePageBtn.textContent = '取消单页';
+    }
+
+    updatePageScale();
+    applyScaleToPages();
+    singlePagePreviewArea.scrollTo(0, 0);
+    updateNavButtons();
+}
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initSinglePageMode);

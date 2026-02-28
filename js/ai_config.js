@@ -15,48 +15,41 @@ const AI_ROLES = [
         label: '例句达人',
         buildPrompt(word, phonetic, def, brief) {
             const entry = buildEntry(word, phonetic, def, brief);
-            return `【角色设定】
-你是一位深谙儿童与青少年心理的"英语百变例句造物主"。你的任务是为一个英语单词生成8条极具画面感、由浅入深的例句。
 
-【核心原则】（小模型必须严格遵守）
-1. 难度分级：句子必须从极简（3-4个词）过渡到初级复合句（8-10个词），最高不超过剑桥 KET/PET 难度。
-2. 拒绝枯燥：严禁出现商务、学术、政治等成人化场景。
-3. 纯正地道：英文句子必须是英美本土孩子日常会说的大白话，严禁中式英语。
-4. 格式锁定：必须严格按照规定的 4 个分类输出，每个分类生成 2 个句子。中文翻译必须贴切、自然。
+            return `你是英语例句老师。请为目标词生成 4 条 A1-A2 难度例句，供中国学生学习。
 
-【硬性红线（违反即视为输出失败）】
-⛔ 禁止输出方括号：输出时直接填充内容，绝对不要把提示用的方括号 [ 和 ] 打印出来！
-⛔ 目标词不得替换：每条例句中【必须且只能】包含 ${word} 本身，绝不能用近义词或其他词替换！
-⛔ 名词语法正确：如果 ${word} 是可数名词，必须根据句子语法正确使用复数形式（-s/-es）或冠词（a/an/the），不能裸用单数可数名词！
+【目标词】
+${word}
 
-【输出规则】
-- 每条例句只占一行，格式固定为：序号. 英文句子（中文翻译）
-- 只将句中的 ${word}（或其正确变体形式）用 **加粗**，其余单词一律不加粗。
-- 中文翻译直接写在全角括号内，不加方括号，不换行。
-- 标题行保留表情和粗体，其他格式不变。
+【输入词条】
+${entry}
 
-【输出示例】（假设单词为 run）
+【生成规则】
+- 每句都要自然、完整、语法正确，像真实英语母语者会说的话。
+- 每句包含目标词 ${word}（允许自然搭配，不要生硬堆词）。
+- 每句 5-10 词，语法正确，可朗读。
+- 必须基于真实英语生活场景：家庭、校园、公共场所、朋友交流。
+- 严禁魔法、外星人、超能力、未来科幻等虚构设定。
+- 翻译自然简洁，不要直译腔。
+- 仅把目标词（或必要变形）加粗，其他词不加粗。
 
-🎯 **【极简动作句】**
-1. I **run** fast.（我跑得很快。）
-2. **Run** to me!（跑过来！）
+【输出格式（必须完全一致）】
+🏠 **【家庭场景】**
+1. English sentence.（中文翻译）
 
-🏫 **【生活共鸣句】**
-3. We **run** in the park every morning.（我们每天早上在公园跑步。）
-4. My dog loves to **run** after the ball.（我的狗喜欢追着球跑。）
+🏫 **【校园场景】**
+2. English sentence.（中文翻译）
 
-✨ **【奇妙脑洞句】**
-5. The wizard can **run** faster than lightning.（这个巫师跑得比闪电还快。）
-6. Robots **run** on solar energy in the future.（未来的机器人靠太阳能跑动。）
+🛒 **【公共场景】**
+3. English sentence.（中文翻译）
 
-🎤 **【互动提问句】**
-7. Can you **run** faster than your friend?（你能跑得比你的朋友快吗？）
-8. How far can you **run** without stopping?（你不停歇能跑多远？）
+💬 **【社交场景】**
+4. English sentence?（中文翻译）
 
-【现在请按相同格式，为下方单词生成 8 条例句】
-
-【待讲解的单词词条】
-${entry}`;
+【输出前自检】
+- 必须有 1-4 共 4 句。
+- 不要输出解释、备注或多余标题。
+- 如果发现任一句不自然，先修正再输出最终版本。`;
         }
     },
     {
@@ -72,17 +65,15 @@ ${entry}`;
 2. 讲解带英文：在讲解过程中，必须出现该【英文单词】及其发音，不能只说中文。
 3. 纯英文口语输出（生死红线）：在最后两个环节要求孩子说出的完整句子，【必须且只能是纯英文】，绝对严禁让孩子输出中文句子！英文句子要极简（3-5个词，主谓宾/主系表）。
 
-【输出结构】（请严格保留前缀表情和冒号，照格式填空）
+【输出结构】
+- 禁止输出任何方括号 []、提示词或占位符。
+- 严格保留以下 5 行前缀并直接填充内容：
 
-💡 一句话导入：${word}，就是[用不超过20个字的大白话解释核心意思]。
-
-🎬 生活小剧场：[设定一个6岁孩子熟悉的生活日常、玩耍、运动场景，1句话描述]。
-
-🗣️ 老师怎么讲：[用第一人称对孩子说话。先带读发音，再用上面的场景解释单词。语气要生动，字数80字以内]。
-
-🏃‍♂️ 动作与全句：[设计一个肢体动作]。要求孩子一边做动作，一边大声说出完整的纯英文句子：[此处必须是一句纯英文，且包含 ${word}]！
-
-🎮 场景替换小测试：[给出一个新场景，引导孩子替换刚才英文句子里的人或物]。请孩子大声说出新的纯英文句子：[此处必须是一句全新的纯英文句子]！
+💡 一句话导入：${word}，就是（20字内大白话解释）。
+🎬 生活小剧场：（1句真实儿童日常场景）。
+🗣️ 老师怎么讲：（第一人称，生动口吻，80字内，包含英文单词与发音）。
+🏃‍♂️ 动作与全句：（动作说明）+ 1句纯英文句子（必须包含 ${word}）。
+🎮 场景替换小测试：（新场景引导）+ 1句全新纯英文句子。
 
 【待讲解的单词词条】
 ${entry}`;
@@ -103,17 +94,14 @@ ${entry}`;
 4. KET 级别语料输出： 英文例句必须符合 KET (A2) 水平，句子长度在 5-10 个词之间。可以包含简单的过去时、将来时、because/but 等连词。句式要实用，是日常真正会说的话。
 
 【输出结构】
-请按以下结构为我提供的单词输出讲解方案：
+- 禁止输出任何方括号 []、提示词或占位符。
+- 严格按下列 5 行输出并直接填充内容：
 
-💡 秒懂释义： [用一句精炼的中文大白话，直接点明核心意思，不绕弯子。]
-
-🎬 校园/生活剧场： [设定一个9岁孩子非常感兴趣的场景]
-
-🗣️ 导师怎么讲： [用平等的、像朋友一样的口吻进行讲解。带读发音，用刚才设定的场景把单词的逻辑解释清楚。语气要酷一点、幽默一点。字数控制在120字以内。]
-
-🧠 记忆外挂 & KET例句： [给出一个帮助记忆的小窍门（如：词根词缀的简单拆解、谐音、或者一个微小的习惯动作）。紧接着给出一句 KET 水平的实用地道英文例句，要求孩子大声朗读。]
-
-🎮 升级挑战： [抛出一个与他们生活相关的问题，要求孩子用英文简短回答，或者用刚才的例句结构造个新句子。]
+💡 秒懂释义：（1句中文大白话，点明核心意思。）
+🎬 校园/生活剧场：（1句真实场景设定。）
+🗣️ 导师怎么讲：（平等口吻，120字内，带读发音并解释清楚。）
+🧠 记忆外挂 & KET例句：（记忆技巧 + 1句KET实用英文句。）
+🎮 升级挑战：（与生活相关的问题，引导学生英文回答或仿句。）
 
 【待讲解的单词词条】
 ${entry}`;
@@ -162,6 +150,37 @@ function setCachedResult(word, roleId, content) {
 
 let _aiLogBuffer = ''; // for console logging
 
+function validateSentencesOutput(fullText, word) {
+    if (!fullText) return { ok: false, reason: 'empty' };
+
+    const numberedLines = fullText
+        .split('\n')
+        .map(s => s.trim())
+        .filter(s => /^\d+\.\s+/.test(s));
+
+    if (numberedLines.length < 4) return { ok: false, reason: 'missing_numbered_lines' };
+
+    const hasAllNumbers = Array.from({ length: 4 }, (_, i) => i + 1)
+        .every(n => numberedLines.some(line => line.startsWith(`${n}.`)));
+    if (!hasAllNumbers) return { ok: false, reason: 'missing_1_to_4' };
+
+    const hasCnBrackets = numberedLines.slice(0, 4).every(line => line.includes('（') && line.includes('）'));
+    if (!hasCnBrackets) return { ok: false, reason: 'missing_translation_brackets' };
+
+    const linesLower = numberedLines.slice(0, 4).map(line => line.toLowerCase());
+    const target = String(word || '').toLowerCase().trim();
+    if (target && !linesLower.every(line => line.includes(target))) {
+        return { ok: false, reason: 'target_word_missing' };
+    }
+
+    // Lightweight bad pattern detection for typical broken "the" outputs.
+    if (/\b(i|we|you|he|she|they)\s+the\s+[a-z]+/i.test(fullText)) {
+        return { ok: false, reason: 'unnatural_the_pattern' };
+    }
+
+    return { ok: true };
+}
+
 async function fetchAiExplanation({ word, phonetic, def, brief, roleId, onDone, onError }) {
     _aiLogBuffer = '';
     try {
@@ -172,25 +191,47 @@ async function fetchAiExplanation({ word, phonetic, def, brief, roleId, onDone, 
         console.log('%c📤 Prompt', 'color:#667eea;font-weight:bold');
         console.log(prompt);
 
-        const res = await fetch(AI_CONFIG.endpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${AI_CONFIG.apiKey}`,
-            },
-            body: JSON.stringify({
-                model: AI_CONFIG.model,
-                messages: [{ role: 'user', content: prompt }],
-                stream: false,
-                max_tokens: 900,
-                temperature: 0.7,
-            }),
-        });
+        const requestAi = async (messages) => {
+            const res = await fetch(AI_CONFIG.endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${AI_CONFIG.apiKey}`,
+                },
+                body: JSON.stringify({
+                    model: AI_CONFIG.model,
+                    messages,
+                    stream: false,
+                    max_tokens: 900,
+                    temperature: 0.25,
+                    top_p: 0.85,
+                    presence_penalty: 0,
+                    frequency_penalty: 0.2,
+                }),
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+            const json = await res.json();
+            return (json.choices?.[0]?.message?.content || '').trim();
+        };
 
-        if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+        let fullText = await requestAi([{ role: 'user', content: prompt }]);
 
-        const json = await res.json();
-        const fullText = json.choices?.[0]?.message?.content?.trim() || '';
+        // For "例句达人", perform one automatic repair retry if output is malformed.
+        if (role.id === 'sentences') {
+            const check = validateSentencesOutput(fullText, word);
+            if (!check.ok) {
+                console.warn('Sentences validation failed, retrying once:', check.reason);
+                fullText = await requestAi([
+                    { role: 'user', content: prompt },
+                    { role: 'assistant', content: fullText },
+                    {
+                        role: 'user',
+                        content:
+                            '你上一版有格式或语法问题。请只输出修正后的最终版本：保留 1-4 编号、每句含中文全角括号翻译、句子语法自然，不要任何解释。'
+                    }
+                ]);
+            }
+        }
 
         _aiLogBuffer = fullText;
         console.log('%c📥 Response', 'color:#2ea043;font-weight:bold');

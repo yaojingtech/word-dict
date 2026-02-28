@@ -135,17 +135,10 @@ function openLocalFile() {
 }
 
 // ==========================================
-// 摄像头拍照：直接调起系统原生相机
-// ==========================================
-function openCamera() {
-    document.getElementById('genCaptureInput')?.click();
-}
-
-// ==========================================
 // 事件绑定
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-    // 本地文件
+    // 单一入口：由系统决定拍照/相册/文件
     document.getElementById('genOcrUploadBtn')?.addEventListener('click', openLocalFile);
 
     document.getElementById('genFileInput')?.addEventListener('change', async e => {
@@ -155,17 +148,5 @@ document.addEventListener('DOMContentLoaded', () => {
         const dataUrl = await fileToBase64(file);
         processImage(dataUrl);
     });
-
-    // 系统相机回退输入
-    document.getElementById('genCaptureInput')?.addEventListener('change', async e => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        e.target.value = '';
-        const dataUrl = await fileToBase64(file);
-        processImage(dataUrl);
-    });
-
-    // 拍照按钮：直接调起系统原生相机
-    document.getElementById('genOcrCameraBtn')?.addEventListener('click', openCamera);
 
 });
