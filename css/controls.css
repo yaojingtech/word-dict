@@ -271,6 +271,119 @@
     background: #000;
 }
 
+/* ===== 启动词表选择弹窗 ===== */
+.startup-vocab-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9500;
+    background: rgba(15, 15, 15, 0.45);
+    backdrop-filter: blur(3px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.startup-vocab-box {
+    width: 560px;
+    max-width: calc(100vw - 32px);
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 12px 48px rgba(15, 15, 15, 0.22), 0 0 0 1px rgba(15, 15, 15, 0.06);
+    padding: 22px;
+    box-sizing: border-box;
+}
+
+.startup-vocab-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #37352f;
+}
+
+.startup-vocab-subtitle {
+    margin-top: 6px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: rgba(55, 53, 47, 0.65);
+}
+
+.startup-vocab-actions {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.startup-vocab-btn {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 5px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 1px solid rgba(55, 53, 47, 0.16);
+    background: rgba(55, 53, 47, 0.03);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, transform 0.12s;
+    text-align: left;
+}
+
+.startup-vocab-btn:hover {
+    background: rgba(55, 53, 47, 0.07);
+    border-color: rgba(55, 53, 47, 0.26);
+}
+
+.startup-vocab-btn:active {
+    transform: translateY(1px);
+}
+
+.startup-vocab-btn.primary {
+    border-color: rgba(46, 170, 89, 0.45);
+    background: rgba(46, 170, 89, 0.09);
+}
+
+.startup-vocab-btn.primary:hover {
+    background: rgba(46, 170, 89, 0.16);
+}
+
+.startup-vocab-btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.startup-vocab-btn-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2a2a2a;
+}
+
+.startup-vocab-btn-file {
+    font-size: 12px;
+    color: rgba(55, 53, 47, 0.56);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+.startup-vocab-new-btn {
+    margin-top: 4px;
+    width: 100%;
+    height: 42px;
+    border: 1px dashed rgba(55, 53, 47, 0.28);
+    border-radius: 10px;
+    background: #fff;
+    color: rgba(55, 53, 47, 0.78);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.startup-vocab-new-btn:hover {
+    background: rgba(55, 53, 47, 0.05);
+    border-color: rgba(55, 53, 47, 0.4);
+}
+
 /* --- 列切换（pill 标签按钮组）--- */
 .controls .column-toggles {
     display: flex;

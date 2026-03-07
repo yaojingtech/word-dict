@@ -3,12 +3,19 @@
 // 依赖: ai_config.js (AI_CONFIG), utils.js (escapeHtml)
 // ==========================================
 
-const OCR_MODEL = 'Qwen/Qwen3-VL-8B-Instruct';
+const OCR_VISION_MODEL = 'PaddlePaddle/PaddleOCR-VL';
+const OCR_CLEAN_MODEL = AI_CONFIG.model;
 
-const OCR_PROMPT = `请仔细观察图片，识别其中出现的所有英文单词（包括标题、正文、标注等）。
-从中筛选出有学习价值的重点词汇（名词、动词、形容词、副词等实词，忽略 a/the/is 等功能词）。
-如果图片里没有单词，则基于当前图片的场景为其提供10个描述当前图片场景的英语单词。
-输出要求：每行仅输出一个单词，不加序号、不加解释、不加标点，只输出单词本身。`;
+const OCR_VISION_PROMPT = `请仔细观察图片，识别其中出现的所有文本内容，将识别到的完整文本返回给我。`;
+
+const OCR_CLEAN_PROMPT = `你是英文学习词汇筛选助手。请根据我提供的OCR原文，提取有学习价值的英文单词。
+
+筛选规则：
+1) 仅保留英文单词（可包含连字符或撇号），忽略数字、符号、网址等。
+2) 优先保留有学习价值的实词（名词、动词、形容词、副词等），忽略 a/the/is/of/to/and 等常见功能词。
+3) 去重（大小写不敏感）。
+4) 每行仅输出一个单词，不加序号、不加解释、不加标点。
+5) 如果无法提取有效英文单词，返回空字符串。`;
 
 // ==========================================
 // 图片文件 → base64
@@ -30,14 +37,14 @@ function splitDataUrl(dataUrl) {
 }
 
 // ==========================================
-// 调用视觉大模型
+// 调用视觉模型（PaddleOCR-VL）提取完整文本
 // ==========================================
 async function callVisionApi(dataUrl) {
     const { mimeType, base64 } = splitDataUrl(dataUrl);
 
-    console.group(`🤖 AI图片识别 · ${OCR_MODEL}`);
+    console.group(`🤖 AI图片识别 · ${OCR_VISION_MODEL}`);
     console.log('%c📤 Prompt', 'color:#667eea;font-weight:bold');
-    console.log(OCR_PROMPT);
+    console.log(OCR_VISION_PROMPT);
     console.log(`📎 图片：${mimeType}，base64长度 ${base64.length} 字符`);
 
     const res = await fetch(AI_CONFIG.endpoint, {
@@ -47,7 +54,7 @@ async function callVisionApi(dataUrl) {
             'Authorization': `Bearer ${AI_CONFIG.apiKey}`,
         },
         body: JSON.stringify({
-            model: OCR_MODEL,
+            model: OCR_VISION_MODEL,
             messages: [{
                 role: 'user',
                 content: [
@@ -55,11 +62,52 @@ async function callVisionApi(dataUrl) {
                         type: 'image_url',
                         image_url: { url: `data:${mimeType};base64,${base64}` }
                     },
-                    { type: 'text', text: OCR_PROMPT }
+                    { type: 'text', text: OCR_VISION_PROMPT }
                 ]
             }],
             stream: false,
-            max_tokens: 600,
+            max_tokens: 800,
+            temperature: 0.1,
+        }),
+    });
+
+    if (!res.ok) { console.groupEnd(); throw new Error(`HTTP ${res.status} ${res.statusText}`); }
+    const data    = await res.json();
+    const content = (data.choices?.[0]?.message?.content || '').trim();
+
+    console.log('%c📥 Response', 'color:#2ea043;font-weight:bold');
+    console.log(content);
+    console.groupEnd();
+    return content;
+}
+
+// ==========================================
+// 调用文本模型（Qwen2.5-7B）清洗 OCR 原文
+// ==========================================
+async function callTextCleanApi(rawText) {
+    console.group(`🧹 OCR文本清洗 · ${OCR_CLEAN_MODEL}`);
+    console.log('%c📤 Prompt', 'color:#667eea;font-weight:bold');
+    console.log(OCR_CLEAN_PROMPT);
+    console.log('%c📝 OCR Raw Text', 'color:#667eea;font-weight:bold');
+    console.log(rawText);
+
+    const res = await fetch(AI_CONFIG.endpoint, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${AI_CONFIG.apiKey}`,
+        },
+        body: JSON.stringify({
+            model: OCR_CLEAN_MODEL,
+            messages: [
+                { role: 'system', content: OCR_CLEAN_PROMPT },
+                {
+                    role: 'user',
+                    content: `以下是OCR原文，请按规则输出结果：\n\n${rawText}`
+                }
+            ],
+            stream: false,
+            max_tokens: 500,
             temperature: 0.1,
         }),
     });
@@ -99,8 +147,9 @@ async function processImage(dataUrl) {
     if (statusEl)  { statusEl.textContent = '⏳ 识别中…'; statusEl.className = 'gen-ocr-status'; }
 
     try {
-        const raw   = await callVisionApi(dataUrl);
-        const words = parseOcrWords(raw);
+        const raw = await callVisionApi(dataUrl);
+        const cleaned = await callTextCleanApi(raw);
+        const words = parseOcrWords(cleaned);
 
         if (words.length === 0) {
             if (statusEl) { statusEl.textContent = '⚠️ 未识别到有效英文单词，请换张图片'; statusEl.className = 'gen-ocr-status error'; }

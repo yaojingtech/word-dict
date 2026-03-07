@@ -53,6 +53,25 @@
     </div>
 </div>
 
+<!-- 启动词表选择弹窗 -->
+<div id="startupVocabOverlay" class="startup-vocab-overlay" aria-hidden="true" style="display:none">
+    <div class="startup-vocab-box" role="dialog" aria-label="选择词表">
+        <div class="startup-vocab-title">选择词表</div>
+        <div class="startup-vocab-subtitle">请选择一个词表开始，或点击“新建空白词表”进入主页</div>
+        <div class="startup-vocab-actions">
+            <button type="button" id="startupPickNgslBtn" class="startup-vocab-btn primary">
+                <span class="startup-vocab-btn-name">NGSL通用高频词</span>
+                <span class="startup-vocab-btn-file">word(2800).json</span>
+            </button>
+            <button type="button" id="startupPickShanghaiBtn" class="startup-vocab-btn">
+                <span class="startup-vocab-btn-name">沪教三年级（下）</span>
+                <span class="startup-vocab-btn-file">沪教三年级.json</span>
+            </button>
+            <button type="button" id="startupPickNewBtn" class="startup-vocab-new-btn">新建空白词表</button>
+        </div>
+    </div>
+</div>
+
 <!-- 导出菜单 -->
 <div id="exportMenuPanel" class="export-menu-panel" aria-hidden="true">
     <button type="button" id="exportJsonCopyBtn" class="export-menu-item" title="将当前词表 JSON 复制到剪贴板">
@@ -232,8 +251,8 @@
         <!-- OCR 识别区（默认展开） -->
         <div id="genOcrSection" class="gen-ocr-section">
             <div class="gen-ocr-btns">
-                <button type="button" id="genOcrUploadBtn" class="gen-ocr-source-btn">AI智能识词（手写体友好）</button>
-                <button type="button" id="genOcrExtractBtn" class="gen-ocr-source-btn">OCR手动选词（印刷体友好）</button>
+                <button type="button" id="genOcrUploadBtn" class="gen-ocr-source-btn">AI智能识词</button>
+                <button type="button" id="genOcrExtractBtn" class="gen-ocr-source-btn">OCR手动选词</button>
             </div>
             <div id="genOcrPreview" class="gen-ocr-preview" style="display:none">
                 <div class="ocr-preview-card">

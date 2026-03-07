@@ -71,22 +71,70 @@ function loadFromJson(json, fileName) {
     return true;
 }
 
-// 加载默认词表和配置
-async function initDefaultData() {
-    try {
-        const response = await fetch('date/word(2800).json');
-        if (!response.ok) throw new Error('Load failed');
-        const json = await response.json();
-        
-        if (loadFromJson(json, 'word(2800).json')) {
-            console.log('Default vocab loaded');
-        }
-    } catch (err) {
-        console.log('Default vocab load failed:', err.message);
+// 启动引导：首屏选择词表（不再默认自动加载）
+async function loadBuiltinVocab(path, sourceFileName) {
+    const response = await fetch(path);
+    if (!response.ok) throw new Error(`Load failed: ${path}`);
+    const json = await response.json();
+    if (!loadFromJson(json, sourceFileName)) {
+        throw new Error(`Invalid vocab format: ${sourceFileName}`);
     }
 }
 
-initDefaultData();
+async function loadShanghaiVocab() {
+    // 优先尝试简短文件名，不存在时回退到当前项目文件名
+    try {
+        await loadBuiltinVocab('date/沪教三年级.json', '沪教三年级（下）.json');
+    } catch (_) {
+        await loadBuiltinVocab('date/沪教三年级（下）.json', '沪教三年级（下）.json');
+    }
+}
+
+function initStartupVocabPicker() {
+    const overlay = document.getElementById('startupVocabOverlay');
+    const ngslBtn = document.getElementById('startupPickNgslBtn');
+    const shBtn   = document.getElementById('startupPickShanghaiBtn');
+    const newBtn  = document.getElementById('startupPickNewBtn');
+
+    if (!overlay || !ngslBtn || !shBtn || !newBtn) return;
+
+    const closePicker = () => {
+        overlay.style.display = 'none';
+        overlay.setAttribute('aria-hidden', 'true');
+    };
+
+    const bindLoadAction = (btn, loader) => {
+        btn.addEventListener('click', async () => {
+            if (btn.disabled) return;
+            btn.disabled = true;
+            const oldText = btn.textContent;
+            btn.textContent = '加载中...';
+            try {
+                await loader();
+                closePicker();
+            } catch (err) {
+                console.log('Builtin vocab load failed:', err.message);
+                alert(`加载失败：${err.message}`);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = oldText;
+            }
+        });
+    };
+
+    bindLoadAction(ngslBtn, () => loadBuiltinVocab('date/word(2800).json', 'word(2800).json'));
+    bindLoadAction(shBtn, loadShanghaiVocab);
+
+    newBtn.addEventListener('click', () => {
+        // 新建模式：不加载任何词表，直接进入主页
+        closePicker();
+    });
+
+    overlay.style.display = 'flex';
+    overlay.setAttribute('aria-hidden', 'false');
+}
+
+initStartupVocabPicker();
 
 // 列配置逻辑已抽离到 columns.js
 // 渲染逻辑已抽离到 render.js

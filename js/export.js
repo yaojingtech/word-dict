@@ -90,17 +90,51 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!range.length) return alert('未识别到有效页面范围，请重试。');
 
         const hidden = [];
+        const previewWrapper = document.getElementById('preview-area-wrapper');
+        const singlePageBtn = document.getElementById('singlePageBtn');
+        const wasSinglePageMode = !!previewWrapper?.classList.contains('single-page-mode');
+        const prevPreviewTransform = previewArea?.style.transform || '';
+
+        // 打印前临时退出单页模式，否则可能只渲染当前屏的一页
+        if (wasSinglePageMode && previewWrapper) {
+            previewWrapper.classList.remove('single-page-mode');
+            if (singlePageBtn) {
+                singlePageBtn.classList.remove('active');
+                singlePageBtn.textContent = '单页模式';
+            }
+            previewArea?.querySelectorAll('.page').forEach(page => {
+                page.style.transform = '';
+            });
+        }
+        if (previewArea) previewArea.style.transform = '';
+
         wraps.forEach((wrap, i) => {
             if (!range.includes(i + 1)) {
                 wrap.style.display = 'none';
                 hidden.push(wrap);
             }
         });
-        window.onafterprint = () => {
+
+        let restored = false;
+        const restoreAfterPrint = () => {
+            if (restored) return;
+            restored = true;
             hidden.forEach(el => el.style.display = '');
+            if (wasSinglePageMode && previewWrapper) {
+                previewWrapper.classList.add('single-page-mode');
+                if (singlePageBtn) {
+                    singlePageBtn.classList.add('active');
+                    singlePageBtn.textContent = '取消单页';
+                }
+            }
+            if (previewArea) previewArea.style.transform = prevPreviewTransform;
             window.onafterprint = null;
         };
+
+        window.onafterprint = restoreAfterPrint;
         window.print();
+        // 某些浏览器可能不触发 onafterprint，兜底恢复
+        setTimeout(restoreAfterPrint, 1200);
         }); // end requestAnimationFrame
     });
 

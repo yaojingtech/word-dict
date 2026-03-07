@@ -145,12 +145,32 @@ function applyBold(escaped) {
         .replace(/（([^）]+)）/, '&thinsp;<span class="wm-ai-translation">（$1）</span>');
 }
 
+function wrapAiEnglishWords(html) {
+    // 仅处理标签外文本，且跳过 HTML 实体（如 &thinsp;），避免误包裹
+    return html
+        .split(/(<[^>]+>)/g)
+        .map(part => {
+            if (!part || part.startsWith('<')) return part;
+
+            return part
+                .split(/(&[a-zA-Z0-9#]+;)/g)
+                .map(seg => {
+                    if (!seg || /^&[a-zA-Z0-9#]+;$/.test(seg)) return seg;
+                    return seg.replace(/\b([A-Za-z][A-Za-z'-]*)\b/g, (m, word) =>
+                        `<span class="wm-ai-word" data-word="${escapeHtml(word)}" title="点击发音">${m}</span>`
+                    );
+                })
+                .join('');
+        })
+        .join('');
+}
+
 function formatAiText(text) {
     return text.split('\n').map(line => {
         const trimmed = line.trim();
         if (!trimmed) return '<div class="wm-ai-gap"></div>';
         const escaped = escapeHtml(trimmed);
-        const html    = applyBold(escaped);
+        const html = wrapAiEnglishWords(applyBold(escaped));
 
         // 章节标题行：以 emoji 开头（🎯🏫✨🎤💡🎬🗣🏃🎮🧠🌟 等）
         if (/^[\u{1F300}-\u{1FAFF}\u{2600}-\u{26FF}]/u.test(trimmed)) {
@@ -307,6 +327,14 @@ function openWordModal(rowData, layoutClass, displayColumns, navCtx = null) {
 
     const aiBlock = contentEl.querySelector('.wm-ai-block');
     if (aiBlock) {
+        // AI 文本中的英文词通过委托实现点击发音（异步渲染内容也可用）
+        aiBlock.addEventListener('click', ev => {
+            const wordEl = ev.target.closest('.wm-ai-word');
+            if (!wordEl) return;
+            const word = wordEl.getAttribute('data-word') || wordEl.textContent || '';
+            if (word) playAudio(word, ev);
+        });
+
         // 并发触发所有角色生成
         AI_ROLES.forEach(role => {
             startRoleGeneration(aiBlock, aiWord, aiPhonetic, aiDef, aiBrief, role.id);

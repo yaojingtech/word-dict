@@ -1,0 +1,1292 @@
+{
+  "headers": [
+    "单词",
+    "美音",
+    "definition",
+    "简明释义",
+    "精选短语"
+  ],
+  "data": [
+    [
+      "our",
+      "/ aʊr; aʊə(r) /",
+      "belonging to or connected with us",
+      "pron. 我们的",
+      "our school: 我们的学校 | our classroom: 我们的教室 | our teacher: 我们的老师"
+    ],
+    [
+      "read",
+      "/ riːd; riːd /",
+      "to look at and understand written words",
+      "v. 阅读；朗读",
+      "read a book: 看书 | read English: 读英语 | read aloud: 大声朗读"
+    ],
+    [
+      "sing",
+      "/ sɪŋ; sɪŋ /",
+      "to make musical sounds with your voice",
+      "v. 唱歌",
+      "sing a song: 唱歌 | sing well: 唱得好 | sing together: 一起唱"
+    ],
+    [
+      "paint",
+      "/ peɪnt; peɪnt /",
+      "to make a picture using paint or color",
+      "v. 用颜料画；绘画 n. 颜料",
+      "paint a picture: 画一幅画 | paint with watercolors: 用水彩画 | paint flowers: 画花朵"
+    ],
+    [
+      "dance",
+      "/ dæns; dæns /",
+      "to move your body to music",
+      "v. 跳舞 n. 舞蹈",
+      "dance to music: 跟着音乐跳舞 | dance class: 舞蹈课 | dance with friends: 和朋友跳舞"
+    ],
+    [
+      "swim",
+      "/ swɪm; swɪm /",
+      "to move through water by using your arms and legs",
+      "v. 游泳",
+      "swim in the pool: 在泳池里游泳 | swim fast: 游得快 | go swimming: 去游泳"
+    ],
+    [
+      "play basketball",
+      "/ pleɪ ˈbæskɪtbɔːl; pleɪ ˈbæskɪtbɔːl /",
+      "to take part in the game of basketball",
+      "phr. 打篮球",
+      "play basketball after school: 放学后打篮球 | play basketball with classmates: 和同学打篮球"
+    ],
+    [
+      "play ping-pong",
+      "/ pleɪ ˈpɪŋ pɔːŋ; pleɪ ˈpɪŋ pɔːŋ /",
+      "to play the game of ping-pong",
+      "phr. 打乒乓球",
+      "play ping-pong at school: 在学校打乒乓球 | play ping-pong with my dad: 和爸爸打乒乓球"
+    ],
+    [
+      "play football",
+      "/ pleɪ ˈfʊtbɔːl; pleɪ ˈfʊtbɔːl /",
+      "to take part in the game of football",
+      "phr. 踢足球",
+      "play football in the park: 在公园踢足球 | play football every weekend: 每周末踢足球"
+    ],
+    [
+      "Ms",
+      "/ mɪz; mɪz /",
+      "a title used before a woman's family name",
+      "n. 女士（用于姓氏前）",
+      "Ms Li: 李女士 | Ms Brown: 布朗女士 | excuse me, Ms: 失礼了，女士"
+    ],
+    [
+      "talk",
+      "/ tɔːk; tɔːk /",
+      "to say things to someone or discuss something",
+      "v. 说话；讨论 n. 谈话",
+      "talk about hobbies: 谈论爱好 | talk with friends: 和朋友交谈 | have a talk: 进行一次谈话"
+    ],
+    [
+      "hobby",
+      "/ ˈhɑːbi; ˈhɒbi /",
+      "an activity that you enjoy doing in your free time",
+      "n. 业余爱好",
+      "my hobby is reading: 我的爱好是阅读 | have many hobbies: 有很多爱好 | a new hobby: 一个新爱好"
+    ],
+    [
+      "do",
+      "/ duː; duː /",
+      "to perform an action or activity",
+      "v. 做，干，办（某事） aux. 助动词",
+      "do homework: 做作业 | do sports: 做运动 | do well: 做得好"
+    ],
+    [
+      "free",
+      "/ friː; friː /",
+      "having time to do things and not busy",
+      "adj. 空闲的；免费的",
+      "be free this afternoon: 今天下午有空 | in my free time: 在我的空闲时间 | free ticket: 免费票"
+    ],
+    [
+      "music",
+      "/ ˈmjuːzɪk; ˈmjuːzɪk /",
+      "sounds that are arranged in a way that is pleasant to listen to",
+      "n. 音乐",
+      "listen to music: 听音乐 | music class: 音乐课 | pop music: 流行音乐"
+    ],
+    [
+      "favourite",
+      "/ ˈfeɪvərɪt; ˈfeɪvərɪt /",
+      "liked more than all others",
+      "adj. 最喜欢的 n. 特别喜爱的人（或物）",
+      "my favourite sport: 我最喜欢的运动 | favourite food: 最喜欢的食物 | favourite color: 最喜欢的颜色"
+    ],
+    [
+      "sport",
+      "/ spɔːrt; spɔːt /",
+      "a game or physical activity that people do for fun or exercise",
+      "n. 体育运动",
+      "play sport: 做运动 | team sport: 团队运动 | sport meeting: 运动会"
+    ],
+    [
+      "play a game",
+      "/ pleɪ ə ɡeɪm; pleɪ ə ɡeɪm /",
+      "to take part in a game",
+      "phr. 做游戏",
+      "play a game together: 一起做游戏 | play a guessing game: 玩猜谜游戏"
+    ],
+    [
+      "take a photo",
+      "/ teɪk ə ˈfoʊtoʊ; teɪk ə ˈfəʊtəʊ /",
+      "to use a camera to make a picture",
+      "phr. 拍照",
+      "take a photo of me: 给我拍张照 | take a family photo: 拍全家福"
+    ],
+    [
+      "row a boat",
+      "/ roʊ ə boʊt; rəʊ ə bəʊt /",
+      "to move a boat through water using oars",
+      "phr. 划船",
+      "row a boat on the lake: 在湖上划船 | row a boat slowly: 慢慢划船"
+    ],
+    [
+      "tell a story",
+      "/ tel ə ˈstɔːri; tel ə ˈstɔːri /",
+      "to say or write a story to others",
+      "phr. 讲故事",
+      "tell a story to children: 给孩子们讲故事 | tell a funny story: 讲一个有趣的故事"
+    ],
+    [
+      "boat",
+      "/ boʊt; bəʊt /",
+      "a small vehicle for traveling on water",
+      "n. 小船",
+      "a small boat: 一条小船 | get in the boat: 上船 | paper boat: 纸船"
+    ],
+    [
+      "sandcastle",
+      "/ ˈsændkæs(ə)l; ˈsændkɑːs(ə)l /",
+      "a castle shape made with wet sand",
+      "n. 沙堡",
+      "build a sandcastle: 堆沙堡 | big sandcastle: 大沙堡 | make a sandcastle on the beach: 在沙滩上堆沙堡"
+    ],
+    [
+      "great",
+      "/ ɡreɪt; ɡreɪt /",
+      "very good or wonderful",
+      "adj. 很好的；很棒的",
+      "a great idea: 一个很棒的主意 | great fun: 非常有趣 | sounds great: 听起来很棒"
+    ],
+    [
+      "sand",
+      "/ sænd; sænd /",
+      "very small pieces of rock on beaches or in deserts",
+      "n. 沙子",
+      "play with sand: 玩沙子 | soft sand: 细软的沙子 | sand on the beach: 沙滩上的沙子"
+    ],
+    [
+      "join",
+      "/ dʒɔɪn; dʒɔɪn /",
+      "to become part of a group or activity",
+      "v. 参与；加入到……之中",
+      "join us: 加入我们 | join the game: 参加游戏 | join the club: 加入俱乐部"
+    ],
+    [
+      "meet",
+      "/ miːt; miːt /",
+      "to see and talk to someone",
+      "v. （与……）见面",
+      "meet my friend: 见我的朋友 | nice to meet you: 很高兴见到你 | meet after school: 放学后见面"
+    ],
+    [
+      "her",
+      "/ hɜːr; hɜː(r) /",
+      "belonging to or referring to a girl or woman",
+      "pron. 她（宾格）；她的",
+      "her bag: 她的包 | help her: 帮助她 | talk to her: 和她说话"
+    ],
+    [
+      "us",
+      "/ ʌs; ʌs /",
+      "used by a speaker to refer to himself or herself and other people",
+      "pron. 我们（宾格）",
+      "come with us: 和我们一起去 | help us: 帮助我们 | tell us a story: 给我们讲个故事"
+    ],
+    [
+      "we",
+      "/ wiː; wiː /",
+      "used by a speaker to refer to himself or herself and at least one other person",
+      "pron. 我们（主格）",
+      "we are friends: 我们是朋友 | we like music: 我们喜欢音乐 | we can do it: 我们能做到"
+    ],
+    [
+      "play in the sand",
+      "/ pleɪ ɪn ðə sænd; pleɪ ɪn ðə sænd /",
+      "to play on a beach or in a place with sand",
+      "phr. 玩沙子",
+      "children play in the sand: 孩子们在玩沙子 | play in the sand happily: 开心地玩沙子"
+    ],
+    [
+      "play beach volleyball",
+      "/ pleɪ biːtʃ ˈvɑːlibɔːl; pleɪ biːtʃ ˈvɒlibɔːl /",
+      "to play volleyball on the beach",
+      "phr. 玩沙滩排球",
+      "play beach volleyball with friends: 和朋友打沙滩排球 | play beach volleyball in summer: 夏天打沙滩排球"
+    ],
+    [
+      "sweater",
+      "/ ˈswetər; ˈswetə(r) /",
+      "a warm piece of clothing for the upper body",
+      "n. 毛衣",
+      "wear a sweater: 穿毛衣 | a red sweater: 一件红色毛衣 | wool sweater: 羊毛衫"
+    ],
+    [
+      "T-shirt",
+      "/ ˈtiː ʃɜːrt; ˈtiː ʃɜːt /",
+      "a casual shirt with short sleeves",
+      "n. T恤衫；短袖汗衫",
+      "white T-shirt: 白色T恤 | wear a T-shirt: 穿T恤 | buy a new T-shirt: 买一件新T恤"
+    ],
+    [
+      "skirt",
+      "/ skɜːrt; skɜːt /",
+      "a piece of clothing for girls or women that hangs from the waist",
+      "n. 短裙；半身裙",
+      "a pink skirt: 一条粉色短裙 | wear a skirt: 穿裙子 | school skirt: 校裙"
+    ],
+    [
+      "dress",
+      "/ dres; dres /",
+      "a piece of clothing for girls or women made in one piece",
+      "n. 连衣裙 v. 穿衣",
+      "a blue dress: 一条蓝色连衣裙 | wear a dress: 穿连衣裙 | party dress: 派对裙"
+    ],
+    [
+      "shirt",
+      "/ ʃɜːrt; ʃɜːt /",
+      "a piece of clothing for the upper body with sleeves",
+      "n. 衬衫",
+      "white shirt: 白衬衫 | school shirt: 校服衬衫 | put on a shirt: 穿上衬衫"
+    ],
+    [
+      "trousers",
+      "/ ˈtraʊzərz; ˈtraʊzəz /",
+      "pants that cover each leg separately",
+      "n. 裤子",
+      "black trousers: 黑色裤子 | wear trousers: 穿裤子 | a pair of trousers: 一条裤子"
+    ],
+    [
+      "shorts",
+      "/ ʃɔːrts; ʃɔːts /",
+      "short pants that end above the knee",
+      "n. 短裤",
+      "sports shorts: 运动短裤 | wear shorts in summer: 夏天穿短裤 | a pair of shorts: 一条短裤"
+    ],
+    [
+      "coat",
+      "/ koʊt; kəʊt /",
+      "an outer piece of clothing worn in cold weather",
+      "n. 外套；外衣；大衣",
+      "winter coat: 冬季大衣 | put on a coat: 穿上外套 | take off your coat: 脱下外套"
+    ],
+    [
+      "cap",
+      "/ kæp; kæp /",
+      "a soft hat with a small brim in front",
+      "n. 帽子",
+      "wear a cap: 戴帽子 | baseball cap: 棒球帽 | new cap: 新帽子"
+    ],
+    [
+      "shoes",
+      "/ ʃuːz; ʃuːz /",
+      "things worn on your feet",
+      "n. 鞋子",
+      "sports shoes: 运动鞋 | clean your shoes: 擦鞋 | a pair of shoes: 一双鞋"
+    ],
+    [
+      "student",
+      "/ ˈstuːd(ə)nt; ˈstjuːd(ə)nt /",
+      "a person who studies at a school",
+      "n. 学生",
+      "good student: 好学生 | primary student: 小学生 | be a student: 是一名学生"
+    ],
+    [
+      "wear",
+      "/ wer; weə(r) /",
+      "to have clothes on your body",
+      "v. 穿；戴；佩戴",
+      "wear a hat: 戴帽子 | wear glasses: 戴眼镜 | wear school uniform: 穿校服"
+    ],
+    [
+      "school",
+      "/ skuːl; skuːl /",
+      "a place where children go to learn",
+      "n. 学校",
+      "go to school: 去上学 | at school: 在学校 | school life: 学校生活"
+    ],
+    [
+      "different",
+      "/ ˈdɪfrənt; ˈdɪfrənt /",
+      "not the same as another person or thing",
+      "adj. 不同的",
+      "different colors: 不同的颜色 | be different from: 与……不同 | try something different: 尝试不同的事物"
+    ],
+    [
+      "clothes",
+      "/ kloʊðz; kləʊðz /",
+      "things that people wear such as shirts and trousers",
+      "n. 衣服；服装",
+      "wash clothes: 洗衣服 | new clothes: 新衣服 | summer clothes: 夏装"
+    ],
+    [
+      "uniform",
+      "/ ˈjuːnɪfɔːrm; ˈjuːnɪfɔːm /",
+      "special clothes worn by members of a school or group",
+      "n. 制服；校服",
+      "school uniform: 校服 | wear uniform: 穿制服 | clean uniform: 干净的校服"
+    ],
+    [
+      "whose",
+      "/ huːz; huːz /",
+      "used to ask or tell who something belongs to",
+      "det./pron. 谁的",
+      "whose bag is this?: 这是谁的包？ | whose book: 谁的书 | whose cap is it?: 这是谁的帽子？"
+    ],
+    [
+      "world",
+      "/ wɜːrld; wɜːld /",
+      "the earth and all people and places on it",
+      "n. 世界",
+      "around the world: 世界各地 | world map: 世界地图 | in the world: 在世界上"
+    ],
+    [
+      "around the world",
+      "/ əˈraʊnd ðə wɜːrld; əˈraʊnd ðə wɜːld /",
+      "in many places in the world",
+      "phr. 在世界各地",
+      "travel around the world: 环游世界 | people around the world: 世界各地的人们"
+    ],
+    [
+      "take a look",
+      "/ teɪk ə lʊk; teɪk ə lʊk /",
+      "to look at something for a short time",
+      "phr. 看一看",
+      "take a look at this: 看看这个 | come and take a look: 过来看一看"
+    ],
+    [
+      "a pair of",
+      "/ ə per əv; ə peə(r) əv /",
+      "used for things that have two parts",
+      "phr. 一条；一双；一对",
+      "a pair of shoes: 一双鞋 | a pair of trousers: 一条裤子 | a pair of glasses: 一副眼镜"
+    ],
+    [
+      "grass",
+      "/ ɡræs; ɡrɑːs /",
+      "green plants that cover the ground",
+      "n. 草",
+      "green grass: 绿色的草 | sit on the grass: 坐在草地上 | cut the grass: 割草"
+    ],
+    [
+      "river",
+      "/ ˈrɪvər; ˈrɪvə(r) /",
+      "a long natural flow of water",
+      "n. 河；江",
+      "a long river: 一条长河 | by the river: 在河边 | cross the river: 过河"
+    ],
+    [
+      "hear",
+      "/ hɪr; hɪə(r) /",
+      "to notice sounds with your ears",
+      "v. 听见；听到",
+      "hear a sound: 听到一个声音 | hear birds sing: 听见鸟叫 | can you hear me?: 你能听到我说话吗？"
+    ],
+    [
+      "bird",
+      "/ bɜːrd; bɜːd /",
+      "an animal with feathers and wings",
+      "n. 鸟",
+      "a little bird: 一只小鸟 | many birds: 许多鸟 | watch the birds: 看鸟"
+    ],
+    [
+      "duck",
+      "/ dʌk; dʌk /",
+      "a water bird with a short neck",
+      "n. 鸭子",
+      "a yellow duck: 一只黄色鸭子 | ducks in the lake: 湖里的鸭子 | feed the ducks: 喂鸭子"
+    ],
+    [
+      "bee",
+      "/ biː; biː /",
+      "a small flying insect that makes honey",
+      "n. 蜜蜂",
+      "a busy bee: 一只忙碌的蜜蜂 | bees and flowers: 蜜蜂和花 | hear a bee buzz: 听见蜜蜂嗡嗡叫"
+    ],
+    [
+      "lake",
+      "/ leɪk; leɪk /",
+      "a large area of water surrounded by land",
+      "n. 湖；湖泊",
+      "a beautiful lake: 一个美丽的湖 | by the lake: 在湖边 | swim in the lake: 在湖里游泳"
+    ],
+    [
+      "chirp",
+      "/ tʃɜːrp; tʃɜːp /",
+      "the short high sound made by birds",
+      "v./n. （鸟）啁啾叫；（鸟叫声）",
+      "birds chirp in the morning: 鸟儿在早晨啁啾 | a chirp in the tree: 树上的一声鸟叫"
+    ],
+    [
+      "buzz",
+      "/ bʌz; bʌz /",
+      "the low sound made by bees or machines",
+      "v./n. （蜜蜂）嗡嗡叫；嗡嗡声",
+      "bees buzz around flowers: 蜜蜂在花丛中嗡嗡叫 | a buzzing bee: 嗡嗡叫的蜜蜂"
+    ],
+    [
+      "by",
+      "/ baɪ; baɪ /",
+      "at the side of or near something",
+      "prep. 在……旁边",
+      "by the river: 在河边 | sit by me: 坐在我旁边 | a house by the lake: 湖边的一座房子"
+    ],
+    [
+      "swish",
+      "/ swɪʃ; swɪʃ /",
+      "a soft sound like wind moving quickly",
+      "n./v. （风等）嗖嗖声；嗖嗖地移动",
+      "the swish of the wind: 风的嗖嗖声 | leaves swish in the wind: 树叶在风中沙沙作响"
+    ],
+    [
+      "blow",
+      "/ bloʊ; bləʊ /",
+      "to move and make air flow",
+      "v. 刮；吹",
+      "the wind blows: 风在刮 | blow out a candle: 吹灭蜡烛 | blow strongly: 刮得很大"
+    ],
+    [
+      "quack",
+      "/ kwæk; kwæk /",
+      "the sound made by a duck",
+      "v./n. （鸭子）呱呱叫；鸭叫声",
+      "ducks quack loudly: 鸭子大声呱呱叫 | hear a quack: 听到一声鸭叫"
+    ],
+    [
+      "past",
+      "/ pæst; pɑːst /",
+      "from one side of something to the other side",
+      "prep. 经过；越过",
+      "walk past the tree: 走过那棵树 | run past me: 从我身边跑过 | go past the school: 经过学校"
+    ],
+    [
+      "walk",
+      "/ wɔːk; wɔːk /",
+      "to move on foot at a normal speed",
+      "v. 走；行走 n. 散步",
+      "walk to school: 步行去学校 | walk with friends: 和朋友一起走 | take a walk: 散步"
+    ],
+    [
+      "along",
+      "/ əˈlɔːŋ; əˈlɒŋ /",
+      "from one end to or beside something",
+      "prep./adv. 沿着；顺着",
+      "walk along the river: 沿着河边走 | run along the path: 沿着小路跑"
+    ],
+    [
+      "path",
+      "/ pæθ; pɑːθ /",
+      "a small road or way for walking",
+      "n. 小路；小径",
+      "a narrow path: 一条狭窄小路 | along the path: 沿着小径 | forest path: 林间小路"
+    ],
+    [
+      "pitter-patter",
+      "/ ˈpɪtər ˌpætər; ˈpɪtə ˌpætə /",
+      "the light repeated sound of rain drops",
+      "n. （雨点）滴答声",
+      "the pitter-patter of rain: 雨滴答滴答的声音 | hear pitter-patter on the window: 听见雨点打在窗上的滴答声"
+    ],
+    [
+      "time",
+      "/ taɪm; taɪm /",
+      "what is measured in minutes, hours and days",
+      "n. 时间；次，回",
+      "what time is it?: 几点了？ | have a good time: 玩得开心 | one more time: 再来一次"
+    ],
+    [
+      "again",
+      "/ əˈɡen; əˈɡeɪn /",
+      "one more time",
+      "adv. 再一次；又一次",
+      "say it again: 再说一遍 | try again: 再试一次 | see you again: 再见到你"
+    ],
+    [
+      "sound",
+      "/ saʊnd; saʊnd /",
+      "something that you can hear",
+      "n. 声音 v. 听起来",
+      "a loud sound: 很响的声音 | hear a strange sound: 听见奇怪的声音 | that sounds great: 那听起来很棒"
+    ],
+    [
+      "go outside",
+      "/ ɡoʊ ˌaʊtˈsaɪd; ɡəʊ ˌaʊtˈsaɪd /",
+      "to leave a building and go outdoors",
+      "phr. 去外面",
+      "go outside and play: 去外面玩 | let's go outside: 我们出去吧"
+    ],
+    [
+      "go home",
+      "/ ɡoʊ hoʊm; ɡəʊ həʊm /",
+      "to return to your home",
+      "phr. 回家",
+      "go home after school: 放学后回家 | it's time to go home: 该回家了"
+    ],
+    [
+      "where",
+      "/ wer; weə(r) /",
+      "in or to what place",
+      "adv. 哪里",
+      "where are you?: 你在哪里？ | where is my book?: 我的书在哪儿？ | where do you live?: 你住在哪里？"
+    ],
+    [
+      "colour",
+      "/ ˈkʌlər; ˈkʌlə(r) /",
+      "the appearance of things caused by light",
+      "n. 颜色 v. 给……着色",
+      "bright colours: 鲜艳的颜色 | favourite colour: 最喜欢的颜色 | colour the picture: 给图画涂色"
+    ],
+    [
+      "pink",
+      "/ pɪŋk; pɪŋk /",
+      "a light red colour",
+      "n./adj. 粉红色；粉红色的",
+      "pink flowers: 粉色的花 | a pink dress: 一条粉色连衣裙 | paint it pink: 把它涂成粉色"
+    ],
+    [
+      "blue",
+      "/ bluː; bluː /",
+      "the colour of a clear sky",
+      "n./adj. 蓝色；蓝色的",
+      "blue sky: 蓝天 | blue shoes: 蓝色鞋子 | dark blue: 深蓝色"
+    ],
+    [
+      "red",
+      "/ red; red /",
+      "the colour of blood or roses",
+      "n./adj. 红色；红色的",
+      "red apple: 红苹果 | red flag: 红旗 | in red: 用红色"
+    ],
+    [
+      "brown",
+      "/ braʊn; braʊn /",
+      "a dark colour like wood or chocolate",
+      "n./adj. 棕色；棕色的",
+      "brown hair: 棕色头发 | brown bear: 棕熊 | light brown: 浅棕色"
+    ],
+    [
+      "black",
+      "/ blæk; blæk /",
+      "the darkest colour",
+      "n./adj. 黑色；黑色的",
+      "black cat: 黑猫 | black shoes: 黑鞋 | in black: 穿黑色"
+    ],
+    [
+      "white",
+      "/ waɪt; waɪt /",
+      "the colour of snow or milk",
+      "n./adj. 白色；白色的",
+      "white snow: 白雪 | white shirt: 白衬衫 | black and white: 黑白相间"
+    ],
+    [
+      "purple",
+      "/ ˈpɜːrp(ə)l; ˈpɜːp(ə)l /",
+      "a colour between red and blue",
+      "n./adj. 紫色；紫色的",
+      "purple flowers: 紫色花朵 | purple skirt: 紫色短裙 | paint it purple: 把它涂成紫色"
+    ],
+    [
+      "green",
+      "/ ɡriːn; ɡriːn /",
+      "the colour of grass and leaves",
+      "n./adj. 绿色；绿色的",
+      "green leaves: 绿叶 | green T-shirt: 绿色T恤 | light green: 浅绿色"
+    ],
+    [
+      "orange",
+      "/ ˈɔːrɪndʒ; ˈɒrɪndʒ /",
+      "a bright colour between red and yellow",
+      "n./adj. 橘黄色；橘黄色的",
+      "orange bag: 橘黄色书包 | orange sunset: 橘色晚霞 | paint it orange: 把它涂成橘黄色"
+    ],
+    [
+      "yellow",
+      "/ ˈjeloʊ; ˈjeləʊ /",
+      "the colour of the sun or lemons",
+      "n./adj. 黄色；黄色的",
+      "yellow duck: 黄色鸭子 | yellow flowers: 黄色花朵 | bright yellow: 亮黄色"
+    ],
+    [
+      "snow",
+      "/ snoʊ; snəʊ /",
+      "soft white pieces of frozen water that fall from the sky",
+      "n. 雪",
+      "falling snow: 飘雪 | play in the snow: 在雪地里玩 | heavy snow: 大雪"
+    ],
+    [
+      "tree",
+      "/ triː; triː /",
+      "a tall plant with a trunk and branches",
+      "n. 树；树木",
+      "big tree: 大树 | climb a tree: 爬树 | under the tree: 在树下"
+    ],
+    [
+      "out",
+      "/ aʊt; aʊt /",
+      "outside or away from inside",
+      "adv. 在室外；向外",
+      "go out: 出去 | play out: 在外面玩 | look out: 向外看"
+    ],
+    [
+      "garden",
+      "/ ˈɡɑːrd(ə)n; ˈɡɑːd(ə)n /",
+      "a place where flowers and plants are grown",
+      "n. 花园",
+      "in the garden: 在花园里 | flower garden: 花园 | water the garden: 给花园浇水"
+    ],
+    [
+      "up",
+      "/ ʌp; ʌp /",
+      "toward a higher place or position",
+      "adv./prep. 向上；在上面",
+      "look up: 向上看 | stand up: 站起来 | up in the sky: 在天空上方"
+    ],
+    [
+      "there (is, are)",
+      "/ ðer; ðeə(r) /",
+      "used to show that something exists",
+      "phr. （there is/are）有；（表示存在或发生）",
+      "there is a bird: 有一只鸟 | there are two trees: 有两棵树 | there is no problem: 没有问题"
+    ],
+    [
+      "butterfly",
+      "/ ˈbʌtərflaɪ; ˈbʌtəflaɪ /",
+      "an insect with large colourful wings",
+      "n. 蝴蝶",
+      "beautiful butterfly: 美丽的蝴蝶 | butterflies in the garden: 花园里的蝴蝶 | watch a butterfly: 看蝴蝶"
+    ],
+    [
+      "lizard",
+      "/ ˈlɪzərd; ˈlɪzəd /",
+      "a small animal with a long body and tail",
+      "n. 蜥蜴",
+      "a small lizard: 一只小蜥蜴 | green lizard: 绿色蜥蜴 | see a lizard on the wall: 看到墙上的蜥蜴"
+    ],
+    [
+      "now",
+      "/ naʊ; naʊ /",
+      "at the present time",
+      "adv. 现在",
+      "do it now: 现在做 | right now: 立刻；现在 | now we can go: 现在我们可以走了"
+    ],
+    [
+      "problem",
+      "/ ˈprɑːbləm; ˈprɒbləm /",
+      "something difficult that needs to be solved",
+      "n. 难题；困难",
+      "no problem: 没问题 | solve the problem: 解决问题 | math problem: 数学题"
+    ],
+    [
+      "sky",
+      "/ skaɪ; skaɪ /",
+      "the space above the earth where clouds move",
+      "n. 天；天空",
+      "blue sky: 蓝天 | in the sky: 在天空中 | look at the sky: 看天空"
+    ],
+    [
+      "dark",
+      "/ dɑːrk; dɑːk /",
+      "having little or no light",
+      "adj. 黑暗的；昏暗的",
+      "dark night: 黑夜 | get dark: 变黑 | dark room: 昏暗的房间"
+    ],
+    [
+      "night",
+      "/ naɪt; naɪt /",
+      "the time when it is dark",
+      "n. 夜晚",
+      "at night: 在夜晚 | good night: 晚安 | every night: 每晚"
+    ],
+    [
+      "colourful",
+      "/ ˈkʌlərfəl; ˈkʌləf(ə)l /",
+      "having many bright colours",
+      "adj. 五彩缤纷的",
+      "colourful flowers: 五彩缤纷的花 | colourful clothes: 色彩鲜艳的衣服 | colourful picture: 彩色图画"
+    ],
+    [
+      "firework",
+      "/ ˈfaɪərwɜːrk; ˈfaɪəwɜːk /",
+      "an explosive thing that makes bright colours in the sky",
+      "n. 烟花",
+      "watch fireworks: 看烟花 | colourful fireworks: 五彩烟花 | firework show: 烟花表演"
+    ],
+    [
+      "kitchen",
+      "/ ˈkɪtʃən; ˈkɪtʃɪn /",
+      "the room where food is cooked",
+      "n. 厨房",
+      "in the kitchen: 在厨房里 | clean the kitchen: 打扫厨房 | kitchen table: 厨房餐桌"
+    ],
+    [
+      "bathroom",
+      "/ ˈbæθruːm; ˈbɑːθruːm /",
+      "a room with a toilet and a bath or shower",
+      "n. 浴室；盥洗室",
+      "go to the bathroom: 去洗手间 | bathroom door: 浴室门 | clean the bathroom: 打扫浴室"
+    ],
+    [
+      "bedroom",
+      "/ ˈbedruːm; ˈbedruːm /",
+      "a room for sleeping",
+      "n. 卧室",
+      "my bedroom: 我的卧室 | in the bedroom: 在卧室里 | bedroom window: 卧室窗户"
+    ],
+    [
+      "dining room",
+      "/ ˈdaɪnɪŋ ruːm; ˈdaɪnɪŋ ruːm /",
+      "a room where people eat meals",
+      "phr. 餐厅",
+      "in the dining room: 在餐厅里 | dining room table: 餐桌 | have dinner in the dining room: 在餐厅吃晚饭"
+    ],
+    [
+      "living room",
+      "/ ˈlɪvɪŋ ruːm; ˈlɪvɪŋ ruːm /",
+      "the main room where people sit and relax",
+      "phr. 客厅；起居室",
+      "in the living room: 在客厅里 | watch TV in the living room: 在客厅看电视 | living room sofa: 客厅沙发"
+    ],
+    [
+      "study",
+      "/ ˈstʌdi; ˈstʌdi /",
+      "a room used for reading and working",
+      "n. 书房 v. 学习",
+      "in the study: 在书房里 | study hard: 努力学习 | study English: 学英语"
+    ],
+    [
+      "desk",
+      "/ desk; desk /",
+      "a table used for writing or studying",
+      "n. 书桌",
+      "school desk: 学生课桌 | at the desk: 在书桌旁 | clean your desk: 整理书桌"
+    ],
+    [
+      "chair",
+      "/ tʃer; tʃeə(r) /",
+      "a seat for one person, with a back",
+      "n. 椅子",
+      "sit on the chair: 坐在椅子上 | a wooden chair: 一把木椅 | blue chair: 蓝色椅子"
+    ],
+    [
+      "sofa",
+      "/ ˈsoʊfə; ˈsəʊfə /",
+      "a long comfortable seat for two or more people",
+      "n. 长沙发",
+      "sit on the sofa: 坐在沙发上 | new sofa: 新沙发 | sofa in the living room: 客厅里的沙发"
+    ],
+    [
+      "room",
+      "/ ruːm; ruːm /",
+      "a part of a building with walls, floor and ceiling",
+      "n. 房间",
+      "my room: 我的房间 | clean the room: 打扫房间 | in the room: 在房间里"
+    ],
+    [
+      "from",
+      "/ frʌm; frɒm /",
+      "used to show where something starts or comes",
+      "prep. 从；来自",
+      "from school: 从学校来 | from China: 来自中国 | a letter from my friend: 来自朋友的一封信"
+    ],
+    [
+      "new",
+      "/ nuː; njuː /",
+      "not old; recently made or bought",
+      "adj. 新的",
+      "new book: 新书 | new friend: 新朋友 | a new room: 新房间"
+    ],
+    [
+      "dear",
+      "/ dɪr; dɪə(r) /",
+      "used at the beginning of a letter before a name",
+      "adj. 亲爱的",
+      "Dear Mum: 亲爱的妈妈 | Dear friend: 亲爱的朋友 | my dear teacher: 我亲爱的老师"
+    ],
+    [
+      "show",
+      "/ ʃoʊ; ʃəʊ /",
+      "to let someone see something",
+      "v. 给……看；展示 n. 展示",
+      "show me your room: 给我看看你的房间 | show a picture: 展示一张图片 | show and tell: 展示与讲述"
+    ],
+    [
+      "write",
+      "/ raɪt; raɪt /",
+      "to make words with a pen or pencil",
+      "v. 写字；写作",
+      "write a letter: 写信 | write your name: 写你的名字 | write in English: 用英语写"
+    ],
+    [
+      "window",
+      "/ ˈwɪndoʊ; ˈwɪndəʊ /",
+      "an opening in a wall with glass to let in light",
+      "n. 窗；窗户",
+      "open the window: 打开窗户 | look out of the window: 向窗外看 | clean the window: 擦窗户"
+    ],
+    [
+      "wish",
+      "/ wɪʃ; wɪʃ /",
+      "to hope that something good will happen",
+      "v./n. 祝愿；愿望",
+      "best wishes: 最美好的祝愿 | wish you happy birthday: 祝你生日快乐 | make a wish: 许愿"
+    ],
+    [
+      "in front of",
+      "/ ɪn frʌnt əv; ɪn frʌnt əv /",
+      "in the position before someone or something",
+      "phr. 在……前面",
+      "in front of the house: 在房子前面 | stand in front of me: 站在我前面 | tree in front of the school: 学校前面的树"
+    ],
+    [
+      "look out of",
+      "/ lʊk aʊt əv; lʊk aʊt əv /",
+      "to look through and outside",
+      "phr. 向……外看",
+      "look out of the window: 向窗外看 | look out of the car: 向车外看"
+    ],
+    [
+      "teddy bear",
+      "/ ˈtedi ber; ˈtedi beə(r) /",
+      "a soft toy bear",
+      "phr. 泰迪熊",
+      "my teddy bear: 我的泰迪熊 | sleep with a teddy bear: 抱着泰迪熊睡觉 | brown teddy bear: 棕色泰迪熊"
+    ],
+    [
+      "welcome",
+      "/ ˈwelkəm; ˈwelkəm /",
+      "used to greet someone in a friendly way",
+      "v./n./adj. 欢迎；受欢迎的",
+      "welcome to our school: 欢迎来到我们学校 | you are welcome: 不客气；欢迎你"
+    ],
+    [
+      "classroom",
+      "/ ˈklæsruːm; ˈklɑːsruːm /",
+      "a room where students have lessons",
+      "n. 教室",
+      "in the classroom: 在教室里 | clean the classroom: 打扫教室 | classroom door: 教室门"
+    ],
+    [
+      "computer room",
+      "/ kəmˈpjuːtər ruːm; kəmˈpjuːtə(r) ruːm /",
+      "a room in school with computers",
+      "phr. 电脑室",
+      "go to the computer room: 去电脑室 | computer room class: 电脑课"
+    ],
+    [
+      "toilet",
+      "/ ˈtɔɪlət; ˈtɔɪlət /",
+      "a room with a toilet in it",
+      "n. 厕所；卫生间；盥洗室",
+      "go to the toilet: 去厕所 | where is the toilet?: 厕所在哪里？"
+    ],
+    [
+      "sports ground",
+      "/ spɔːrts ɡraʊnd; spɔːts ɡraʊnd /",
+      "an outdoor place for sports at school",
+      "phr. 操场",
+      "on the sports ground: 在操场上 | run on the sports ground: 在操场上跑步"
+    ],
+    [
+      "library",
+      "/ ˈlaɪbreri; ˈlaɪbrəri /",
+      "a place where many books are kept",
+      "n. 图书馆",
+      "in the library: 在图书馆里 | read in the library: 在图书馆看书 | school library: 学校图书馆"
+    ],
+    [
+      "office",
+      "/ ˈɔːfɪs; ˈɒfɪs /",
+      "a room where people work",
+      "n. 办公室",
+      "teacher's office: 教师办公室 | in the office: 在办公室里 | go to the office: 去办公室"
+    ],
+    [
+      "picture",
+      "/ ˈpɪktʃər; ˈpɪktʃə(r) /",
+      "a drawing or photo",
+      "n. 图画；图片",
+      "draw a picture: 画一幅画 | nice picture: 漂亮的图片 | take a picture: 拍照"
+    ],
+    [
+      "tomorrow",
+      "/ təˈmɑːroʊ; təˈmɒrəʊ /",
+      "the day after today",
+      "n./adv. 明天",
+      "see you tomorrow: 明天见 | tomorrow morning: 明天早上 | go to school tomorrow: 明天去上学"
+    ],
+    [
+      "also",
+      "/ ˈɔːlsoʊ; ˈɔːlsəʊ /",
+      "in addition; too",
+      "adv. 也",
+      "I also like music: 我也喜欢音乐 | she is also a student: 她也是一名学生"
+    ],
+    [
+      "schoolbag",
+      "/ ˈskuːlbæɡ; ˈskuːlbæɡ /",
+      "a bag for carrying school things",
+      "n. 书包",
+      "new schoolbag: 新书包 | in my schoolbag: 在我的书包里 | carry a schoolbag: 背书包"
+    ],
+    [
+      "ruler",
+      "/ ˈruːlər; ˈruːlə(r) /",
+      "a straight tool for drawing lines and measuring",
+      "n. 直尺",
+      "use a ruler: 用直尺 | long ruler: 长尺子 | draw a line with a ruler: 用直尺画线"
+    ],
+    [
+      "pencil",
+      "/ ˈpens(ə)l; ˈpens(ə)l /",
+      "a tool for writing or drawing",
+      "n. 铅笔",
+      "write with a pencil: 用铅笔写字 | sharpen a pencil: 削铅笔 | two pencils: 两支铅笔"
+    ],
+    [
+      "pen",
+      "/ pen; pen /",
+      "a tool for writing with ink",
+      "n. 钢笔",
+      "blue pen: 蓝色钢笔 | write with a pen: 用钢笔写字 | my pen: 我的钢笔"
+    ],
+    [
+      "art room",
+      "/ ɑːrt ruːm; ɑːt ruːm /",
+      "a room where students draw and make art",
+      "phr. 美术教室",
+      "in the art room: 在美术教室里 | have art in the art room: 在美术教室上美术课"
+    ],
+    [
+      "swimming pool",
+      "/ ˈswɪmɪŋ puːl; ˈswɪmɪŋ puːl /",
+      "a place filled with water for swimming",
+      "phr. 游泳池",
+      "in the swimming pool: 在游泳池里 | swim in the swimming pool: 在游泳池游泳"
+    ],
+    [
+      "lots of",
+      "/ lɑːts əv; lɒts əv /",
+      "a large amount of or many",
+      "phr. 大量的；很多的",
+      "lots of books: 很多书 | lots of students: 很多学生 | lots of fun: 很多乐趣"
+    ],
+    [
+      "Come and see!",
+      "/ kʌm ænd siː; kʌm ənd siː /",
+      "used to ask someone to come and look",
+      "sent. 来看一看！",
+      "Come and see my picture!: 来看看我的画！ | Come and see our classroom!: 来看看我们的教室！"
+    ],
+    [
+      "Children's Day",
+      "/ ˈtʃɪldrənz deɪ; ˈtʃɪldrənz deɪ /",
+      "a special day for children",
+      "phr. 儿童节",
+      "Happy Children's Day!: 儿童节快乐！ | on Children's Day: 在儿童节"
+    ],
+    [
+      "go to the beach",
+      "/ ɡoʊ tə ðə biːtʃ; ɡəʊ tə ðə biːtʃ /",
+      "to go to a sandy place by the sea",
+      "phr. 去海滩",
+      "go to the beach in summer: 夏天去海滩 | go to the beach with friends: 和朋友去海滩"
+    ],
+    [
+      "go to the cinema",
+      "/ ɡoʊ tə ðə ˈsɪnəmə; ɡəʊ tə ðə ˈsɪnəmə /",
+      "to go to a place where people watch films",
+      "phr. （去电影院）看电影",
+      "go to the cinema on Sunday: 周日去电影院 | go to the cinema with my family: 和家人去看电影"
+    ],
+    [
+      "go to the park",
+      "/ ɡoʊ tə ðə pɑːrk; ɡəʊ tə ðə pɑːk /",
+      "to go to a public place with trees and grass",
+      "phr. 去公园",
+      "go to the park after school: 放学后去公园 | go to the park and play: 去公园玩"
+    ],
+    [
+      "go to the zoo",
+      "/ ɡoʊ tə ðə zuː; ɡəʊ tə ðə zuː /",
+      "to go to a place where animals are kept",
+      "phr. 去动物园",
+      "go to the zoo on Saturday: 周六去动物园 | go to the zoo to see animals: 去动物园看动物"
+    ],
+    [
+      "go to the museum",
+      "/ ɡoʊ tə ðə mjuˈziːəm; ɡəʊ tə ðə mjuˈziːəm /",
+      "to go to a place where old or important things are shown",
+      "phr. 去博物馆",
+      "go to the museum tomorrow: 明天去博物馆 | go to the museum with classmates: 和同学去博物馆"
+    ],
+    [
+      "elephant",
+      "/ ˈelɪfənt; ˈelɪfənt /",
+      "a very large animal with a long nose",
+      "n. 象",
+      "big elephant: 大象 | see an elephant at the zoo: 在动物园看大象 | elephant ears: 大象耳朵"
+    ],
+    [
+      "film",
+      "/ fɪlm; fɪlm /",
+      "a movie",
+      "n. 电影",
+      "watch a film: 看电影 | interesting film: 有趣的电影 | new film: 新电影"
+    ],
+    [
+      "pizza",
+      "/ ˈpiːtsə; ˈpiːtsə /",
+      "a baked flat bread with cheese and other food on top",
+      "n. 比萨饼；意大利饼",
+      "eat pizza: 吃比萨 | a slice of pizza: 一片比萨 | make pizza: 做比萨"
+    ],
+    [
+      "shop",
+      "/ ʃɑːp; ʃɒp /",
+      "a place where people buy things",
+      "n. 商店 v. 购物",
+      "toy shop: 玩具店 | go to the shop: 去商店 | shop with my mum: 和妈妈购物"
+    ],
+    [
+      "eat",
+      "/ iːt; iːt /",
+      "to put food in your mouth and swallow it",
+      "v. 吃",
+      "eat lunch: 吃午饭 | eat fruit: 吃水果 | eat together: 一起吃"
+    ],
+    [
+      "classmate",
+      "/ ˈklæsmeɪt; ˈklɑːsmeɪt /",
+      "a person in the same class at school",
+      "n. 同班同学",
+      "my classmate: 我的同班同学 | help a classmate: 帮助同学 | play with classmates: 和同学一起玩"
+    ],
+    [
+      "do a survey",
+      "/ duː ə ˈsɜːrveɪ; duː ə ˈsɜːveɪ /",
+      "to ask questions and collect answers",
+      "phr. 做调查",
+      "do a survey in class: 在班里做调查 | do a survey about hobbies: 做关于爱好的调查"
+    ],
+    [
+      "science museum",
+      "/ ˈsaɪəns mjuˈziːəm; ˈsaɪəns mjuˈziːəm /",
+      "a museum with science exhibits",
+      "phr. 科技馆",
+      "visit the science museum: 参观科技馆 | science museum trip: 科技馆之行"
+    ],
+    [
+      "week",
+      "/ wiːk; wiːk /",
+      "a period of seven days",
+      "n. 星期；周",
+      "this week: 这周 | next week: 下周 | every week: 每周"
+    ],
+    [
+      "Monday",
+      "/ ˈmʌndeɪ; ˈmʌndeɪ /",
+      "the first day of the school or work week",
+      "n. 星期一",
+      "on Monday: 在星期一 | next Monday: 下周一 | Monday morning: 星期一早上"
+    ],
+    [
+      "Tuesday",
+      "/ ˈtuːzdeɪ; ˈtjuːzdeɪ /",
+      "the day after Monday",
+      "n. 星期二",
+      "on Tuesday: 在星期二 | this Tuesday: 这个星期二 | Tuesday afternoon: 星期二下午"
+    ],
+    [
+      "Wednesday",
+      "/ ˈwenzdeɪ; ˈwenzdeɪ /",
+      "the day after Tuesday",
+      "n. 星期三",
+      "on Wednesday: 在星期三 | every Wednesday: 每个星期三 | Wednesday evening: 星期三晚上"
+    ],
+    [
+      "Thursday",
+      "/ ˈθɜːrzdeɪ; ˈθɜːzdeɪ /",
+      "the day after Wednesday",
+      "n. 星期四",
+      "on Thursday: 在星期四 | this Thursday: 这个星期四 | Thursday class: 星期四的课"
+    ],
+    [
+      "Friday",
+      "/ ˈfraɪdeɪ; ˈfraɪdeɪ /",
+      "the day after Thursday",
+      "n. 星期五",
+      "on Friday: 在星期五 | Friday night: 星期五晚上 | this Friday: 本周五"
+    ],
+    [
+      "Saturday",
+      "/ ˈsætərdeɪ; ˈsætədeɪ /",
+      "the day after Friday",
+      "n. 星期六",
+      "on Saturday: 在星期六 | Saturday morning: 星期六早上 | this Saturday: 这周六"
+    ],
+    [
+      "Sunday",
+      "/ ˈsʌndeɪ; ˈsʌndeɪ /",
+      "the day after Saturday",
+      "n. 星期日",
+      "on Sunday: 在星期日 | every Sunday: 每个星期日 | Sunday afternoon: 星期日下午"
+    ],
+    [
+      "one",
+      "/ wʌn; wʌn /",
+      "the number 1",
+      "num. 一",
+      "one apple: 一个苹果 | one day: 一天 | one book: 一本书"
+    ],
+    [
+      "two",
+      "/ tuː; tuː /",
+      "the number 2",
+      "num. 二",
+      "two pens: 两支钢笔 | two cats: 两只猫 | two days: 两天"
+    ],
+    [
+      "three",
+      "/ θriː; θriː /",
+      "the number 3",
+      "num. 三",
+      "three books: 三本书 | three boys: 三个男孩 | three trees: 三棵树"
+    ],
+    [
+      "four",
+      "/ fɔːr; fɔː(r) /",
+      "the number 4",
+      "num. 四",
+      "four chairs: 四把椅子 | four bags: 四个书包 | four days: 四天"
+    ],
+    [
+      "five",
+      "/ faɪv; faɪv /",
+      "the number 5",
+      "num. 五",
+      "five pencils: 五支铅笔 | five ducks: 五只鸭子 | five apples: 五个苹果"
+    ],
+    [
+      "six",
+      "/ sɪks; sɪks /",
+      "the number 6",
+      "num. 六",
+      "six students: 六个学生 | six books: 六本书 | six o'clock: 六点钟"
+    ],
+    [
+      "seven",
+      "/ ˈsev(ə)n; ˈsev(ə)n /",
+      "the number 7",
+      "num. 七",
+      "seven days: 七天 | seven flowers: 七朵花 | seven cats: 七只猫"
+    ],
+    [
+      "eight",
+      "/ eɪt; eɪt /",
+      "the number 8",
+      "num. 八",
+      "eight apples: 八个苹果 | eight years old: 八岁 | eight books: 八本书"
+    ],
+    [
+      "nine",
+      "/ naɪn; naɪn /",
+      "the number 9",
+      "num. 九",
+      "nine students: 九个学生 | nine balloons: 九个气球 | nine birds: 九只鸟"
+    ],
+    [
+      "ten",
+      "/ ten; ten /",
+      "the number 10",
+      "num. 十",
+      "ten pencils: 十支铅笔 | ten minutes: 十分钟 | ten boys: 十个男孩"
+    ],
+    [
+      "eleven",
+      "/ ɪˈlev(ə)n; ɪˈlev(ə)n /",
+      "the number 11",
+      "num. 十一",
+      "eleven books: 十一本书 | eleven years old: 十一岁 | eleven pens: 十一支钢笔"
+    ],
+    [
+      "twelve",
+      "/ twelv; twelv /",
+      "the number 12",
+      "num. 十二",
+      "twelve months: 十二个月 | twelve chairs: 十二把椅子 | twelve o'clock: 十二点"
+    ],
+    [
+      "thirteen",
+      "/ ˌθɜːrˈtiːn; ˌθɜːˈtiːn /",
+      "the number 13",
+      "num. 十三",
+      "thirteen students: 十三个学生 | thirteen books: 十三本书 | thirteen years old: 十三岁"
+    ],
+    [
+      "fourteen",
+      "/ ˌfɔːrˈtiːn; ˌfɔːˈtiːn /",
+      "the number 14",
+      "num. 十四",
+      "fourteen apples: 十四个苹果 | fourteen days: 十四天 | fourteen pens: 十四支钢笔"
+    ],
+    [
+      "fifteen",
+      "/ ˌfɪfˈtiːn; ˌfɪfˈtiːn /",
+      "the number 15",
+      "num. 十五",
+      "fifteen minutes: 十五分钟 | fifteen books: 十五本书 | fifteen girls: 十五个女孩"
+    ],
+    [
+      "sixteen",
+      "/ ˌsɪksˈtiːn; ˌsɪksˈtiːn /",
+      "the number 16",
+      "num. 十六",
+      "sixteen students: 十六个学生 | sixteen flowers: 十六朵花 | sixteen pencils: 十六支铅笔"
+    ],
+    [
+      "seventeen",
+      "/ ˌsev(ə)nˈtiːn; ˌsev(ə)nˈtiːn /",
+      "the number 17",
+      "num. 十七",
+      "seventeen books: 十七本书 | seventeen days: 十七天 | seventeen ducks: 十七只鸭子"
+    ],
+    [
+      "eighteen",
+      "/ ˌeɪˈtiːn; ˌeɪˈtiːn /",
+      "the number 18",
+      "num. 十八",
+      "eighteen apples: 十八个苹果 | eighteen boys: 十八个男孩 | eighteen pens: 十八支钢笔"
+    ],
+    [
+      "nineteen",
+      "/ ˌnaɪnˈtiːn; ˌnaɪnˈtiːn /",
+      "the number 19",
+      "num. 十九",
+      "nineteen students: 十九个学生 | nineteen books: 十九本书 | nineteen balloons: 十九个气球"
+    ],
+    [
+      "twenty",
+      "/ ˈtwenti; ˈtwenti /",
+      "the number 20",
+      "num. 二十",
+      "twenty pencils: 二十支铅笔 | twenty minutes: 二十分钟 | twenty children: 二十个孩子"
+    ]
+  ]
+}
