@@ -3,7 +3,7 @@
 // 依赖: ai_config.js (AI_CONFIG), utils.js (escapeHtml)
 // ==========================================
 
-const OCR_VISION_MODEL = 'PaddlePaddle/PaddleOCR-VL';
+const OCR_VISION_MODEL = 'PaddlePaddle/PaddleOCR-VL-1.5';
 const OCR_CLEAN_MODEL = AI_CONFIG.model;
 
 const OCR_VISION_PROMPT = `请仔细观察图片，识别其中出现的所有文本内容，将识别到的完整文本返回给我。`;

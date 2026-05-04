@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 自动排版与贴纸遮罩 Demo</title>
+    <style>
+        /* 极简杂志风 UI 配置 */
+        :root {
+            --primary-color: #000000;
+            --bg-color: #f5f5f7;
+            --surface-color: #ffffff;
+            --text-main: #1d1d1f;
+            --text-secondary: #86868b;
+            --border-color: #d2d2d7;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "SF Pro Text", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { font-weight: 600; font-size: 24px; margin-bottom: 8px; }
+        
+        .upload-panel {
+            background: var(--surface-color);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        button:hover { opacity: 0.8; }
+        button:disabled { background-color: var(--border-color); cursor: not-allowed; }
+        select {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 13px;
+            background: #fff;
+            color: var(--text-main);
+        }
+        .control-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .toggle-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .workspace {
+            display: flex;
+            gap: 24px;
+            width: 100%;
+            max-width: 1200px;
+            align-items: flex-start;
+        }
+
+        .canvas-wrapper {
+            flex: 2;
+            background: var(--surface-color);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .result-panel {
+            flex: 1;
+            background: var(--surface-color);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            min-height: 400px;
+        }
+
+        .result-panel h3 { margin-top: 0; font-size: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
+        .llm-output { font-size: 14px; line-height: 1.6; color: #333; white-space: pre-wrap; }
+        .status { color: #0066cc; font-size: 13px; font-weight: 500; margin-top: 8px; }
+        .error { color: #e3120b; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>AI 智能贴纸与文本优化工具</h1>
+    </div>
+
+    <div class="upload-panel">
+        <div style="font-size: 13px; color: var(--text-secondary);">
+            已接入硅基流动 API，可切换视觉模型做坐标对比
+        </div>
+        <div class="control-row">
+            <label for="visionModelSelect" style="font-size: 13px; color: var(--text-secondary);">视觉模型</label>
+            <select id="visionModelSelect"></select>
+            <label class="toggle-label">
+                <input type="checkbox" id="fallbackRetryCheck" checked>
+                自动兜底重试
+            </label>
+            <input type="file" id="imageInput" accept="image/*" style="display: none;">
+            <button id="uploadBtn" onclick="document.getElementById('imageInput').click()">上传图片并自动处理</button>
+        </div>
+    </div>
+
+    <div class="workspace">
+        <div class="canvas-wrapper">
+            <canvas id="mainCanvas"></canvas>
+        </div>
+        <div class="result-panel">
+            <h3>优化后文本 (Qwen2.5-7B 输出)</h3>
+            <div id="statusText" class="status">等待上传图片...</div>
+            <div id="llmResult" class="llm-output" style="margin-top: 16px;"></div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 核心配置区 (支持任意修改)
+        // ==========================================
+        const AI_CONFIG = {
+            endpoint: 'https://api.siliconflow.cn/v1/chat/completions',
+            apiKey: 'sk-pqhajqrvfsyeufdproqvkjcsyykggprmtflahbidbptfvzul',
+            visionModel: 'PaddlePaddle/PaddleOCR-VL',
+            textModel: 'Qwen/Qwen2.5-7B-Instruct'
+        };
+        const VISION_MODEL_OPTIONS = [
+            'PaddlePaddle/PaddleOCR-VL',
+            'Qwen/Qwen2-VL-72B-Instruct',
+            'deepseek-ai/DeepSeek-OCR'
+        ];
+
+        const imageInput = document.getElementById('imageInput');
+        const mainCanvas = document.getElementById('mainCanvas');
+        const ctx = mainCanvas.getContext('2d');
+        const llmResult = document.getElementById('llmResult');
+        const statusText = document.getElementById('statusText');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const visionModelSelect = document.getElementById('visionModelSelect');
+        const fallbackRetryCheck = document.getElementById('fallbackRetryCheck');
+        
+        let originalImage = new Image();
+        initVisionModelSelect();
+
+        function initVisionModelSelect() {
+            visionModelSelect.innerHTML = '';
+            VISION_MODEL_OPTIONS.forEach(model => {
+                const option = document.createElement('option');
+                option.value = model;
+                option.textContent = model;
+                if (model === AI_CONFIG.visionModel) {
+                    option.selected = true;
+                }
+                visionModelSelect.appendChild(option);
+            });
+        }
+
+        visionModelSelect.addEventListener('change', function(e) {
+            AI_CONFIG.visionModel = e.target.value;
+            statusText.innerText = `已切换视觉模型：${AI_CONFIG.visionModel}`;
+        });
+
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            uploadBtn.disabled = true;
+            llmResult.innerHTML = '';
+            statusText.innerText = "正在读取图片...";
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const base64Image = event.target.result;
+                originalImage.onload = function() {
+                    mainCanvas.width = originalImage.width;
+                    mainCanvas.height = originalImage.height;
+                    ctx.drawImage(originalImage, 0, 0);
+                    
+                    // 开始工作流
+                    runWorkflow(base64Image);
+                }
+                originalImage.src = base64Image;
+            }
+            reader.readAsDataURL(file);
+        });
+
+        async function runWorkflow(base64Image) {
+            let extractedFullText = "";
+
+            try {
+                // --------------------------------------------------
+                // 1. 调用视觉模型提取坐标
+                // --------------------------------------------------
+                statusText.innerText = `[1/2] 正在调用 ${AI_CONFIG.visionModel} 提取文本与坐标...`;
+                const ocrData = await callVisionModel(base64Image);
+                
+                if (!ocrData || ocrData.length === 0) {
+                    throw new Error("未能识别到任何文字或坐标解析失败。");
+                }
+
+                // --------------------------------------------------
+                // 2. Canvas 绘制贴纸与覆盖文字
+                // --------------------------------------------------
+                statusText.innerText = `正在渲染遮罩贴纸...`;
+                
+                ocrData.forEach(item => {
+                    if (!item.box || !item.text) return;
+                    
+                    extractedFullText += item.text + "\n";
+                    
+                    // 解析 Bounding Box
+                    const box = item.box; 
+                    const xs = box.map(p => p[0]);
+                    const ys = box.map(p => p[1]);
+                    const x = Math.min(...xs);
+                    const y = Math.min(...ys);
+                    const width = Math.max(...xs) - x;
+                    const height = Math.max(...ys) - y;
+
+                    // 绘制白云毛玻璃感贴纸
+                    const padding = 6;
+                    ctx.fillStyle = "rgba(255, 255, 255, 0.95)"; 
+                    ctx.shadowColor = "rgba(0, 0, 0, 0.1)";
+                    ctx.shadowBlur = 6;
+                    
+                    ctx.beginPath();
+                    ctx.roundRect(x - padding, y - padding, width + padding * 2, height + padding * 2, 8);
+                    ctx.fill();
+                    ctx.shadowColor = "transparent";
+
+                    // 绘制提取的文字
+                    ctx.fillStyle = "#1d1d1f";
+                    ctx.textBaseline = "top";
+                    const fontSize = Math.max(12, height * 0.75); // 动态字体大小
+                    ctx.font = `500 ${fontSize}px "PingFang SC", sans-serif`;
+                    ctx.fillText(item.text, x, y + (height - fontSize)/2); 
+                });
+
+                // --------------------------------------------------
+                // 3. 调用大模型润色文本
+                // --------------------------------------------------
+                statusText.innerText = `[2/2] 正在调用 ${AI_CONFIG.textModel} 优化文本排版...`;
+                const optimizedText = await callTextModel(extractedFullText);
+                
+                llmResult.innerText = optimizedText;
+                statusText.innerText = "处理完成！";
+                uploadBtn.disabled = false;
+
+            } catch (error) {
+                console.error("Workflow Error:", error);
+                statusText.innerHTML = `<span class="error">发生错误: ${error.message}</span>`;
+                uploadBtn.disabled = false;
+            }
+        }
+
+        // ==========================================
+        // API 请求封装
+        // ==========================================
+
+        // 调用视觉模型 (增强格式约束与容错解析)
+        async function callVisionModel(base64Image) {
+            const prompt = [
+                "你是 OCR 引擎。",
+                "只返回 JSON，不要返回任何解释、注释、markdown、前后缀文本。",
+                "优先返回对象格式：{\"items\":[{\"text\":\"...\",\"box\":[[x1,y1],[x2,y2],[x3,y3],[x4,y4]]}]}",
+                "也允许直接返回数组：[{\"text\":\"...\",\"box\":[[x1,y1],[x2,y2],[x3,y3],[x4,y4]]}]",
+                "box 必须是 4 个点，每个点是 [x,y] 数字。"
+            ].join("\n");
+
+            const fallbackModels = [
+                'Qwen/Qwen2-VL-72B-Instruct',
+                'deepseek-ai/DeepSeek-OCR',
+                'PaddlePaddle/PaddleOCR-VL'
+            ];
+            const candidateModels = fallbackRetryCheck.checked
+                ? Array.from(new Set([AI_CONFIG.visionModel, ...fallbackModels]))
+                : [AI_CONFIG.visionModel];
+            const attemptErrors = [];
+
+            for (const model of candidateModels) {
+                for (const useJsonObject of [true, false]) {
+                    try {
+                        const rawContent = await requestVisionContent(model, useJsonObject);
+                        console.log(`模型原始返回(${model}, jsonMode=${useJsonObject}):`, rawContent);
+                        const parsed = parseVisionResult(rawContent);
+                        const normalized = normalizeAndValidateOcrItems(parsed);
+                        if (normalized.length > 0) {
+                            return normalized;
+                        }
+                    } catch (err) {
+                        attemptErrors.push(`${model} / jsonMode=${useJsonObject}: ${err.message}`);
+                    }
+                }
+            }
+
+            console.error("视觉模型多轮解析失败：", attemptErrors);
+            throw new Error("视觉模型未能返回有效坐标数据。已自动重试主模型与 Qwen/Qwen2-VL-72B-Instruct，仍失败。请换图或稍后重试。");
+
+            async function requestVisionContent(model, useJsonObject) {
+                const payload = {
+                    model,
+                    messages: [
+                        {
+                            role: "user",
+                            content: [
+                                { type: "image_url", image_url: { url: base64Image } },
+                                { type: "text", text: prompt }
+                            ]
+                        }
+                    ],
+                    temperature: 0.0,
+                    max_tokens: 1500
+                };
+
+                if (useJsonObject) {
+                    payload.response_format = { type: "json_object" };
+                }
+
+                const response = await fetch(AI_CONFIG.endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${AI_CONFIG.apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    let detail = "";
+                    try {
+                        detail = await response.text();
+                    } catch (_) {
+                        detail = "";
+                    }
+                    throw new Error(`Vision API 请求失败(${response.status}) ${detail}`.trim());
+                }
+
+                const data = await response.json();
+                return data?.choices?.[0]?.message?.content ?? "";
+            }
+
+            function parseVisionResult(content) {
+                const raw = Array.isArray(content)
+                    ? content.map(part => typeof part === "string" ? part : (part?.text || "")).join("\n")
+                    : (typeof content === "string" ? content : JSON.stringify(content || ""));
+                const cleaned = raw.replace(/```json/gi, "").replace(/```/g, "").trim();
+
+                // 1) 优先整体解析
+                const direct = tryParseJSON(cleaned);
+                const directItems = pickItems(direct);
+                if (directItems) return directItems;
+
+                // 2) 尝试截取数组
+                const arrayMatch = cleaned.match(/\[\s*\{[\s\S]*\}\s*\]/);
+                if (arrayMatch) {
+                    const parsed = tryParseJSON(arrayMatch[0]);
+                    const items = pickItems(parsed);
+                    if (items) return items;
+                }
+
+                // 3) 尝试截取对象（含 items）
+                const objectMatch = cleaned.match(/\{[\s\S]*\}/);
+                if (objectMatch) {
+                    const parsed = tryParseJSON(objectMatch[0]);
+                    const items = pickItems(parsed);
+                    if (items) return items;
+                }
+
+                throw new Error("JSON 解析失败，未提取到可用结构。");
+            }
+
+            function pickItems(parsed) {
+                if (!parsed) return null;
+                if (Array.isArray(parsed)) return parsed;
+                if (Array.isArray(parsed.items)) return parsed.items;
+                if (Array.isArray(parsed.data)) return parsed.data;
+                return null;
+            }
+
+            function tryParseJSON(str) {
+                try {
+                    return JSON.parse(str);
+                } catch (_) {
+                    return null;
+                }
+            }
+
+            function normalizeAndValidateOcrItems(items) {
+                if (!Array.isArray(items)) {
+                    throw new Error("返回结果不是数组。");
+                }
+
+                const normalized = items
+                    .map(item => {
+                        const text = typeof item?.text === "string" ? item.text.trim() : "";
+                        const box = Array.isArray(item?.box) ? item.box : [];
+                        const points = box
+                            .slice(0, 4)
+                            .map(point => Array.isArray(point) ? [Number(point[0]), Number(point[1])] : [NaN, NaN]);
+                        return { text, box: points };
+                    })
+                    .filter(item => {
+                        if (!item.text || item.box.length !== 4) return false;
+                        return item.box.every(([x, y]) => Number.isFinite(x) && Number.isFinite(y));
+                    });
+
+                if (normalized.length === 0) {
+                    throw new Error("结果中没有合法的 text/box 数据。");
+                }
+
+                // 一些模型会返回示例占位 JSON（如 text="..." + [1,1]...[4,4]），需要拦截并继续重试。
+                const isPlaceholderStyle = normalized.every(item => {
+                    const t = item.text.replace(/\s+/g, "");
+                    const looksLikePlaceholderText = t === "..." || t === "……" || /^示例|样例|example$/i.test(t);
+                    const looksLikeDummyBox = JSON.stringify(item.box) === JSON.stringify([[1, 1], [2, 2], [3, 3], [4, 4]]);
+                    return looksLikePlaceholderText || looksLikeDummyBox;
+                });
+                if (isPlaceholderStyle) {
+                    throw new Error("模型返回了占位示例数据，非真实 OCR 结果。");
+                }
+
+                return normalized;
+            }
+        }
+
+        // 调用硅基流动文本模型进行润色
+        async function callTextModel(text) {
+            const prompt = `你是一个专业的英语教研编辑。请对以下 OCR 提取的文本进行清理、纠错，并梳理成逻辑通顺、格式优雅的文章。无需额外解释，直接输出优化后的最终文本：\n\n${text}`;
+
+            const response = await fetch(AI_CONFIG.endpoint, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${AI_CONFIG.apiKey}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: AI_CONFIG.textModel,
+                    messages: [
+                        { role: "user", content: prompt }
+                    ],
+                    temperature: 0.3
+                })
+            });
+
+            if (!response.ok) throw new Error(`Text API 请求失败: ${response.status}`);
+            
+            const data = await response.json();
+            return data.choices[0].message.content;
+        }
+    </script>
+</body>
+</html>
