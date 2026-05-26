@@ -313,7 +313,7 @@ UI 行为：
 - 生成并发批次：`GEN_BATCH_SIZE = 50`
 - 词条生成模型：`AI_CONFIG.model`
 - 词条生成温度：`0.3`
-- OCR 视觉模型：`PaddlePaddle/PaddleOCR-VL`
+- OCR 视觉模型：`PaddlePaddle/PaddleOCR-VL-1.5`
 - OCR 清洗模型：`AI_CONFIG.model`
 
 ---

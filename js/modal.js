@@ -125,10 +125,10 @@ function buildModalCardHtml(row, displayColumns) {
                         <button type="button" class="wm-ai-regen-btn" style="display:none;" disabled>↺ 重新生成</button>
                     </div>
                     <div class="wm-ai-tabs">
-                        ${AI_ROLES.map((r, i) => `<div class="wm-ai-tab${i === 0 ? ' active' : ''}" data-role="${r.id}" data-state="loading">${escapeHtml(r.label)}</div>`).join('')}
+                        ${AI_ROLES.map((r, i) => `<div class="wm-ai-tab${i === 0 ? ' active' : ''}" data-role="${r.id}" data-state="idle">${escapeHtml(r.label)}</div>`).join('')}
                     </div>
                     <div class="wm-ai-panels">
-                        ${AI_ROLES.map((r, i) => `<div class="wm-ai-panel${i === 0 ? ' active' : ''}" data-role="${r.id}" data-state="loading"><div class="wm-ai-text"></div></div>`).join('')}
+                        ${AI_ROLES.map((r, i) => `<div class="wm-ai-panel${i === 0 ? ' active' : ''}" data-role="${r.id}" data-state="idle"><div class="wm-ai-text"></div></div>`).join('')}
                     </div>
                 </div>
                 ${phraseBlockHtml}
@@ -210,7 +210,7 @@ function switchAiTab(block, roleId) {
         p.classList.toggle('active', p.getAttribute('data-role') === roleId));
 
     const panel = block.querySelector(`.wm-ai-panel[data-role="${roleId}"]`);
-    const state = panel?.getAttribute('data-state') ?? 'loading';
+    const state = panel?.getAttribute('data-state') ?? 'idle';
     const regenBtn = block.querySelector('.wm-ai-regen-btn');
     if (regenBtn) {
         const done = state === 'done' || state === 'error';
@@ -219,14 +219,25 @@ function switchAiTab(block, roleId) {
     }
 }
 
+// 按需启动生成（跳过已加载/加载中；命中缓存时直接渲染）
+function ensureRoleGeneration(block, word, phonetic, def, brief, roleId) {
+    const panel = block.querySelector(`.wm-ai-panel[data-role="${roleId}"]`);
+    if (!panel) return;
+    const state = panel.getAttribute('data-state');
+    if (state === 'loading' || state === 'done') return;
+    startRoleGeneration(block, word, phonetic, def, brief, roleId);
+}
+
 // 针对某一角色启动（或强制重新）生成
-function startRoleGeneration(block, word, phonetic, def, brief, roleId, forceRegen = false) {
+async function startRoleGeneration(block, word, phonetic, def, brief, roleId, forceRegen = false) {
     const panel = block.querySelector(`.wm-ai-panel[data-role="${roleId}"]`);
     if (!panel) return;
     const textEl = panel.querySelector('.wm-ai-text');
 
-    // 命中缓存则直接渲染
+    if (!forceRegen && panel.getAttribute('data-fetching') === '1') return;
+
     if (!forceRegen) {
+        await ensureBundledAiCacheReady(word);
         const cached = getCachedResult(word, roleId);
         if (cached) {
             textEl.innerHTML = formatAiText(cached);
@@ -235,17 +246,20 @@ function startRoleGeneration(block, word, phonetic, def, brief, roleId, forceReg
         }
     }
 
+    panel.setAttribute('data-fetching', '1');
     setTabState(block, roleId, 'loading');
     textEl.textContent = '正在生成…';
 
     fetchAiExplanation({
         word, phonetic, def, brief, roleId,
         onDone(fullText) {
+            panel.removeAttribute('data-fetching');
             textEl.innerHTML = formatAiText(fullText);
             setCachedResult(word, roleId, fullText);
             setTabState(block, roleId, 'done');
         },
         onError(err) {
+            panel.removeAttribute('data-fetching');
             textEl.innerHTML = `<span class="wm-ai-error">生成失败：${escapeHtml(err.message)}</span>`;
             setTabState(block, roleId, 'error');
         },
@@ -335,19 +349,17 @@ function openWordModal(rowData, layoutClass, displayColumns, navCtx = null) {
             if (word) playAudio(word, ev);
         });
 
-        // 并发触发所有角色生成
-        AI_ROLES.forEach(role => {
-            startRoleGeneration(aiBlock, aiWord, aiPhonetic, aiDef, aiBrief, role.id);
-        });
+        // 仅首次触发「例句达人」，其余角色在用户切换 tab 时懒加载
+        startRoleGeneration(aiBlock, aiWord, aiPhonetic, aiDef, aiBrief, 'sentences');
 
-        // 标签页切换
+        // 标签页切换：切换展示并按需触发生成
         aiBlock.querySelectorAll('.wm-ai-tab').forEach(tab => {
-            tab.addEventListener('click', () => switchAiTab(aiBlock, tab.getAttribute('data-role')));
+            tab.addEventListener('click', () => {
+                const roleId = tab.getAttribute('data-role');
+                switchAiTab(aiBlock, roleId);
+                ensureRoleGeneration(aiBlock, aiWord, aiPhonetic, aiDef, aiBrief, roleId);
+            });
         });
-
-        // 默认激活用户在工具栏选择的讲解角色
-        const preferredRole = document.getElementById('roleSelect')?.value || AI_ROLES[0]?.id;
-        if (preferredRole) switchAiTab(aiBlock, preferredRole);
 
         // 重新生成（仅针对当前激活标签）
         const regenBtn = aiBlock.querySelector('.wm-ai-regen-btn');

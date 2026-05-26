@@ -8,6 +8,13 @@ let headers = [];
 let visibleColumns = [];
 let currentVocabFileName = ''; // 当前加载的词表文件名
 
+function getVocabWordIndex(word) {
+    const w = String(word || '').toLowerCase().trim();
+    if (!w) return -1;
+    return allData.findIndex(row => (row[0] || '').trim().toLowerCase() === w);
+}
+window.getVocabWordIndex = getVocabWordIndex;
+
 // --- DOM 元素获取 ---
 const layoutSelect = document.getElementById('layoutSelect');
 const pageSizeInput = document.getElementById('pageSizeInput');
@@ -37,6 +44,7 @@ function loadFromJson(json, fileName) {
     if (fileName) {
         currentVocabFileName = fileName;
         console.log('Current vocab file:', currentVocabFileName);
+        loadBundledAiCache(currentVocabFileName);
     }
     
     initColumnControls();
@@ -79,6 +87,7 @@ async function loadBuiltinVocab(path, sourceFileName) {
     if (!loadFromJson(json, sourceFileName)) {
         throw new Error(`Invalid vocab format: ${sourceFileName}`);
     }
+    await ensureBundledAiCacheReady();
 }
 
 async function loadShanghaiVocab() {

@@ -973,6 +973,14 @@ body {
     font-size: 0.9em;
 }
 
+/* 未加载面板：切换 tab 后自动生成 */
+.wm-ai-panel[data-state="idle"] .wm-ai-text:empty::before {
+    content: '切换到此标签后自动生成';
+    color: rgba(55,53,47,0.35);
+    font-style: italic;
+    font-size: 0.9em;
+}
+
 .wm-ai-placeholder {
     font-size: clamp(13px, 1.8vw, 16px);
     color: rgba(55,53,47,0.4);

@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "vocab": "word(2800).json",
+  "baseName": "ai_cache_word(2800)",
+  "chunkSize": 500,
+  "chunkCount": 6,
+  "entryCount": 3009,
+  "updatedAt": "2026-05-26T03:20:18.828Z"
+}

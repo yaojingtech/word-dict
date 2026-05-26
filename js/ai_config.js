@@ -4,8 +4,8 @@
 
 const AI_CONFIG = {
     endpoint: 'https://api.siliconflow.cn/v1/chat/completions',
-    apiKey: 'sk-pqhajqrvfsyeufdproqvkjcsyykggprmtflahbidbptfvzul',
-    model: 'Qwen/Qwen2.5-7B-Instruct',
+    apiKey: 'sk-ronmcnlsxgffegdbxfhprrutknqydofkccrambklihgfkngo',
+    model: 'deepseek-ai/DeepSeek-V4-Flash',
 };
 
 // --- 多角色讲解方案 ---
@@ -118,33 +118,137 @@ function buildEntry(word, phonetic, def, brief) {
     ].filter(Boolean).join('\n');
 }
 
-// --- 结果缓存（内存 + localStorage 持久化）---
-const _AI_CACHE_LS_KEY = 'word_dict_ai_v1';
-let _aiCache = null;
+// --- 结果缓存 ---
+// 内置缓存：split_ai_cache.js 切分后的 manifest + chunk（按需加载）
+// 用户缓存：localStorage，用于「重新生成」覆盖内置数据
+const _AI_USER_CACHE_LS_KEY = 'word_dict_ai_user_v1';
+const _AI_CACHE_LS_KEY = 'word_dict_ai_v1'; // 旧版 key，读取时兼容
+let _bundledCache = {};
+let _userCache = null;
+let _bundledCachePromise = null;
+let _cacheManifest = null;
+let _loadedChunkIds = new Set();
+let _chunkLoadPromises = new Map();
 
-function _loadCache() {
-    if (_aiCache) return _aiCache;
+function _cacheKey(word, roleId) {
+    return `${word.toLowerCase().trim()}|${roleId}`;
+}
+
+function _loadUserCache() {
+    if (_userCache) return _userCache;
+    _userCache = {};
     try {
-        const raw = localStorage.getItem(_AI_CACHE_LS_KEY);
-        _aiCache = raw ? JSON.parse(raw) : {};
-    } catch { _aiCache = {}; }
-    return _aiCache;
+        const raw = localStorage.getItem(_AI_USER_CACHE_LS_KEY);
+        if (raw) Object.assign(_userCache, JSON.parse(raw));
+    } catch { /* ignore */ }
+    // 兼容旧版缓存
+    try {
+        const legacy = localStorage.getItem(_AI_CACHE_LS_KEY);
+        if (legacy) Object.assign(_userCache, JSON.parse(legacy));
+    } catch { /* ignore */ }
+    return _userCache;
+}
+
+function getBundledAiCacheBaseName(vocabFileName) {
+    const base = String(vocabFileName || '').replace(/\.json$/i, '');
+    if (!base) return null;
+    return `ai_cache_${base}`;
+}
+
+function getBundledAiCacheFileName(vocabFileName) {
+    const baseName = getBundledAiCacheBaseName(vocabFileName);
+    return baseName ? `${baseName}.json` : null;
+}
+
+async function _fetchCacheJson(fileName) {
+    const res = await fetch(`date/${encodeURIComponent(fileName)}?t=${Date.now()}`);
+    if (!res.ok) return null;
+    return res.json();
+}
+
+async function _loadMonolithicCache(fileName) {
+    const json = await _fetchCacheJson(fileName);
+    if (!json) return false;
+    _bundledCache = json.entries || json;
+    console.log(`AI 内置缓存已加载: date/${fileName} (${Object.keys(_bundledCache).length} 条)`);
+    return true;
+}
+
+async function ensureChunkForWord(word) {
+    if (!_cacheManifest) return;
+
+    const idxFn = typeof window !== 'undefined' ? window.getVocabWordIndex : null;
+    const idx = idxFn ? idxFn(word) : -1;
+    if (idx < 0) return;
+
+    const chunkId = String(Math.floor(idx / _cacheManifest.chunkSize)).padStart(3, '0');
+    if (_loadedChunkIds.has(chunkId)) return;
+
+    let promise = _chunkLoadPromises.get(chunkId);
+    if (!promise) {
+        const fileName = `${_cacheManifest.baseName}.chunk-${chunkId}.json`;
+        promise = (async () => {
+            const json = await _fetchCacheJson(fileName);
+            if (json) {
+                Object.assign(_bundledCache, json.entries || json);
+                _loadedChunkIds.add(chunkId);
+                const count = Object.keys(json.entries || json).length;
+                console.log(`AI 缓存分片已加载: date/${fileName} (${count} 条)`);
+            }
+        })();
+        _chunkLoadPromises.set(chunkId, promise);
+    }
+    await promise;
+}
+
+async function loadBundledAiCache(vocabFileName) {
+    _bundledCache = {};
+    _cacheManifest = null;
+    _loadedChunkIds.clear();
+    _chunkLoadPromises.clear();
+
+    _bundledCachePromise = (async () => {
+        const baseName = getBundledAiCacheBaseName(vocabFileName);
+        if (!baseName) return;
+
+        const manifest = await _fetchCacheJson(`${baseName}.manifest.json`);
+        if (manifest?.baseName) {
+            _cacheManifest = manifest;
+            console.log(
+                `AI 缓存 manifest 已加载: date/${baseName}.manifest.json (${manifest.chunkCount} 片, ${manifest.entryCount} 条)`
+            );
+            return;
+        }
+
+        const fileName = `${baseName}.json`;
+        const ok = await _loadMonolithicCache(fileName);
+        if (!ok) console.warn(`AI 内置缓存未找到: date/${baseName}.manifest.json 或 date/${fileName}`);
+    })();
+    return _bundledCachePromise;
+}
+
+async function ensureBundledAiCacheReady(word) {
+    if (_bundledCachePromise) await _bundledCachePromise;
+    if (word) await ensureChunkForWord(word);
 }
 
 function getCachedResult(word, roleId) {
-    return _loadCache()[`${word.toLowerCase().trim()}|${roleId}`] ?? null;
+    const key = _cacheKey(word, roleId);
+    const user = _loadUserCache()[key];
+    if (user) return user;
+    return _bundledCache[key] ?? null;
 }
 
 function setCachedResult(word, roleId, content) {
-    const cache = _loadCache();
-    const key = `${word.toLowerCase().trim()}|${roleId}`;
+    const cache = _loadUserCache();
+    const key = _cacheKey(word, roleId);
     cache[key] = content;
     try {
         const keys = Object.keys(cache);
         if (keys.length > 300) keys.slice(0, keys.length - 300).forEach(k => delete cache[k]);
-        localStorage.setItem(_AI_CACHE_LS_KEY, JSON.stringify(cache));
+        localStorage.setItem(_AI_USER_CACHE_LS_KEY, JSON.stringify(cache));
     } catch (e) {
-        console.warn('AI cache write failed:', e.message);
+        console.warn('AI user cache write failed:', e.message);
     }
 }
 

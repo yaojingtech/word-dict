@@ -1,10 +1,10 @@
 // ==========================================
 // 图片选词提取模块 (ai_extract.js)
-// 使用 PaddlePaddle/PaddleOCR-VL 模型提取图片中的所有英文单词
+// 使用 PaddlePaddle/PaddleOCR-VL-1.5 模型提取图片中的所有英文单词
 // 依赖: ai_config.js (AI_CONFIG), utils.js (escapeHtml)
 // ==========================================
 
-const EXTRACT_MODEL = 'PaddlePaddle/PaddleOCR-VL';
+const EXTRACT_MODEL = 'PaddlePaddle/PaddleOCR-VL-1.5';
 
 const EXTRACT_PROMPT = `请仔细观察图片，识别其中出现的所有文本内容，将识别到的完整文本返回给我。`;
 
