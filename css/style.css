@@ -1039,6 +1039,53 @@ body {
     border-left: 3px solid rgba(55, 53, 47, 0.15);
     margin: 4px 0;
 }
+
+.wm-ai-sentence-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.wm-ai-sentence-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.wm-ai-speak-btn {
+    flex-shrink: 0;
+    margin-top: 1px;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    background: rgba(55, 53, 47, 0.08);
+    color: rgba(55, 53, 47, 0.55);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, color 0.15s, transform 0.12s;
+}
+
+.wm-ai-speak-btn:hover {
+    background: rgba(55, 53, 47, 0.14);
+    color: rgb(55, 53, 47);
+}
+
+.wm-ai-speak-btn:active {
+    transform: scale(0.94);
+}
+
+.wm-ai-speak-btn.speaking {
+    background: rgba(232, 92, 40, 0.14);
+    color: #e85c28;
+}
+
+.wm-ai-speak-icon {
+    font-size: 14px;
+    line-height: 1;
+}
 .wm-ai-sentence strong {
     color: rgb(30, 30, 30);
     font-weight: 700;

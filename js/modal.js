@@ -50,6 +50,8 @@ function playAudio(word, ev = null) {
     if (ev) ev.stopPropagation();
     word = (word || '').trim();
     if (!word) return;
+
+    stopAiSpeech();
     
     const accentSelect = document.getElementById('accentSelect');
     const type = (accentSelect && accentSelect.value) || '1'; // 1: 英音, 2: 美音
@@ -60,6 +62,106 @@ function playAudio(word, ev = null) {
     currentAudio.play().catch(() => {
         console.warn('浏览器可能限制了自动播放');
     });
+}
+
+// --- 例句 TTS（Web Speech API，优先 Apple 系统英文女声）---
+const AI_SENTENCE_TTS_RATE = 0.82; // 语速：1 正常，越小越慢（建议 0.75–0.95）
+let _ttsVoice = null;
+let _ttsActiveBtn = null;
+
+function _scoreTtsVoice(voice) {
+    if (!voice || !/^en(-|$)/i.test(voice.lang || '')) return -1;
+    let score = 0;
+    const name = voice.name || '';
+    if (voice.localService) score += 10;
+    if (/Samantha/i.test(name)) score += 100;
+    if (/Siri/i.test(name)) score += 95;
+    if (/Karen|Moira|Tessa|Allison|Ava|Susan|Serena|Kate|Stephanie/i.test(name)) score += 85;
+    if (/Daniel|Alex|Tom/i.test(name)) score += 70;
+    if (/Enhanced|Premium|Super/i.test(name)) score += 25;
+    if ((voice.lang || '').startsWith('en-US')) score += 8;
+    if ((voice.lang || '').startsWith('en-GB')) score += 6;
+    return score;
+}
+
+function pickEnglishTtsVoice() {
+    if (!window.speechSynthesis) return null;
+    const voices = speechSynthesis.getVoices();
+    if (!voices.length) return _ttsVoice;
+    let best = null;
+    let bestScore = -1;
+    voices.forEach(v => {
+        const s = _scoreTtsVoice(v);
+        if (s > bestScore) {
+            bestScore = s;
+            best = v;
+        }
+    });
+    _ttsVoice = best;
+    return best;
+}
+
+function stopAiSpeech() {
+    if (!window.speechSynthesis) return;
+    speechSynthesis.cancel();
+    if (_ttsActiveBtn) {
+        _ttsActiveBtn.classList.remove('speaking');
+        _ttsActiveBtn = null;
+    }
+}
+
+function speakAiSentence(text, btnEl, ev = null) {
+    if (ev) ev.stopPropagation();
+    text = (text || '').trim();
+    if (!text || !window.speechSynthesis) return;
+
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio = null;
+    }
+
+    if (_ttsActiveBtn === btnEl && speechSynthesis.speaking) {
+        stopAiSpeech();
+        return;
+    }
+
+    stopAiSpeech();
+    pickEnglishTtsVoice();
+
+    const utter = new SpeechSynthesisUtterance(text);
+    const voice = _ttsVoice || pickEnglishTtsVoice();
+    if (voice) {
+        utter.voice = voice;
+        utter.lang = voice.lang;
+    } else {
+        utter.lang = 'en-US';
+    }
+    utter.rate = AI_SENTENCE_TTS_RATE;
+    utter.pitch = 1;
+
+    if (btnEl) {
+        _ttsActiveBtn = btnEl;
+        btnEl.classList.add('speaking');
+        utter.onend = () => {
+            if (_ttsActiveBtn === btnEl) {
+                btnEl.classList.remove('speaking');
+                _ttsActiveBtn = null;
+            }
+        };
+        utter.onerror = () => {
+            if (_ttsActiveBtn === btnEl) {
+                btnEl.classList.remove('speaking');
+                _ttsActiveBtn = null;
+            }
+        };
+    }
+
+    speechSynthesis.speak(utter);
+}
+
+if (typeof window !== 'undefined' && window.speechSynthesis) {
+    pickEnglishTtsVoice();
+    window.speechSynthesis.addEventListener('voiceschanged', () => { _ttsVoice = null; });
 }
 
 // --- 模态框 HTML 构建 ---
@@ -165,7 +267,14 @@ function wrapAiEnglishWords(html) {
         .join('');
 }
 
-function formatAiText(text) {
+function extractSentenceForTts(line) {
+    let s = line.replace(/^\d+\.\s*/, '');
+    s = s.replace(/\*\*(.+?)\*\*/g, '$1');
+    s = s.replace(/\s*[（(][^）)]*[）)]\s*$/, '').trim();
+    return s;
+}
+
+function formatAiText(text, roleId = '') {
     return text.split('\n').map(line => {
         const trimmed = line.trim();
         if (!trimmed) return '<div class="wm-ai-gap"></div>';
@@ -178,6 +287,13 @@ function formatAiText(text) {
         }
         // 编号例句行：1. / 2. 等
         if (/^\d+\./.test(trimmed)) {
+            if (roleId === 'sentences') {
+                const ttsText = extractSentenceForTts(trimmed);
+                const speakBtn = ttsText
+                    ? `<button type="button" class="wm-ai-speak-btn" data-sentence="${escapeHtml(ttsText)}" title="朗读例句" aria-label="朗读例句"><span class="wm-ai-speak-icon" aria-hidden="true">🔊</span></button>`
+                    : '';
+                return `<div class="wm-ai-sentence wm-ai-sentence-row"><span class="wm-ai-sentence-body">${html}</span>${speakBtn}</div>`;
+            }
             return `<div class="wm-ai-sentence">${html}</div>`;
         }
         return `<div class="wm-ai-line">${html}</div>`;
@@ -240,7 +356,7 @@ async function startRoleGeneration(block, word, phonetic, def, brief, roleId, fo
         await ensureBundledAiCacheReady(word);
         const cached = getCachedResult(word, roleId);
         if (cached) {
-            textEl.innerHTML = formatAiText(cached);
+            textEl.innerHTML = formatAiText(cached, roleId);
             setTabState(block, roleId, 'done');
             return;
         }
@@ -254,7 +370,7 @@ async function startRoleGeneration(block, word, phonetic, def, brief, roleId, fo
         word, phonetic, def, brief, roleId,
         onDone(fullText) {
             panel.removeAttribute('data-fetching');
-            textEl.innerHTML = formatAiText(fullText);
+            textEl.innerHTML = formatAiText(fullText, roleId);
             setCachedResult(word, roleId, fullText);
             setTabState(block, roleId, 'done');
         },
@@ -269,6 +385,7 @@ async function startRoleGeneration(block, word, phonetic, def, brief, roleId, fo
 // --- 模态框交互控制 ---
 // 接收行数据、布局方式、列配置，实现解耦
 function openWordModal(rowData, layoutClass, displayColumns, navCtx = null) {
+    stopAiSpeech();
     _modalNavContext = navCtx;
     const overlay = document.getElementById('wordModalOverlay');
     const box = document.getElementById('wordModalBox');
@@ -343,6 +460,12 @@ function openWordModal(rowData, layoutClass, displayColumns, navCtx = null) {
     if (aiBlock) {
         // AI 文本中的英文词通过委托实现点击发音（异步渲染内容也可用）
         aiBlock.addEventListener('click', ev => {
+            const speakBtn = ev.target.closest('.wm-ai-speak-btn');
+            if (speakBtn) {
+                const sentence = speakBtn.getAttribute('data-sentence');
+                if (sentence) speakAiSentence(sentence, speakBtn, ev);
+                return;
+            }
             const wordEl = ev.target.closest('.wm-ai-word');
             if (!wordEl) return;
             const word = wordEl.getAttribute('data-word') || wordEl.textContent || '';
@@ -375,6 +498,7 @@ function openWordModal(rowData, layoutClass, displayColumns, navCtx = null) {
 
 function closeWordModal() {
     if (_autoPlayTimer) { clearTimeout(_autoPlayTimer); _autoPlayTimer = null; }
+    stopAiSpeech();
     const overlay = document.getElementById('wordModalOverlay');
     if (overlay) {
         if (document.activeElement && overlay.contains(document.activeElement)) {
