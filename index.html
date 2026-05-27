@@ -11,7 +11,7 @@
 <body>
 
 <div class="controls">
-    <button type="button" id="genWordsBtn" class="gen-words-btn" title="输入单词，用AI自动生成词条并添加到列表">拍照识词</button>
+    <button type="button" id="genWordsBtn" class="gen-words-btn" title="词表设置、切换与智能生成">词表设置</button>
     <div class="control-group control-group-sep" aria-hidden="true"></div>
     <div class="control-group">
         <button type="button" id="fileInputBtn" class="upload-btn" title="上传 CSV 或 JSON 词表文件">上传</button>
@@ -53,11 +53,11 @@
     </div>
 </div>
 
-<!-- 启动词表选择弹窗 -->
+<!-- 词表选择弹窗（由「选择词表」按钮打开） -->
 <div id="startupVocabOverlay" class="startup-vocab-overlay" aria-hidden="true" style="display:none">
     <div class="startup-vocab-box" role="dialog" aria-label="选择词表">
         <div class="startup-vocab-title">选择词表</div>
-        <div class="startup-vocab-subtitle">请选择一个词表开始，或点击“新建空白词表”进入主页</div>
+        <div class="startup-vocab-subtitle">选择内置词表加载到首页，或新建空白词表</div>
         <div class="startup-vocab-actions">
             <button type="button" id="startupPickNgslBtn" class="startup-vocab-btn primary">
                 <span class="startup-vocab-btn-name">NGSL通用高频词</span>
@@ -164,12 +164,9 @@
 <!-- 单词详情模态框 -->
 <div id="wordModalOverlay" class="word-modal-overlay" aria-hidden="true">
     <div class="word-modal-backdrop" id="wordModalBackdrop"></div>
-    <button type="button" id="wordModalPrev" class="word-modal-nav-btn" aria-label="上一个单词">&#8249;</button>
     <div id="wordModalBox" class="word-modal-box" role="dialog">
-        <button type="button" class="word-modal-close" id="wordModalClose" aria-label="关闭">×</button>
         <div id="wordModalContent" class="word-modal-content"></div>
     </div>
-    <button type="button" id="wordModalNext" class="word-modal-nav-btn" aria-label="下一个单词">&#8250;</button>
 </div>
 
 <!-- 页面操作 Popover（点击页脚触发） -->
@@ -253,6 +250,7 @@
             <div class="gen-ocr-btns">
                 <button type="button" id="genOcrUploadBtn" class="gen-ocr-source-btn">AI智能识词（单词表）</button>
                 <button type="button" id="genOcrExtractBtn" class="gen-ocr-source-btn">OCR手动选词（文章）</button>
+                <button type="button" id="pickVocabBtn" class="gen-ocr-source-btn gen-ocr-vocab-btn">选择词表</button>
             </div>
             <div id="genOcrPreview" class="gen-ocr-preview" style="display:none">
                 <div class="ocr-preview-card">
@@ -363,6 +361,7 @@
     <script src="js/utils.js"></script>
     <script src="js/columns.js"></script>
     <script src="js/ai_config.js"></script>
+    <script src="js/kids_def.js"></script>
     <script src="js/modal.js"></script>
 <script src="js/export.js"></script>
 <script src="js/render.js"></script>

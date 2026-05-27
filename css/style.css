@@ -599,25 +599,6 @@ body {
     gap: 0;
     overflow: hidden;
 }
-.word-modal-close {
-    position: absolute;
-    top: 14px;
-    right: 16px;
-    width: 48px;
-    height: 48px;
-    border: none;
-    background: linear-gradient(180deg, #ffc99b 0%, #ff9f6b 100%);
-    border-radius: 50%;
-    font-size: 28px;
-    line-height: 1;
-    cursor: pointer;
-    z-index: 10;
-    color: #fff;
-    box-shadow: 0 4px 14px rgba(255,120,60,0.35);
-    transition: transform 0.2s;
-}
-.word-modal-close:hover { transform: scale(1.08); }
-.word-modal-close:active { transform: scale(0.95); }
 
 /* 卡片布局 · 填满垂直空间 */
 .wm-card {
@@ -626,60 +607,88 @@ body {
     height: 100%;
     min-height: 0;
     gap: 16px;
-    font-family: "Comic Sans MS", "微软雅黑", "PingFang SC", sans-serif;
+    font-family: -apple-system-rounded, "SF Pro Rounded", "PingFang SC", "Helvetica Neue", sans-serif;
 }
 .wm-hero {
     flex-shrink: 0;
     min-width: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 20px 16px;
-    cursor: pointer;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: stretch;
+    padding: 0;
     background: linear-gradient(135deg, rgba(255,230,200,0.6) 0%, rgba(255,210,170,0.4) 100%);
     border-radius: 20px;
     border: 3px solid rgba(255,180,120,0.5);
     box-shadow: inset 0 2px 0 rgba(255,255,255,0.6);
+    overflow: hidden;
 }
-/* 模态框两侧导航箭头（overlay flex 子元素，紧贴模态框外侧）*/
-.word-modal-nav-btn {
-    position: relative;
-    z-index: 10001;
-    flex-shrink: 0;
-    width: 60px;
-    height: 60px;
-    margin: 0 18px;
-    border: none;
-    background: rgba(255,255,255,0.72);
-    backdrop-filter: blur(6px);
-    border-radius: 50%;
-    font-size: 36px;
-    line-height: 1;
-    color: #c44a1e;
-    cursor: pointer;
+
+.wm-hero-center {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
-    transition: background 0.18s, transform 0.18s, box-shadow 0.18s;
+    min-width: 0;
+    padding: 16px 12px;
+    cursor: pointer;
+    border-left: 2px solid rgba(255,180,120,0.45);
+    border-right: 2px solid rgba(255,180,120,0.45);
+}
+
+.wm-hero-nav-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    width: clamp(56px, 14vw, 80px);
+    padding: 10px 6px;
+    border: none;
+    background: rgba(255,255,255,0.72);
+    color: #c44a1e;
+    font-family: inherit;
+    cursor: pointer;
     user-select: none;
+    transition: background 0.18s, color 0.18s;
 }
 
-.word-modal-nav-btn:hover:not(:disabled) {
-    background: rgba(255,255,255,0.97);
-    transform: scale(1.12);
-    box-shadow: 0 6px 28px rgba(0,0,0,0.18);
+.wm-hero-nav-btn:hover:not(:disabled) {
+    background: rgba(255,255,255,0.95);
+    color: #a33a14;
 }
 
-.word-modal-nav-btn:active:not(:disabled) {
-    transform: scale(0.96);
+.wm-hero-nav-btn:active:not(:disabled) {
+    background: rgba(255,245,235,0.98);
 }
 
-.word-modal-nav-btn:disabled {
-    opacity: 0.18;
+.wm-hero-nav-btn:disabled {
+    opacity: 0.28;
     cursor: default;
-    box-shadow: none;
+}
+
+.wm-hero-nav-btn[hidden] {
+    display: none;
+}
+
+.wm-hero-nav-arrow {
+    font-size: clamp(28px, 5vw, 38px);
+    font-weight: 700;
+    line-height: 1;
+}
+
+.wm-hero-nav-label {
+    font-size: clamp(11px, 1.4vw, 13px);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+}
+
+.wm-hero--solo {
+    grid-template-columns: 1fr;
+}
+
+.wm-hero--solo .wm-hero-center {
+    border-left: none;
+    border-right: none;
 }
 
 .wm-word {
@@ -706,8 +715,13 @@ body {
 }
 
 @media (max-width: 768px) {
-    .wm-hero {
-        padding: 14px 10px;
+    .wm-hero-center {
+        padding: 12px 8px;
+    }
+
+    .wm-hero-nav-btn {
+        width: clamp(48px, 13vw, 64px);
+        padding: 8px 4px;
     }
 
     .wm-word {
@@ -885,6 +899,43 @@ body {
     flex: 0 0 auto;
 }
 
+.wm-label-row-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.wm-label-row-actions .wm-ai-regen-btn {
+    margin-left: 0;
+}
+
+.wm-modal-close-btn {
+    padding: 5px 14px;
+    background: rgba(255, 235, 235, 0.85);
+    color: #d4736a;
+    border: 1.5px solid rgba(212, 115, 106, 0.45);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: clamp(12px, 1.5vw, 14px);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.18s, border-color 0.18s, color 0.18s;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.wm-modal-close-btn:hover {
+    background: rgba(255, 220, 220, 0.95);
+    border-color: rgba(212, 115, 106, 0.75);
+    color: #c25550;
+}
+
+.wm-modal-close-btn:active {
+    background: rgba(255, 200, 200, 0.95);
+}
+
 .wm-ai-regen-btn {
     margin-left: auto;
     padding: 5px 14px;
@@ -1020,12 +1071,25 @@ body {
 .wm-ai-section {
     font-weight: 700;
     color: rgb(55, 53, 47);
-    margin-top: 0.75em;
-    margin-bottom: 0.15em;
+    margin-top: 0.35em;
+    margin-bottom: 0;
     font-size: 1.05em;
 }
 
+/* 例句达人：场景标题略小、例句正文略大 */
+.wm-ai-panel[data-role="sentences"] .wm-ai-section {
+    font-size: calc(1em - 3px);
+}
+
+.wm-ai-panel[data-role="sentences"] .wm-ai-sentence-body {
+    font-size: calc(1em + 2px);
+}
+
 .wm-ai-section:first-child { margin-top: 0; }
+
+.wm-ai-gap + .wm-ai-section {
+    margin-top: 0.2em;
+}
 
 .wm-ai-line {
     color: rgb(55, 53, 47);
@@ -1035,9 +1099,9 @@ body {
 /* 编号例句行（1. 2. 3. …） */
 .wm-ai-sentence {
     color: rgb(55, 53, 47);
-    padding: 3px 0 3px 1em;
+    padding: 2px 0 2px 1em;
     border-left: 3px solid rgba(55, 53, 47, 0.15);
-    margin: 4px 0;
+    margin: 0 0 2px;
 }
 
 .wm-ai-sentence-row {
@@ -1113,7 +1177,41 @@ body {
     color: #e85c28;
 }
 
-.wm-ai-gap { height: 0.4em; }
+/* 儿童英英释义：场景例句高亮 */
+.wm-kids-def-text {
+    line-height: 1.65;
+}
+
+.wm-kids-def-text .wm-def-word {
+    padding: 0;
+    margin: 0;
+}
+
+.wm-kids-def-context {
+    display: block;
+    margin-top: 0.55em;
+}
+
+.wm-kids-highlight-green {
+    color: #2ea043;
+    font-weight: 600;
+}
+
+.wm-def-word.wm-kids-highlight-green:hover,
+.wm-kids-highlight-green .wm-def-word:hover {
+    color: #248a3a;
+}
+
+/* 简明释义：默认折叠 */
+.wm-brief-block.is-collapsed .wm-brief-body {
+    display: none;
+}
+
+.wm-brief-body {
+    font-size: calc(1em - 1px);
+}
+
+.wm-ai-gap { height: 0.12em; }
 
 .wm-ai-error {
     color: #c44a1e;
@@ -1133,6 +1231,146 @@ body {
     margin-left: 2px;
     vertical-align: text-bottom;
     animation: ai-cursor-blink 0.65s ease infinite;
+}
+
+/* ========== iPad / 平板：全屏阅读 + 大字模式 ========== */
+@media (min-width: 768px) and (pointer: coarse) {
+    .word-modal-overlay.show {
+        padding: 0;
+    }
+
+    .word-modal-box,
+    .word-modal-box.landscape {
+        width: 100vw;
+        height: 100vh;
+        max-width: none;
+        aspect-ratio: unset;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .word-modal-content {
+        padding: 2% 3%;
+    }
+
+    .wm-card {
+        gap: 10px;
+    }
+
+    .wm-hero {
+        border-radius: 16px;
+    }
+
+    .wm-hero-nav-btn {
+        width: clamp(64px, 12vw, 88px);
+        padding: 12px 8px;
+    }
+
+    .wm-hero-nav-arrow {
+        font-size: clamp(32px, 4.5vw, 42px);
+    }
+
+    .wm-hero-nav-label {
+        font-size: clamp(12px, 1.5vw, 14px);
+    }
+
+    .wm-word {
+        font-size: clamp(44px, 10vw, 72px);
+        padding: 8px 20px;
+        border-radius: 18px;
+    }
+
+    .wm-body {
+        gap: 10px;
+    }
+
+    .wm-block {
+        padding: 12px 16px;
+        border-radius: 14px;
+    }
+
+    .wm-label-row {
+        gap: 10px;
+        margin-bottom: 8px;
+        padding-bottom: 6px;
+    }
+
+    .wm-label,
+    .wm-label-row .wm-label {
+        font-size: clamp(14px, 2vw, 18px);
+    }
+
+    .wm-label-row .wm-phonetic,
+    .wm-phonetic {
+        font-size: clamp(16px, 2.2vw, 22px);
+        padding: 4px 12px;
+    }
+
+    .wm-text {
+        font-size: 22px;
+        line-height: 1.55;
+    }
+
+    .wm-kids-def-text {
+        font-size: 23px;
+        line-height: 1.55;
+    }
+
+    .wm-kids-highlight-green {
+        font-size: inherit;
+    }
+
+    .wm-modal-close-btn {
+        padding: 8px 16px;
+        font-size: clamp(13px, 1.6vw, 15px);
+    }
+
+    .wm-ai-text {
+        font-size: clamp(18px, 2.4vw, 26px);
+        line-height: 1.6;
+    }
+
+    .wm-ai-sentence {
+        padding: 2px 0 2px 0.75em;
+        margin: 0 0 2px;
+    }
+
+    .wm-ai-sentence-row {
+        gap: 10px;
+    }
+
+    .wm-ai-speak-btn {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+    }
+
+    .wm-ai-speak-icon {
+        font-size: 20px;
+    }
+
+    .wm-ai-tab {
+        padding: 8px 22px;
+        font-size: clamp(14px, 1.8vw, 17px);
+    }
+
+    .wm-phrase-en {
+        font-size: clamp(16px, 2.2vw, 22px);
+    }
+
+    .wm-phrase-zh {
+        font-size: clamp(14px, 1.8vw, 18px);
+    }
+
+    .wm-phrase-item {
+        padding: 6px 0;
+    }
+
+    .wm-ai-regen-btn,
+    .wm-brief-toggle-btn {
+        padding: 8px 16px;
+        font-size: clamp(13px, 1.6vw, 15px);
+    }
 }
 
 /* --- 打印媒体查询 --- */

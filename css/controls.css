@@ -880,6 +880,14 @@
 .gen-ocr-btns {
     display: flex;
     gap: 8px;
+    align-items: stretch;
+}
+
+.gen-ocr-vocab-btn {
+    flex: 0 0 auto;
+    margin-left: auto;
+    padding: 8px 14px;
+    white-space: nowrap;
 }
 
 .gen-ocr-source-btn {

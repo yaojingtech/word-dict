@@ -26,7 +26,7 @@ function navigateModal(delta) {
         _modalNavContext.data[newIndex],
         _modalNavContext.getLayout(),
         _modalNavContext.getColumns(),
-        { ..._modalNavContext, index: newIndex }
+        { ..._modalNavContext, index: newIndex, autoPlayImmediate: true }
     );
 }
 
@@ -184,6 +184,7 @@ function buildModalCardHtml(row, displayColumns) {
 
     def = wrapDefWordsForModal(escapeHtml(def));
     brief = wrapBriefPosForModal(escapeHtml(brief));
+    const defHtml = getKidsDefDisplayHtml(rawWord, def) || '—';
 
     // 将短语中每个单词包成独立可点击 span
     function wrapPhraseWords(raw) {
@@ -209,18 +210,38 @@ function buildModalCardHtml(row, displayColumns) {
 
     return `
         <div class="wm-card">
-            <div class="wm-hero" ${rawWord ? `title="点击发音"` : ''}>
-                <div class="wm-word" ${rawWord ? `data-word="${escapeHtml(rawWord)}"` : ''}>${escapeHtml(rawWord) || '&nbsp;'}</div>
+            <div class="wm-hero">
+                <button type="button" class="wm-hero-nav-btn wm-hero-nav-prev" aria-label="上一个单词">
+                    <span class="wm-hero-nav-arrow" aria-hidden="true">‹</span>
+                    <span class="wm-hero-nav-label">上一个</span>
+                </button>
+                <div class="wm-hero-center" ${rawWord ? `title="点击发音"` : ''}>
+                    <div class="wm-word" ${rawWord ? `data-word="${escapeHtml(rawWord)}"` : ''}>${escapeHtml(rawWord) || '&nbsp;'}</div>
+                </div>
+                <button type="button" class="wm-hero-nav-btn wm-hero-nav-next" aria-label="下一个单词">
+                    <span class="wm-hero-nav-label">下一个</span>
+                    <span class="wm-hero-nav-arrow" aria-hidden="true">›</span>
+                </button>
             </div>
             <div class="wm-body">
-                <div class="wm-block">
+                <div class="wm-block wm-kids-def-block">
                     <div class="wm-label-row">
                         <div class="wm-label">📖 英文释义</div>
                         ${phonetic ? `<div class="wm-phonetic">${escapeHtml(phonetic)}</div>` : ''}
+                        <div class="wm-label-row-actions">
+                            <button type="button" class="wm-modal-close-btn" aria-label="关闭页面">关闭页面</button>
+                            <button type="button" class="wm-ai-regen-btn wm-kids-def-regen-btn">↺ 重新生成</button>
+                        </div>
                     </div>
-                    <div class="wm-text">${def || '—'}</div>
+                    <div class="wm-text wm-kids-def-text">${defHtml}</div>
                 </div>
-                <div class="wm-block"><div class="wm-label">✨ 简明释义</div><div class="wm-text">${brief || '—'}</div></div>
+                <div class="wm-block wm-brief-block is-collapsed">
+                    <div class="wm-label-row">
+                        <div class="wm-label">✨ 简明释义</div>
+                        <button type="button" class="wm-ai-regen-btn wm-brief-toggle-btn" aria-expanded="false">展开</button>
+                    </div>
+                    <div class="wm-text wm-brief-body">${brief || '—'}</div>
+                </div>
                 <div class="wm-block wm-ai-block">
                     <div class="wm-label-row">
                         <div class="wm-label">🤖 AI 单词讲解</div>
@@ -384,7 +405,7 @@ async function startRoleGeneration(block, word, phonetic, def, brief, roleId, fo
 
 // --- 模态框交互控制 ---
 // 接收行数据、布局方式、列配置，实现解耦
-function openWordModal(rowData, layoutClass, displayColumns, navCtx = null) {
+async function openWordModal(rowData, layoutClass, displayColumns, navCtx = null) {
     stopAiSpeech();
     _modalNavContext = navCtx;
     const overlay = document.getElementById('wordModalOverlay');
@@ -392,49 +413,6 @@ function openWordModal(rowData, layoutClass, displayColumns, navCtx = null) {
     const contentEl = document.getElementById('wordModalContent');
     if (!overlay || !box || !contentEl) return;
 
-    contentEl.innerHTML = buildModalCardHtml(rowData, displayColumns);
-    box.classList.toggle('landscape', layoutClass === 'a4-landscape');
-    overlay.classList.add('show');
-    overlay.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden';
-
-    document.addEventListener('keydown', onWordModalKeydown);
-
-    // 前/后导航按钮（位于 overlay 层，modal box 外侧）
-    const prevBtn = document.getElementById('wordModalPrev');
-    const nextBtn = document.getElementById('wordModalNext');
-    if (prevBtn && nextBtn) {
-        if (navCtx) {
-            prevBtn.style.visibility = '';
-            nextBtn.style.visibility = '';
-            prevBtn.disabled = navCtx.index <= 0;
-            nextBtn.disabled = navCtx.index >= navCtx.data.length - 1;
-            prevBtn.onclick = () => navigateModal(-1);
-            nextBtn.onclick = () => navigateModal(+1);
-        } else {
-            prevBtn.style.visibility = 'hidden';
-            nextBtn.style.visibility = 'hidden';
-            prevBtn.onclick = null;
-            nextBtn.onclick = null;
-        }
-    }
-
-    // 绑定模态框内部的单词发音点击事件（.wm-hero 整块可点击发音，附带波纹效果）
-    contentEl.querySelectorAll('.wm-hero, .wm-def-word, .wm-phrase[data-word], .wm-phrase-en[data-word], .wm-phrase-word[data-word]').forEach(el => {
-        el.addEventListener('click', (ev) => {
-            let word = '';
-            if (el.classList.contains('wm-hero')) {
-                const wmWord = el.querySelector('.wm-word');
-                word = wmWord?.getAttribute('data-word') || wmWord?.textContent || '';
-                if (wmWord) spawnHeroRipple(wmWord, ev);
-            } else {
-                word = el.getAttribute('data-word') || el.textContent;
-            }
-            if (word) playAudio(word, ev);
-        });
-    });
-
-    // 提取原始词条数据
     let aiWord = '', aiPhonetic = '', aiDef = '', aiBrief = '';
     displayColumns.forEach(col => {
         if (col.type === 'wordPhonetic') {
@@ -446,14 +424,112 @@ function openWordModal(rowData, layoutClass, displayColumns, navCtx = null) {
         }
     });
 
-    // 1 秒后自动朗读单词，同时触发 hero 波纹
+    const autoPlayImmediate = !!navCtx?.autoPlayImmediate;
+    // iOS/iPad：须在用户点击的同步调用栈内播放，await 或 setTimeout 会丢失手势授权
+    if (autoPlayImmediate && aiWord) {
+        if (_autoPlayTimer) clearTimeout(_autoPlayTimer);
+        playAudio(aiWord);
+    }
+
+    await ensureKidsDefReady();
+    contentEl.innerHTML = buildModalCardHtml(rowData, displayColumns);
+    box.classList.toggle('landscape', layoutClass === 'a4-landscape');
+    overlay.classList.add('show');
+    overlay.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+
+    document.addEventListener('keydown', onWordModalKeydown);
+
+    const heroEl = contentEl.querySelector('.wm-hero');
+    if (heroEl) heroEl.classList.toggle('wm-hero--solo', !navCtx);
+
+    // 顶部 hero 区：前/后翻页（格子按钮，不遮挡正文）
+    const prevBtn = contentEl.querySelector('.wm-hero-nav-prev');
+    const nextBtn = contentEl.querySelector('.wm-hero-nav-next');
+    if (prevBtn && nextBtn) {
+        if (navCtx) {
+            prevBtn.hidden = false;
+            nextBtn.hidden = false;
+            prevBtn.disabled = navCtx.index <= 0;
+            nextBtn.disabled = navCtx.index >= navCtx.data.length - 1;
+            prevBtn.onclick = (e) => { e.stopPropagation(); navigateModal(-1); };
+            nextBtn.onclick = (e) => { e.stopPropagation(); navigateModal(+1); };
+        } else {
+            prevBtn.hidden = true;
+            nextBtn.hidden = true;
+            prevBtn.onclick = null;
+            nextBtn.onclick = null;
+        }
+    }
+
+    contentEl.querySelector('.wm-modal-close-btn')?.addEventListener('click', closeWordModal);
+
+    // 绑定模态框内部的单词发音点击事件（hero 中央区域可点击发音，附带波纹效果）
+    contentEl.querySelectorAll('.wm-hero-center, .wm-def-word, .wm-phrase[data-word], .wm-phrase-en[data-word], .wm-phrase-word[data-word]').forEach(el => {
+        el.addEventListener('click', (ev) => {
+            let word = '';
+            if (el.classList.contains('wm-hero-center')) {
+                const wmWord = el.querySelector('.wm-word');
+                word = wmWord?.getAttribute('data-word') || wmWord?.textContent || '';
+                if (wmWord) spawnHeroRipple(wmWord, ev);
+            } else {
+                word = el.getAttribute('data-word') || el.textContent;
+            }
+            if (word) playAudio(word, ev);
+        });
+    });
+
     if (_autoPlayTimer) clearTimeout(_autoPlayTimer);
     if (aiWord) {
-        _autoPlayTimer = setTimeout(() => {
-            playAudio(aiWord);
+        if (autoPlayImmediate) {
             const wmWord = contentEl.querySelector('.wm-word');
             if (wmWord) spawnHeroRipple(wmWord);
-        }, 1000);
+        } else {
+            _autoPlayTimer = setTimeout(() => {
+                playAudio(aiWord);
+                const wmWord = contentEl.querySelector('.wm-word');
+                if (wmWord) spawnHeroRipple(wmWord);
+            }, 1000);
+        }
+    }
+
+    // 儿童英英释义：重新生成
+    const kidsDefText = contentEl.querySelector('.wm-kids-def-text');
+    const kidsDefRegenBtn = contentEl.querySelector('.wm-kids-def-regen-btn');
+    if (kidsDefRegenBtn && kidsDefText) {
+        kidsDefRegenBtn.addEventListener('click', async () => {
+            if (kidsDefRegenBtn.disabled || !aiWord) return;
+            kidsDefRegenBtn.disabled = true;
+            kidsDefText.textContent = '正在生成…';
+            try {
+                const entry = await fetchKidsDefRegeneration({ word: aiWord, def: aiDef, brief: aiBrief });
+                setUserKidsDef(aiWord, entry);
+                kidsDefText.innerHTML = formatKidsDefHtml(entry);
+                kidsDefText.querySelectorAll('.wm-def-word').forEach(el => {
+                    el.addEventListener('click', (ev) => {
+                        const w = el.getAttribute('data-word') || el.textContent;
+                        if (w) playAudio(w, ev);
+                    });
+                });
+            } catch (err) {
+                kidsDefText.innerHTML = `<span class="wm-ai-error">生成失败：${escapeHtml(err.message)}</span>`;
+            } finally {
+                kidsDefRegenBtn.disabled = false;
+            }
+        });
+    }
+
+    // 简明释义：默认折叠，点击展开/折叠
+    const briefBlock = contentEl.querySelector('.wm-brief-block');
+    const briefToggleBtn = contentEl.querySelector('.wm-brief-toggle-btn');
+    if (briefBlock && briefToggleBtn) {
+        briefToggleBtn.addEventListener('click', () => {
+            const wasCollapsed = briefBlock.classList.contains('is-collapsed');
+            const collapsed = briefBlock.classList.toggle('is-collapsed');
+            briefToggleBtn.textContent = collapsed ? '展开' : '折叠';
+            briefToggleBtn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+            if (wasCollapsed && !collapsed && aiWord) playAudio(aiWord);
+        });
     }
 
     const aiBlock = contentEl.querySelector('.wm-ai-block');
@@ -520,5 +596,4 @@ function onWordModalKeydown(e) {
 // 页面加载后自动绑定背景板和关闭按钮事件
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('wordModalBackdrop')?.addEventListener('click', closeWordModal);
-    document.getElementById('wordModalClose')?.addEventListener('click', closeWordModal);
 });

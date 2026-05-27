@@ -45,6 +45,7 @@ function loadFromJson(json, fileName) {
         currentVocabFileName = fileName;
         console.log('Current vocab file:', currentVocabFileName);
         loadBundledAiCache(currentVocabFileName);
+        loadKidsDefSidecar(currentVocabFileName);
     }
     
     initColumnControls();
@@ -88,6 +89,7 @@ async function loadBuiltinVocab(path, sourceFileName) {
         throw new Error(`Invalid vocab format: ${sourceFileName}`);
     }
     await ensureBundledAiCacheReady();
+    await ensureKidsDefReady();
 }
 
 async function loadShanghaiVocab() {
@@ -99,34 +101,47 @@ async function loadShanghaiVocab() {
     }
 }
 
-function initStartupVocabPicker() {
+function initVocabPicker() {
     const overlay = document.getElementById('startupVocabOverlay');
+    const pickBtn = document.getElementById('pickVocabBtn');
     const ngslBtn = document.getElementById('startupPickNgslBtn');
     const shBtn   = document.getElementById('startupPickShanghaiBtn');
     const newBtn  = document.getElementById('startupPickNewBtn');
 
     if (!overlay || !ngslBtn || !shBtn || !newBtn) return;
 
+    const openPicker = () => {
+        overlay.style.display = 'flex';
+        overlay.setAttribute('aria-hidden', 'false');
+    };
+
     const closePicker = () => {
         overlay.style.display = 'none';
         overlay.setAttribute('aria-hidden', 'true');
     };
 
+    const closePickerAndGenModal = () => {
+        closePicker();
+        if (typeof closeGenModal === 'function') closeGenModal();
+    };
+
+    pickBtn?.addEventListener('click', openPicker);
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closePicker();
+    });
+
     const bindLoadAction = (btn, loader) => {
         btn.addEventListener('click', async () => {
             if (btn.disabled) return;
             btn.disabled = true;
-            const oldText = btn.textContent;
-            btn.textContent = '加载中...';
             try {
                 await loader();
-                closePicker();
+                closePickerAndGenModal();
             } catch (err) {
                 console.log('Builtin vocab load failed:', err.message);
                 alert(`加载失败：${err.message}`);
             } finally {
                 btn.disabled = false;
-                btn.textContent = oldText;
             }
         });
     };
@@ -135,15 +150,21 @@ function initStartupVocabPicker() {
     bindLoadAction(shBtn, loadShanghaiVocab);
 
     newBtn.addEventListener('click', () => {
-        // 新建模式：不加载任何词表，直接进入主页
-        closePicker();
+        closePickerAndGenModal();
     });
-
-    overlay.style.display = 'flex';
-    overlay.setAttribute('aria-hidden', 'false');
 }
 
-initStartupVocabPicker();
+async function loadDefaultVocabOnStartup() {
+    try {
+        await loadBuiltinVocab('date/word(2800).json', 'word(2800).json');
+    } catch (err) {
+        console.log('Default vocab load failed:', err.message);
+        alert(`默认词表加载失败：${err.message}`);
+    }
+}
+
+initVocabPicker();
+loadDefaultVocabOnStartup();
 
 // 列配置逻辑已抽离到 columns.js
 // 渲染逻辑已抽离到 render.js
