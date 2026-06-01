@@ -1202,8 +1202,9 @@ body {
     color: #248a3a;
 }
 
-/* 简明释义：默认折叠 */
-.wm-brief-block.is-collapsed .wm-brief-body {
+/* 简明释义 / AI 讲解：默认折叠 */
+.wm-brief-block.is-collapsed .wm-brief-body,
+.wm-ai-block.is-collapsed .wm-ai-body {
     display: none;
 }
 

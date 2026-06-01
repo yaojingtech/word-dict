@@ -242,16 +242,21 @@ function buildModalCardHtml(row, displayColumns) {
                     </div>
                     <div class="wm-text wm-brief-body">${brief || '—'}</div>
                 </div>
-                <div class="wm-block wm-ai-block">
+                <div class="wm-block wm-ai-block is-collapsed">
                     <div class="wm-label-row">
-                        <div class="wm-label">🤖 AI 单词讲解</div>
-                        <button type="button" class="wm-ai-regen-btn" style="display:none;" disabled>↺ 重新生成</button>
+                        <div class="wm-label">🤖 单词讲解</div>
+                        <div class="wm-label-row-actions">
+                            <button type="button" class="wm-ai-regen-btn wm-ai-regen-only" style="display:none;" disabled>↺ 重新生成</button>
+                            <button type="button" class="wm-ai-regen-btn wm-ai-toggle-btn" aria-expanded="false">展开</button>
+                        </div>
                     </div>
-                    <div class="wm-ai-tabs">
-                        ${AI_ROLES.map((r, i) => `<div class="wm-ai-tab${i === 0 ? ' active' : ''}" data-role="${r.id}" data-state="idle">${escapeHtml(r.label)}</div>`).join('')}
-                    </div>
-                    <div class="wm-ai-panels">
-                        ${AI_ROLES.map((r, i) => `<div class="wm-ai-panel${i === 0 ? ' active' : ''}" data-role="${r.id}" data-state="idle"><div class="wm-ai-text"></div></div>`).join('')}
+                    <div class="wm-ai-body">
+                        <div class="wm-ai-tabs">
+                            ${AI_ROLES.map((r, i) => `<div class="wm-ai-tab${i === 0 ? ' active' : ''}" data-role="${r.id}" data-state="idle">${escapeHtml(r.label)}</div>`).join('')}
+                        </div>
+                        <div class="wm-ai-panels">
+                            ${AI_ROLES.map((r, i) => `<div class="wm-ai-panel${i === 0 ? ' active' : ''}" data-role="${r.id}" data-state="idle"><div class="wm-ai-text"></div></div>`).join('')}
+                        </div>
                     </div>
                 </div>
                 ${phraseBlockHtml}
@@ -330,7 +335,7 @@ function setTabState(block, roleId, state) {
 
     const activeTab = block.querySelector('.wm-ai-tab.active');
     if (activeTab?.getAttribute('data-role') === roleId) {
-        const regenBtn = block.querySelector('.wm-ai-regen-btn');
+        const regenBtn = block.querySelector('.wm-ai-regen-only');
         if (regenBtn) {
             const done = state === 'done' || state === 'error';
             regenBtn.style.display = done ? '' : 'none';
@@ -348,7 +353,7 @@ function switchAiTab(block, roleId) {
 
     const panel = block.querySelector(`.wm-ai-panel[data-role="${roleId}"]`);
     const state = panel?.getAttribute('data-state') ?? 'idle';
-    const regenBtn = block.querySelector('.wm-ai-regen-btn');
+    const regenBtn = block.querySelector('.wm-ai-regen-only');
     if (regenBtn) {
         const done = state === 'done' || state === 'error';
         regenBtn.style.display = done ? '' : 'none';
@@ -548,8 +553,19 @@ async function openWordModal(rowData, layoutClass, displayColumns, navCtx = null
             if (word) playAudio(word, ev);
         });
 
-        // 仅首次触发「例句达人」，其余角色在用户切换 tab 时懒加载
-        startRoleGeneration(aiBlock, aiWord, aiPhonetic, aiDef, aiBrief, 'sentences');
+        const aiToggleBtn = aiBlock.querySelector('.wm-ai-toggle-btn');
+        if (aiToggleBtn) {
+            aiToggleBtn.addEventListener('click', () => {
+                const wasCollapsed = aiBlock.classList.contains('is-collapsed');
+                const collapsed = aiBlock.classList.toggle('is-collapsed');
+                aiToggleBtn.textContent = collapsed ? '展开' : '折叠';
+                aiToggleBtn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+                if (wasCollapsed && !collapsed) {
+                    if (aiWord) playAudio(aiWord);
+                    startRoleGeneration(aiBlock, aiWord, aiPhonetic, aiDef, aiBrief, 'sentences');
+                }
+            });
+        }
 
         // 标签页切换：切换展示并按需触发生成
         aiBlock.querySelectorAll('.wm-ai-tab').forEach(tab => {
@@ -561,7 +577,7 @@ async function openWordModal(rowData, layoutClass, displayColumns, navCtx = null
         });
 
         // 重新生成（仅针对当前激活标签）
-        const regenBtn = aiBlock.querySelector('.wm-ai-regen-btn');
+        const regenBtn = aiBlock.querySelector('.wm-ai-regen-only');
         if (regenBtn) {
             regenBtn.addEventListener('click', () => {
                 const activeTab = aiBlock.querySelector('.wm-ai-tab.active');
